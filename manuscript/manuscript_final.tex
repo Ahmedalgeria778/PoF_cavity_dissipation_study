@@ -345,16 +345,40 @@ $E^\ast=0.25$. The \emph{uniform} lid $U_{\mathrm{lid}}=0.5$ is the reference of
 the problem statement; it carries a tangential-velocity discontinuity at the two
 upper corners, which is retained because it is the classical boundary condition,
 but which is shown in Sec.~\ref{sec:corner} to prevent the convergence of its own
-dissipation. A \emph{corner-regularized uniform} lid, with the same plateau and a
-raised-cosine taper of width $\delta=0.05$ at each corner
+dissipation. A \emph{corner-regularized uniform} lid, constructed with an initial
+plateau $U_p=0.5$ and a raised-cosine taper of width $\delta=0.05$ at each corner
 \begin{equation}
-U_{\mathrm{lid}}=\frac{1}{2}\left[1-\cos\!\left(\frac{\pi x}{\delta}\right)\right]
-\quad (x<\delta),
+U_{\mathrm{lid}}^{\mathrm{raw}}(x)=
+\begin{cases}
+\displaystyle
+\frac{U_p}{2}
+\left[1-\cos\!\left(\frac{\pi x}{\delta}\right)\right],
+& 0\leq x<\delta,\\[6pt]
+U_p,
+& \delta\leq x\leq 1-\delta,\\[6pt]
+\displaystyle
+\frac{U_p}{2}
+\left[1-\cos\!\left(\frac{\pi(1-x)}{\delta}\right)\right],
+& 1-\delta<x\leq 1,
+\end{cases}
 \label{eq:taper}
 \end{equation}
-and symmetrically at $x>1-\delta$, removes the discontinuity at the cost of
-$6.3\%$ of the norm, which is restored by rescaling; it provides a converged
-reference. The first and second spatial harmonics,
+then rescaled to the prescribed norm:
+\begin{equation}
+U_{\mathrm{lid}}(x)=c\,U_{\mathrm{lid}}^{\mathrm{raw}}(x),
+\qquad
+c=
+\sqrt{
+\frac{E^\ast}
+{\displaystyle\int_0^1
+\left(U_{\mathrm{lid}}^{\mathrm{raw}}\right)^2 dx}
+}.
+\end{equation}
+For $\delta=0.05$, the raw profile carries $E_{\mathrm{raw}}/E_{\mathrm{uniform}}
+=1-5\delta/4=0.9375$, a $6.25\%$ loss which is restored by the rescaling factor
+$c=\sqrt{16/15}\approx 1.033$; the final plateau value is approximately $0.5164$,
+corresponding to $U_{\max}=0.52$ in table~\ref{tab:modes}. This regularized
+profile removes the discontinuity and provides a converged reference. The first and second spatial harmonics,
 $U_{\mathrm{lid}}=\sqrt{2E^\ast}\sin(\pi x)$ and
 $\sqrt{2E^\ast}\sin(2\pi x)$, are the two elementary spatially structured
 controls. Finally, the time-mean profile of the identified $B_1$ branch
@@ -380,7 +404,8 @@ the two harmonics and $0.78$ for the $B_1$ mean profile.}
 The time-dependent actuations are three representatives identified by the
 physics-informed procedure of Sec.~\ref{sec:methods} and classified by the modal
 energy of their control coefficients (details of the identification campaign and
-classification rules are provided in supplementary Tables~S1--S3 and Fig.~S3). Writing the lid as
+classification rules are provided in Supplementary Secs.~S1--S3, particularly
+Sec.~S2.3, Tables~S2--S3 and Fig.~S1). Writing the lid as
 \begin{equation}
 U_{\mathrm{lid}}(x,t)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
 a_{mn}\sin(m\pi x)\cos\!\left(\frac{2n\pi t}{T}\right),
@@ -391,7 +416,7 @@ the energy of coefficient $(m,n)$ is $\mathcal{E}_{m0}=\tfrac12a_{m0}^2$ and
 $\mathcal{E}_{mn}=\tfrac14a_{mn}^2$ for $n\ge1$, with normalized fractions
 $f_{mn}=\mathcal{E}_{mn}/\sum\mathcal{E}_{ij}$. The stationary second-harmonic
 fraction is $f_2\equiv f_{20}$ and the total time-dependent fraction is
-$f_t=\sum_{n\ge1}f_{mn}$. The three classes are defined by modal dominance
+$f_t=\sum_{m=1}^{N_x}\sum_{n=1}^{N_t-1}f_{mn}$. The three classes are defined by modal dominance
 \cite{beniaiche2026}: $B_1$ has $f_2>2f_t$ and $f_2>0.5$ (stationary
 second-harmonic dominated); $B_2$ has $f_t>2f_2$ and $f_t>0.5$ (temporally
 dominated); $B_3$ satisfies neither condition (mixed). At $Re=500$ and
@@ -433,12 +458,14 @@ diagnostic sees almost no actuation.}
 \caption{Actuation modes and hydrodynamic states compared in this study
 ($Re=500$, fixed viscosity and geometry). $U_{\max}$ is the maximum of the
 time-mean lid profile and $Re_{\max}=U_{\max}Re$ the corresponding effective
-Reynolds number; for the two time-dependent branches the maximum over the whole
-period is given in parentheses. All stationary profiles and the cycle means of
+Reynolds number; for the time-dependent controls, the maximum over the whole
+forcing period is given in parentheses. All stationary profiles and the cycle means of
 the time-dependent ones carry the same quadratic actuation norm,
-$\overline{E}_{\mathrm{act}}=0.25$; the instantaneous norm of $B_2$ and $B_3$
+$\overline{E}_{\mathrm{act}}=0.25$; the instantaneous norm of $B_1$, $B_2$ and $B_3$
 varies over the period. $f_2$ and $f_t$ are the stationary second-harmonic and
-total temporal energy fractions of the control coefficients.}
+total temporal energy fractions of the control coefficients. For the pure
+first-harmonic control, $f_1=1$ and $f_2=0$; for the pure second-harmonic control,
+$f_1=0$ and $f_2=1$.}
 \label{tab:modes}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -448,12 +475,12 @@ Actuation & Structure & $U_{\max}$ & $Re_{\max}$ & $f_2$ & $f_t$ & Role\\
 \midrule
 Uniform lid & constant, sharp corners & 0.50 & 250 & --- & 0 & reference\\
 Uniform lid, $\delta=0.05$ & constant, tapered & 0.52 & 258 & --- & 0 & converged ref.\\
-$k=1$ & $\sin\pi x$ & 0.71 & 354 & 1.00 & 0 & control\\
+$k=1$ & $\sin\pi x$ & 0.71 & 354 & 0.00 & 0 & control\\
 $k=2$ & $\sin 2\pi x$ & 0.71 & 354 & 1.00 & 0 & control\\
 $B_1$ mean profile & mean of $B_1$ & 0.78 & 390 & 0.93 & 0 & stationary\\
-$B_1$ full series & Fourier series & 0.78 (0.82) & 388 & 0.93 & 0.07 & branch\\
-$B_2$ seed 5 & temporal & 0.04 (1.23) & 20 & 0.00 & 1.00 & unsteady\\
-$B_3$ seed 0 & mixed & 0.62 (1.16) & 311 & 0.52 & 0.45 & intermediate\\
+$B_1$ full series & Fourier series & 0.78 (0.82) & 388 (410) & 0.93 & 0.07 & branch\\
+$B_2$ seed 5 & temporal & 0.04 (1.23) & 20 (615) & 0.00 & 1.00 & unsteady\\
+$B_3$ seed 0 & mixed & 0.62 (1.16) & 311 (580) & 0.52 & 0.45 & intermediate\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -494,7 +521,7 @@ condition \cite{zou1997pressure,pan2006high}. The solver reproduces the benchmar
 centerline velocities of Ghia et al.~\cite{ghia1982high} with
 $L_2(u)=0.0051$ and $L_\infty(u)=0.0128$ at $Re=100$, and
 $L_2(u)=0.0141$ and $L_\infty(u)=0.0300$ at $Re=1000$ on the
-$256\times256$ lattice (Supplementary Table~S1), which fixes the resolution used
+$256\times256$ lattice (Supplementary Sec.~S8.2), which fixes the resolution used
 for the controlled flows.
 
 Each actuation is advanced from rest with the lid switched on at $t=0$. At least
@@ -663,17 +690,19 @@ peak ($169$ to $15.0$) at a cost of $4.7\%$ in interior mean strain, and is a ne
 reduction. The second harmonic removes slightly less of it ($23.4$) while raising
 the interior mean by $39.6\%$, and is a net penalty: it buys a symmetric two-cell
 state with a stronger interior strain field, and the corner singularity it removes
-is not costly enough to compensate. The second harmonic therefore pays roughly
-$40\%$ more interior strain to avoid a corner peak that contributes less than
-$5\%$ of the total dissipation. Additional parametric studies (network capacity,
-loss-term ablation, aspect-ratio dependence, and Fourier vs.\ Chebyshev bases)
-are reported in supplementary Secs.~S3--S7 and Figs.~S5--S7; they confirm that
-the ordering is robust to the numerical parameters and is a physical property of
-the flow response to the actuation structure.
-eight times the interior penalty of the first for no additional corner gain. This
-is the mechanical content of the $+36.8\%$ and $+44.3\%$ of
-Table~\ref{tab:stationary}: the energetic cost of a spatial mode is set by the
-volume over which it raises the strain, not by the peak it removes.
+is not costly enough to compensate. Relative to the uniform lid, the increase in
+interior mean strain is only $4.7\%$ for $k=1$, but reaches $39.6\%$ for $k=2$.
+The latter increase is approximately 8.4 times larger, even though the second
+harmonic does not reduce the peak strain below that of the first harmonic ($23.4$
+against $15.0$). Additional identification-sensitivity and control-representation
+studies, including loss-term ablation, network-capacity sensitivity,
+control-space truncation, aspect-ratio dependence and Fourier versus
+modified-Chebyshev parametrizations, are documented in
+Supplementary Secs.~S3--S7, Tables~S3--S11 and Figs.~S1--S4.
+These studies characterize the robustness of branch identification;
+the dissipation ordering discussed here is established independently
+by the MRT-LBM calculations and their grid and estimator checks
+in Supplementary Secs.~S8.4--S8.7.
 
 \begin{figure}[t]
 \centering
@@ -708,8 +737,9 @@ dissipation of the fluctuations, and there is no reason for that term to be smal
 when the actuation reverses sign. A mean-field diagnostic answers the question
 ``how much would this flow dissipate if it were steady?''; it does not answer
 ``how much does it dissipate?''. Figure~\ref{fig:cycle} and
-Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary Table~S5 and Fig.~S5 provide additional temporal statistics and phase-resolved
-analyses for the three branches.
+Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary
+Tables~S15--S16 provide additional cycle-averaged statistics and iso-energetic
+comparisons, while Figs.~S5--S6 provide the phase-resolved field captures.
 
 \begin{figure}[t]
 \centering
