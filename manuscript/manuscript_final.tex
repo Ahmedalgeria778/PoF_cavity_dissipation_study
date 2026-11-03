@@ -76,7 +76,7 @@ energy budget; mean-flow diagnostics; mode selection
 \hline
 \multicolumn{2}{|l|}{\textbf{Roman letters}} \\
 \hline
-$D$ & viscous dissipation rate, $\int_\Omega 2\mathbf{S}:\mathbf{S}\,d\Omega$ \\
+$D$ & viscous dissipation rate, $\frac{2}{Re}\int_\Omega \mathbf{S}:\mathbf{S}\,d\Omega$ \\
 $\Dbar$ & cycle-mean dissipation, $\langle D \rangle_t$ \\
 $E_{\mathrm{act}}$ & quadratic actuation norm, $\int_0^1 U_{\mathrm{lid}}^2\,dx$ \\
 $E^*$ & prescribed actuation energy (constraint value) \\
@@ -96,6 +96,9 @@ $U_0$ & reference lid velocity scale \\
 $U_{\mathrm{lid}}$ & tangential lid velocity \\
 $\mathbf{u}$ & velocity vector field $(u,v)$ \\
 $x, y$ & Cartesian coordinates \\
+$K$ & number of retained modes in control expansion \\
+$A_\epsilon$ & amplitude threshold for mode classification \\
+$R_K$ & ratio of kinetic energy in retained modes \\
 \hline
 \multicolumn{2}{|l|}{\textbf{Greek letters}} \\
 \hline
@@ -110,7 +113,6 @@ GCI & grid convergence index \\
 LBM & lattice Boltzmann method \\
 MRT & multiple-relaxation-time \\
 PINN & physics-informed neural network \\
-PXP & AIP Publishing's peer review and submission system \\
 \hline
 \end{tabular}
 \end{center}
@@ -331,7 +333,7 @@ periodicity of the response, with that estimator uncertainty made explicit
 
 \subsection{Stationary reference profiles}
 
-Four stationary profiles define the comparison, all normalized to
+Five stationary profiles define the comparison, all normalized to
 $E^\ast=0.25$. The \emph{uniform} lid $U_{\mathrm{lid}}=0.5$ is the reference of
 the problem statement; it carries a tangential-velocity discontinuity at the two
 upper corners, which is retained because it is the classical boundary condition,
@@ -398,7 +400,7 @@ profile and the cycle-mean comparison of Sec.~\ref{sec:branches} uses the full
 series, so that the effect of the spatial structure is never conflated with the
 effect of the temporal one. Representative profiles and their space--time
 structure are shown in Fig.~\ref{fig:signatures}; Table~\ref{tab:modes}
-collects the characteristics of the eight actuations compared in the paper.
+collects the characteristics of the eight primary actuation cases compared in the paper.
 
 \begin{figure}[t]
 \centering
@@ -699,7 +701,7 @@ when the actuation reverses sign. A mean-field diagnostic answers the question
 ``how much would this flow dissipate if it were steady?''; it does not answer
 ``how much does it dissipate?''. Figure~\ref{fig:cycle} and
 Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary
-Table~S5 and Fig.~S8 provide additional temporal statistics and phase-resolved
+Tables~S15--S16 and Fig.~S5 provide additional temporal statistics and phase-resolved
 analyses for the three branches.
 
 \begin{figure}[t]

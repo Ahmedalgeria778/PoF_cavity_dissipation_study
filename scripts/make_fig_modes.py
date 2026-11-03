@@ -149,7 +149,7 @@ ax.set_title(r"stationary modes at $E_{\mathrm{act}}=0.25$", fontsize=9)
 ax.legend(fontsize=7, loc="lower left", frameon=False, handlelength=2.4)
 ax.text(-0.14, 0.98, "(b)", transform=ax.transAxes, fontsize=10,
         fontweight="bold", va="top")
-ax.text(0.03, 0.95, r"$U_{\max}=0.50,\ 0.71,\ 0.71,\ 0.78$", transform=ax.transAxes,
+ax.text(0.03, 0.95, r"$U_{\max}=0.50,\ 0.52,\ 0.71,\ 0.71,\ 0.78$", transform=ax.transAxes,
         fontsize=7, va="top", color="0.3")
 fig.savefig(os.path.join(OUT, "fig01_modes.pdf"), bbox_inches="tight")
 fig.savefig(os.path.join(OUT, "fig01_modes.png"), dpi=320, bbox_inches="tight")
