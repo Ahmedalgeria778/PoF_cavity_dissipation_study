@@ -119,11 +119,13 @@ training epoch, preventing overfitting to any fixed quadrature set.
 
 \textbf{Interior PDE collocation:} \(N_{\mathrm{phys}}=4\,000\) points sampled
 uniformly at random over the computational domain
-\(\Omega\times[0,1]=[0,L_x]\times[0,1]\times[0,1]\). At each epoch, three
-Reynolds-number values are selected from the set \(\{100,300,500,700,900,1000\}\);
-each interior point is evaluated at all three selected \(Re\) values, giving an
-effective PDE sample size of \(3N_{\mathrm{phys}}=12\,000\) residual evaluations
-per epoch.
+\(\Omega\times[0,1]=[0,L_x]\times[0,1]\times[0,1]\), where the time coordinate
+\(t\in[0,1]\) represents the normalized phase \(\theta=t_{\mathrm{phys}}/T\) with
+\(T=2\) the physical period (see Sec.~S8.5 for the temporal convention). At each
+epoch, three Reynolds-number values are selected from the set
+\(\{100,300,500,700,900,1000\}\); each interior point is evaluated at all three
+selected \(Re\) values, giving an effective PDE sample size of
+\(3N_{\mathrm{phys}}=12\,000\) residual evaluations per epoch.
 
 \textbf{Boundary collocation:} \(N_{\mathrm{BC}}=600\) points distributed across
 the boundary \(\partial\Omega\), split as \(200\) on \(\Gamma_{\mathrm{top}}\)
@@ -1020,12 +1022,34 @@ not be read as the asymptotic ones.
 
 \subsection{S8.5 Cycle-averaged response of the temporal controls}
 
+\textbf{Temporal convention and periodicity.} The PINN operates on a normalized
+time variable \(t\in[0,1]\) that represents the phase
+\(\theta=t_{\mathrm{phys}}/T\), where \(t_{\mathrm{phys}}\) is the physical time
+and \(T=2\) is the forcing period. The temporal basis functions are
+\(\cos(n\pi t)=\cos(n\pi\theta)\) for integer \(n\geq 0\). The fundamental mode
+\(n=1\) has \(\cos(\pi\theta)\), which completes one full oscillation as
+\(\theta\) goes from 0 to 1, corresponding to one physical period
+\(t_{\mathrm{phys}}\in[0,T]\). When the control is exported for LBM simulation,
+the mapping \(t_{\mathrm{phys}}=T\theta=2\theta\) is applied, so the exported
+control on \(t_{\mathrm{phys}}\in[0,2]\) has the form
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})=\sum_{m,n}a_{mn}\sin(m\pi x)\cos(n\pi
+t_{\mathrm{phys}}/T)\). The time derivative in the Navier--Stokes residual uses
+the chain rule: \(\partial/\partial t_{\mathrm{phys}}=(1/T)\,\partial/\partial\theta\),
+so \(\partial_t u\) in the PINN residual is scaled by \(1/T=1/2\) relative to the
+derivative with respect to the normalized variable. Periodicity of the flow field
+is enforced by the periodic basis: since all temporal modes are
+\(\cos(n\pi\theta)\) with integer \(n\), the reconstructed field satisfies
+\(u(\theta+1)=u(\theta)\), which translates to
+\(u(t_{\mathrm{phys}}+T)=u(t_{\mathrm{phys}})\) in physical time. This periodicity
+is verified a posteriori by comparing the first and last phases of the LBM
+simulation after transient decay.
+
 The two temporal controls, the full Fourier series and the
 modified-Chebyshev series, are periodic with the forced
 period \(T=2\). The PINN residual is imposed on the normalized interval
 \(t\in[0,1]\); the fundamental cosine factor \(\cos(\pi t)\) therefore has period
-\(T=2\) in those units, and the control is exported on \(t\in[0,2]\), one full
-period, and advanced by 256 lattice steps. The dissipation of such a flow is not a
+\(T=2\) in physical time, and the control is exported on \(t_{\mathrm{phys}}\in[0,2]\),
+one full period, and advanced by 256 lattice steps. The dissipation of such a flow is not a
 single number: what a
 periodic actuation is charged for is the cycle average
 \(\bar\varepsilon=T^{-1}\!\int_0^T\varepsilon(t)\,dt\), whereas the diagnostics of
