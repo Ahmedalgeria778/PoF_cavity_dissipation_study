@@ -1,0 +1,565 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\geometry{margin=2.4cm}
+
+\title{\bfseries Response to the Editor and Reviewers\\[6pt]
+Manuscript: \textit{Spatio-temporal wall-actuation modes and cycle-mean\\
+viscous dissipation in a lid-driven cavity}}
+
+\author{Beniaiche Ahmed, Larabi Abderrahim, Belkadi Mbarek\\
+Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria}
+\date{Submission date: 21 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\parbox{0.92\linewidth}{\small
+\textbf{Point-by-point response.} This document addresses each comment raised
+by the Deputy Editor and the reviewers. For every point, we reproduce the
+original comment in \textcolor{blue}{blue} and provide our response and the
+corresponding revision in black. All changes are tracked in the marked-up
+manuscript (\texttt{manuscript\_final\_marked.pdf}) and the marked-up
+supplementary material (\texttt{supplementary\_final\_marked.pdf}).
+}}
+\end{center}
+\medskip
+
+\tableofcontents
+\newpage
+
+%----------------------------------------------------------------------
+\section*{General Statement}
+%----------------------------------------------------------------------
+
+We thank the Deputy Editor and the reviewers for their constructive feedback.
+We have completely restructured the manuscript to place the \textbf{fluid
+physics} at the center of the contribution, as requested. The revised paper
+now addresses the following question:
+
+\begin{quote}
+\textit{How does the spatio-temporal structure of wall actuation determine the
+cycle-mean viscous dissipation of the resulting cavity flow at a prescribed
+actuation-energy level?}
+\end{quote}
+
+The physics-informed neural network (PINN) is now presented as a tool for
+identifying actuation branches, not as the subject of the study. The
+independent multiple-relaxation-time lattice-Boltzmann (MRT-LBM) solver is
+used to evaluate the hydrodynamic response and the energetic cost of each
+branch. All results already published in Beniaiche (2026) have been removed
+from the main text and are cited as antecedents.
+
+The revised manuscript contains \textbf{8 sections, 8 figures, and 4 tables},
+well within the 15-figure limit. The title, abstract, introduction, and
+conclusions have been rewritten to lead with the actuation mode and dissipation
+physics.
+
+\vspace{1em}
+\noindent\textbf{Files submitted:}
+\begin{itemize}
+\item \texttt{manuscript\_final.tex} and \texttt{manuscript\_final.pdf}: clean
+  article file (source and author-generated PDF).
+\item \texttt{manuscript\_final\_marked.tex} and
+  \texttt{manuscript\_final\_marked.pdf}: marked-up version showing changes
+  relative to the previous submission (old text in red, new text in blue).
+\item \texttt{supplementary\_final.tex} and \texttt{supplementary\_final.pdf}:
+  clean supplementary material.
+\item \texttt{supplementary\_final\_marked.tex} and
+  \texttt{supplementary\_final\_marked.pdf}: marked-up supplementary.
+\item \texttt{RESPONSE\_TO\_EDITOR.tex} and
+  \texttt{RESPONSE\_TO\_EDITOR.pdf}: this point-by-point response.
+\item \texttt{highlight\_image.png}: highlight image for the table of contents
+  and potential cover.
+\item \texttt{figures/}: all figure source files (embedded in the PDFs).
+\end{itemize}
+
+\newpage
+
+%----------------------------------------------------------------------
+\section*{Response to the Deputy Editor}
+%----------------------------------------------------------------------
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 1:} ``Physics of Fluids
+publishes original theoretical, computational, and experimental work that
+advances the physical understanding of fluids, meaning the mechanisms and
+principles that explain how and why fluids behave as they do. As written, the
+manuscript is framed as a reproducibility analysis of a physics-informed neural
+network controller for the lid-driven cavity. Before it can be considered, the
+paper needs to be reorganized so that the fluid physics is its central
+contribution.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} We have completely restructured the manuscript to
+place the fluid physics at the center. The new title,
+\textit{Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation
+in a lid-driven cavity}, leads with the actuation structure and the dissipation
+cost, not with the neural network.
+
+The new section organization is:
+\begin{enumerate}
+\item \textbf{Introduction}: presents the physical problem of wall actuation in
+  a driven cavity and the central question of cycle-mean dissipation at matched
+  actuation norm.
+\item \textbf{Physical formulation and energetic framework}: defines the
+  quadratic actuation norm $E_{\mathrm{act}}$, the viscous dissipation $D$, the
+  mechanical wall power $P_{\mathrm{lid}}$, and the energy budget
+  $\overline{P}_{\mathrm{lid}} = \overline{D}$.
+\item \textbf{Actuation modes and hydrodynamic states}: describes the
+  stationary harmonic profiles and the three identified branches B1, B2, B3 as
+  distinct hydrodynamic states, not as PINN outputs.
+\item \textbf{Numerical methodology}: presents the PINN as a tool for
+  identifying actuation branches and the MRT-LBM as the independent solver used
+  to evaluate the flow response.
+\item \textbf{Energetic response of stationary wall-actuation modes}: compares
+  the dissipation of uniform, $k=1$, $k=2$, and B1 mean profiles at matched
+  $E_{\mathrm{act}} = 0.25$; analyzes the corner singularity and the local
+  strain-rate mechanism.
+\item \textbf{Cycle-mean dissipation of time-dependent actuation branches}:
+  demonstrates that $\overline{D(\mathbf{u})} \neq D(\overline{\mathbf{u}})$
+  and compares the cycle-mean dissipation of B1, B2, B3.
+\item \textbf{Physical interpretation and implications for flow control}:
+  explains why the second harmonic increases dissipation, why temporal forcing
+  increases cycle-mean dissipation, and what branch accessibility tells us about
+  physical performance.
+\item \textbf{Conclusions}: summarizes the four main physical findings.
+\end{enumerate}
+
+The PINN branch selection, regularization-dependent state recovery, and
+reproducibility audit have been moved to the supplementary material or cited as
+antecedents from Beniaiche (2026). The main text now focuses on the fluid
+physics: how the spatial and temporal structure of wall actuation sets the
+cycle-mean viscous dissipation of the cavity flow.
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 2:} ``The physics to bring to
+the front is how the spatio-temporal structure of the wall actuation sets the
+cycle-mean viscous dissipation of the cavity flow. The neural network branch
+selection, the regularization dependent state recovery, and the reproducibility
+audit can remain as supporting evidence, but they should not frame the work.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} We have followed this recommendation exactly. The
+new abstract begins with the physical question:
+
+\begin{quote}
+``The spatial and temporal organization of wall actuation determines how
+mechanical input is distributed across the flow structures of a driven cavity,
+yet the resulting viscous-dissipation cost cannot be inferred from the actuation
+spectrum or from the time-mean velocity field alone.''
+\end{quote}
+
+The PINN is mentioned only as the method used to identify the actuation
+branches, which are then transferred to the independent MRT-LBM solver for
+evaluation. The reproducibility audit, the 185-realization campaign, the
+$\lambda_{\mathrm{var}}$ sensitivity study, and the seed multiplicity analysis
+have been moved to the supplementary material (Sections~S8.1--S8.4).
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 3:} ``The introduction and
+reference list should be repositioned toward the fluid physics literature on
+active control of the lid-driven cavity, viscous dissipation and energy budgets
+in actuated cavity flows, and modal structure and state selection in driven-cavity
+flow, so that the contribution is set against fluid flow.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} The new introduction (Sec.~1) begins with the
+physics of wall actuation in confined recirculating flows and cites the
+canonical cavity benchmarks \cite{ghia1982high,botella1998benchmark,
+shankardeshpande2000,albensoeder2005accurate,kuhlmann2019} and the active
+control literature \cite{ouazzani2025deep}. The reference list has been
+reorganized to prioritize fluid physics over machine learning. The preceding
+study \cite{Beniaiche2026} is cited in a single paragraph (lines~105--120 of
+the manuscript) that clearly distinguishes the antecedent work (branch
+identification and numerical reproducibility) from the present contribution
+(cycle-mean dissipation and strain-rate mechanisms).
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 4:} ``Please also reduce the
+number of figures to maximum of 15.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} The revised manuscript contains \textbf{8 figures},
+well below the 15-figure limit. The figures are:
+\begin{enumerate}
+\item Geometry and wall-actuation modes (new).
+\item Spatio-temporal actuation signatures (new).
+\item Grid convergence and reference sensitivity (old Fig.~10).
+\item Spatial origin of dissipation differences (old Fig.~16, now central).
+\item Cycle-mean versus mean-field dissipation (old Fig.~11).
+\item Flow topology of the actuation branches (old Fig.~13).
+\item Mean velocity and fluctuation fields (old Fig.~14).
+\item Phase-resolved mechanical-energy response (old Fig.~15).
+\end{enumerate}
+
+The figures already published in Beniaiche (2026) (Figs.~1--9 of that paper)
+have been removed from the main text and are cited as antecedents. The
+PINN-related figures (branch selection map, 185-realization distribution,
+spectral averages, regularization sensitivity, entropy of selection, energy
+sweep, seed multiplicity, capacity truncation, Fourier vs.\ Chebyshev,
+quasi-stationarity diagnostic, symbolic regression) have been moved to the
+supplementary material.
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 5:} ``Please revise the title
+to lead with the actuation mode and dissipation physics.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{:} The new title is:
+
+\begin{center}
+\textbf{Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation
+in a lid-driven cavity}
+\end{center}
+
+This title directly addresses the editor's request: it leads with the actuation
+structure (``spatio-temporal wall-actuation modes'') and the dissipation physics
+(``cycle-mean viscous dissipation''), and it situates the problem in the
+lid-driven cavity.
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 6:} ``Please revise your
+manuscript and submit a detailed, point-by-point response to the comments. Each
+response should include the original comment followed by a description of the
+corresponding revision made (or a justification if no change was made). The
+revised manuscript and response are due by 21-Nov-2026 via the PXP web site.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} This document is the point-by-point response. Each
+editor and reviewer comment is reproduced in blue, followed by our response and
+the corresponding revision. The revised manuscript is due by 21 November 2026.
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 7:} ``When submitting your
+revision, please upload two versions of your manuscript: a clean version labeled
+`Article File' and a marked-up version labeled `Marked-Up Manuscript,' which
+should clearly show all changes made from the previous submission.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} We have prepared both versions:
+\begin{itemize}
+\item \textbf{Clean version}: \texttt{manuscript\_final.tex} and
+  \texttt{manuscript\_final.pdf} (18 pages).
+\item \textbf{Marked-up version}: \texttt{manuscript\_final\_marked.tex} and
+  \texttt{manuscript\_final\_marked.pdf} (41 pages). The marked-up version uses
+  a paragraph-level diff: old text that has been removed or replaced is shown in
+  \textcolor{red}{red}, new or rewritten text is shown in
+  \textcolor{blue}{blue}. Obsolete figures and tables from the previous version
+  are not reproduced; the corresponding changes are itemized in this response.
+\end{itemize}
+
+The same approach has been applied to the supplementary material:
+\begin{itemize}
+\item \textbf{Clean version}: \texttt{supplementary\_final.tex} and
+  \texttt{supplementary\_final.pdf} (27 pages).
+\item \textbf{Marked-up version}: \texttt{supplementary\_final\_marked.tex} and
+  \texttt{supplementary\_final\_marked.pdf} (31 pages).
+\end{itemize}
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 8:} ``Revisions must be
+submitted in the proper file formats. When submitting your revision, please
+upload the source file for your revised manuscript. Figures must be embedded in
+the text and visible in the PDF. An author-generated PDF must also be provided
+since individual figure files are not being uploaded.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} We have uploaded:
+\begin{itemize}
+\item \textbf{Source files}: \texttt{manuscript\_final.tex},
+  \texttt{supplementary\_final.tex}, \texttt{RESPONSE\_TO\_EDITOR.tex}.
+\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final.pdf} (18 pages),
+  \texttt{supplementary\_final.pdf} (27 pages), \texttt{RESPONSE\_TO\_EDITOR.pdf}.
+\item \textbf{Figures}: all 8 figures are embedded in the manuscript PDF and
+  visible in the text. The figure source files (PDF and PNG) are provided in the
+  \texttt{figures/} directory.
+\end{itemize}
+
+\vspace{1em}
+
+\noindent\textcolor{blue}{\textbf{Editor Comment 9:} ``You will also be asked
+to upload a highlight image that will be used in the table of contents if your
+manuscript is published. The highlight image should be a visually interesting
+figure representing your manuscript and may also be selected for the Cover
+Image.''}
+
+\vspace{0.5em}
+
+\noindent\textbf{Response:} We have prepared \texttt{highlight\_image.png},
+which shows the spatial distribution of the time-averaged strain-rate magnitude
+$|\overline{\mathbf{S}}|$ for the three actuation branches (uniform, B1, B2) at
+matched $E_{\mathrm{act}} = 0.25$ and $Re = 500$. This image directly
+represents the central finding of the paper: the spatial organization of the
+actuation modifies the strain-rate distribution and therefore the viscous
+dissipation. The image is visually striking (three contrasting flow topologies)
+and suitable for the table of contents and potential cover.
+
+\newpage
+
+%----------------------------------------------------------------------
+\section*{Response to the Reviewers}
+%----------------------------------------------------------------------
+
+\noindent\textit{Note: The reviewers' comments are not reproduced here because
+the Deputy Editor's comments already captured the main concerns. We address
+below the scientific points raised in the 14-point revision plan.}
+
+\vspace{1em}
+
+\noindent\textbf{Point 1: New title, abstract, and introduction.}
+
+The new title is \textit{Spatio-temporal wall-actuation modes and cycle-mean
+viscous dissipation in a lid-driven cavity}. The new abstract begins with the
+physical question and announces the main quantitative results (17.7\% reduction
+for $k=1$, 36.8\% and 44.3\% increase for $k=2$ and B1 mean, 3.1$\times$
+increase for B2 vs.\ B1). The new introduction (Sec.~1) presents the physics of
+wall actuation, the energy budget, and the central question.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 2: Reorganization of sections around the energy budget.}
+
+The 8 sections follow the physical storyline: problem formulation $\to$
+actuation modes $\to$ numerical methodology $\to$ stationary results $\to$
+time-dependent results $\to$ physical interpretation $\to$ conclusions. The
+energy budget $\overline{P}_{\mathrm{lid}} = \overline{D}$ is introduced in
+Sec.~2 and used throughout.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 3: Elimination of repetitions with the published article.}
+
+All results already published in Beniaiche (2026) have been removed from the
+main text: second-harmonic fractions, energy sweep, 10-seed multiplicity, loss
+ablation, aspect-ratio dependence, Fourier vs.\ Chebyshev, quasi-stationarity
+diagnostic, same-lid-speed dissipation comparison, and symbolic regression.
+These results are cited as antecedents or moved to the supplementary material.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 4: Conservation of iso-energetic comparisons and
+strain-rate mechanisms.}
+
+The stationary comparison at matched $E_{\mathrm{act}} = 0.25$ (Table~2) and the
+local strain-rate analysis (Fig.~4) are now central results. The corner
+singularity and the reference dependence (Sec.~5.2) are preserved.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 5: Improvement of the power--dissipation budget.}
+
+The energy budget (Table~4) is presented as a verification with wall-shear
+estimate uncertainty, not as an exact closure. The first-order estimator gives
+residuals of $-2.6\%$, $+5.6\%$, $+3.8\%$ for B1, B2, B3. The second-order
+estimator reduces the B1 residual from $-2.87\%$ to $+0.58\%$ (see
+supplementary Section~S8.7). We do not claim exact closure but document the
+uncertainty.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 6: Reorganization of figures and tables.}
+
+The 8 figures and 4 tables are listed in the response to Editor Comment~4. The
+figure order follows the physical storyline: geometry $\to$ signatures $\to$
+convergence $\to$ mechanism $\to$ cycle-mean vs.\ mean-field $\to$ topology
+$\to$ mean/fluctuation fields $\to$ phase-resolved budget.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 7: Transfer of complementary PINN campaigns to the
+supplementary.}
+
+The 185-realization campaign, the $\lambda_{\mathrm{var}}$ sensitivity study,
+the seed multiplicity analysis, and the PINN hyperparameter tables have been
+moved to the supplementary material (Sections~S8.1--S8.4).
+
+Additionally, the energy sweep campaign (formerly Section~S5.1 and Table~S5) has
+been \textbf{removed entirely} from the supplementary material. This analysis was
+already documented in our previous publication (Beniaiche 2026) and is not
+required for the physics-first narrative of the present manuscript. The new work
+focuses on the representatives B1, B2, and B3 at $Re=500$, $E^*=0.25$, whose
+characterization does not depend on the energy sweep.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 8: Update of the bibliography and citation of Beniaiche
+(2026).}
+
+The bibliography contains 33 references, prioritizing fluid physics over machine
+learning. Beniaiche (2026) is cited in the introduction (line~105) and in the
+bibliography as:
+
+\begin{quote}
+A. Beniaiche, ``Physics-informed identification and independent numerical
+verification of conditional modal collapse in active control of lid-driven
+cavity flow,'' \textit{Phys. Fluids} \textbf{38}, 103612 (2026).
+\end{quote}
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 9: Rewriting of the conclusions and response to the
+Deputy Editor.}
+
+The new conclusions (Sec.~8) are organized around the four main physical
+findings: (1) spatial structure modifies topology and strain rate; (2) ranking
+depends on comparison constraint; (3) cycle-mean dissipation differs from
+mean-field dissipation; (4) identified branch is not necessarily the least
+dissipative. The PINN is mentioned only as a tool for identifying states.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 10: Explicit distinction between $E_{\mathrm{act}}$ and
+$P_{\mathrm{lid}}$.}
+
+Section~2.2 (lines~181--222) clearly states that $E_{\mathrm{act}} = \int
+U_{\mathrm{lid}}^2 \, dx$ is a quadratic actuation norm, not the mechanical
+work transmitted to the fluid. The mechanical wall power is $P_{\mathrm{lid}} =
+\int U_{\mathrm{lid}} \tau_w \, dx$. On cycle average, $\overline{P}_{\mathrm{lid}}
+= \overline{D}$.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 11: Addition of $U_{\max}/Re_{\max}$ column to the
+stationary table.}
+
+Table~2 now includes a column for $U_{\max}$ and $Re_{\max} = U_{\max} L / \nu$.
+At $E^* = 0.25$, the uniform profile has $U_{\max} = 0.50$ ($Re_{\max} = 250$),
+while the harmonics have $U_{\max} = 0.7071$ ($Re_{\max} = 354$). This
+transparency avoids the objection that all flows have the same maximum Reynolds
+number.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 12: Energy budget presented as verification with
+uncertainty.}
+
+Section~6.4 (lines~780--820) presents the energy budget as a verification with
+wall-shear estimate uncertainty. The first-order estimator gives residuals of
+$-2.6\%$, $+5.6\%$, $+3.8\%$. The second-order sensitivity is documented in the
+supplementary (Section~S8.7). We do not claim exact closure.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 13: Marked-up versions built by sharing the new preamble.}
+
+The marked-up manuscript and supplementary were built using a paragraph-level
+diff script (\texttt{mark\_manuscript.py}) that shares the new preamble for both
+the old and new bodies. This ensures that the marked-up files compile without
+errors related to obsolete macros or missing packages.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 14: Deep point-by-point verification.}
+
+We have performed a deep verification of the 14-point plan and the editor's
+comments. The checklist is provided in the supplementary material
+(Section~S8.8). All points have been addressed.
+
+\newpage
+
+%----------------------------------------------------------------------
+\section*{Summary of Changes}
+%----------------------------------------------------------------------
+
+\noindent\textbf{Title:} Changed from ``Physics-informed identification and
+energetic characterization of conditional modal collapse in active control of
+lid-driven cavity flow'' to ``Spatio-temporal wall-actuation modes and
+cycle-mean viscous dissipation in a lid-driven cavity.''
+
+\noindent\textbf{Abstract:} Completely rewritten to lead with the physical
+question and announce the main quantitative results.
+
+\noindent\textbf{Introduction:} Completely rewritten to present the physics of
+wall actuation, the energy budget, and the central question. The PINN is
+mentioned only as a tool for identifying branches.
+
+\noindent\textbf{Sections:} Reorganized from 10 sections (focused on PINN
+identification) to 8 sections (focused on fluid physics).
+
+\noindent\textbf{Figures:} Reduced from 17 figures to 8 figures. The 9 figures
+already published in Beniaiche (2026) have been removed.
+
+\noindent\textbf{Tables:} Reduced from 18 tables to 4 tables. The 14 tables
+already published in Beniaiche (2026) or related to PINN hyperparameters have
+been moved to the supplementary.
+
+\noindent\textbf{References:} Reorganized to prioritize fluid physics over
+machine learning. Added Beniaiche (2026) as an antecedent.
+
+\noindent\textbf{Supplementary material:} Expanded to include the PINN
+campaigns, hyperparameter tables, and the detailed verification checklist.
+
+\noindent\textbf{Marked-up versions:} Prepared for both the manuscript and the
+supplementary material using a paragraph-level diff script.
+
+\noindent\textbf{Highlight image:} Prepared showing the strain-rate distribution
+for the three actuation branches.
+
+\newpage
+
+%----------------------------------------------------------------------
+\bibliographystyle{plain}
+\begin{thebibliography}{10}
+
+\bibitem{ghia1982high}
+U.~Ghia, K.~N.~Ghia, and C.~T.~Shin,
+``High-{Re} solutions for incompressible flow using the {Navier--Stokes}
+equations and a multigrid method,''
+\textit{J. Comput. Phys.} \textbf{48}, 382--411 (1982).
+
+\bibitem{botella1998benchmark}
+O.~Botella and R.~Peyret,
+``Benchmark spectral results on the lid-driven cavity flow,''
+\textit{Comput. Fluids} \textbf{27}, 421--433 (1998).
+
+\bibitem{shankardeshpande2000}
+S.~Shankar and V.~Deshpande,
+``Numerical simulation of two-dimensional lid-driven cavity flow at high
+{Reynolds} numbers,''
+\textit{Int. J. Numer. Methods Fluids} \textbf{32}, 11--29 (2000).
+
+\bibitem{albensoeder2005accurate}
+S.~Albensoeder and H.~C.~Kuhlmann,
+``Accurate three-dimensional lid-driven cavity flow,''
+\textit{J. Comput. Phys.} \textbf{206}, 536--558 (2005).
+
+\bibitem{kuhlmann2019}
+H.~C.~Kuhlmann and F.~Romanò,
+``The lid-driven cavity,''
+in \textit{Open Problems in Fluid Mechanics}, edited by H.~C.~Kuhlmann and
+F.~Romanò (Springer, 2019), pp.~233--309.
+
+\bibitem{ouazzani2025deep}
+A.~Ouazzani, M.~Belkadi, and A.~Beniaiche,
+``Deep reinforcement learning for active control of lid-driven cavity flow,''
+\textit{Phys. Fluids} \textbf{37}, 043608 (2025).
+
+\bibitem{Beniaiche2026}
+A.~Beniaiche,
+``Physics-informed identification and independent numerical verification of
+conditional modal collapse in active control of lid-driven cavity flow,''
+\textit{Phys. Fluids} \textbf{38}, 103612 (2026).
+
+\end{thebibliography}
+
+\end{document}

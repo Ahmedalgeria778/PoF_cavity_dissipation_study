@@ -1,0 +1,59 @@
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.lof
+*.lot
+*.idx
+*.ilg
+*.ind
+*.ist
+*.glg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+*.loa
+*.nav
+*.snm
+*.vrb
+*.dvi
+*.ps
+*.xdy
+*.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Large data files (available on request)
+*.npz
+*.h5
+*.hdf5
+*.csv
+
+# Temporary files
+*.tmp
+*.bak

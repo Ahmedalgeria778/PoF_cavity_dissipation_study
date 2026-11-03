@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation in a lid-driven cavity"
+authors:
+  - family-names: Beniaiche
+    given-names: Ahmed
+    email: beniaiche_ahmed25@yahoo.fr
+    affiliation: Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria
+  - family-names: Larabi
+    given-names: Abderrahim
+    affiliation: Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria
+  - family-names: Belkadi
+    given-names: Mbarek
+    affiliation: Laboratory of Turbomachinery, Ecole Militaire Polytechnique, Algiers, Algeria
+version: 1.0.0
+date-released: 2026-11-03
+url: "https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study"
+repository-code: "https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study"
+license: MIT
+type: dataset
+keywords:
+  - lid-driven cavity
+  - wall actuation
+  - viscous dissipation
+  - energy budget
+  - mean-flow diagnostics
+  - mode selection
+  - lattice Boltzmann method
+  - physics-informed neural networks
+abstract: |
+  This repository contains the complete computational study, data, and analysis
+  scripts for the paper on spatio-temporal wall-actuation modes and cycle-mean
+  viscous dissipation in a lid-driven cavity, submitted to Physics of Fluids (2026).
