@@ -34,7 +34,9 @@ PoF_cavity_dissipation_study/
 │   ├── fig02_signatures.*       # Figure 2: Spatio-temporal signatures
 │   └── ...                      # Additional figures
 ├── scripts/                     # Analysis scripts
-│   └── make_fig_modes.py        # Generate Figures 1 and 2
+│   ├── make_fig_modes.py        # Generate Figures 1 and 2
+│   ├── make_fig_gci.py          # Generate Figure 12 (grid convergence)
+│   └── make_fig_branch_topology.py  # Generate Figure 20 (branch topology)
 ├── tables/                      # Table data
 └── docs/                        # Documentation
     └── RESPONSE_TO_EDITOR.*     # Response to editor letter
@@ -59,10 +61,28 @@ pip install numpy matplotlib scipy
 
 ### Generate Figures
 
+All figure scripts read from `results/` and write to `figures/`.
+
 ```bash
-cd scripts
-python make_fig_modes.py
+# Figures 1 & 2: geometry, stationary modes, and branch signatures
+python scripts/make_fig_modes.py
+
+# Figure 12: grid convergence index (GCI)
+python scripts/make_fig_gci.py
+
+# Figure 20: branch flow topology (streamfunction + streamlines)
+python scripts/make_fig_branch_topology.py
+python scripts/make_fig_branch_topology.py --variant phases8     # supplementary Fig. S5
+python scripts/make_fig_branch_topology.py --variant panelscale # supplementary Fig. S6
 ```
+
+### Raw Data
+
+The `results/` directory contains the simulation data used to generate all figures:
+
+- `results/06_branch_figures/capture_B{1,2,3}.npz` — phase-resolved velocity fields, lid series, and energy budgets for the three branch classes at Re=500, E*=0.25
+- `results/06_branch_figures/summary.json` — cycle-averaged diagnostics (dissipation, kinetic energy, lid power, closure residuals)
+- `results/p1_gci_iso/p1_gci_raw.csv` — grid convergence data at N=128, 256, 512
 
 ### Compile Manuscript
 

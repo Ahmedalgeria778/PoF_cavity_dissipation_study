@@ -68,52 +68,59 @@ energy budget; mean-flow diagnostics; mode selection
 %----------------------------------------------------------------------
 
 \begin{center}
-\renewcommand{\arraystretch}{1.3}
-\setlength{\tabcolsep}{8pt}
-\begin{tabular}{|l|p{9cm}|}
-\hline
-\textbf{Symbol} & \textbf{Description} \\
-\hline
-\multicolumn{2}{|l|}{\textbf{Roman letters}} \\
-\hline
-$D$ & viscous dissipation rate, $\frac{2}{Re}\int_\Omega \mathbf{S}:\mathbf{S}\,d\Omega$ \\
-$\Dbar$ & cycle-mean dissipation, $\langle D \rangle_t$ \\
-$E_{\mathrm{act}}$ & quadratic actuation norm, $\int_0^1 U_{\mathrm{lid}}^2\,dx$ \\
-$E^*$ & prescribed actuation energy (constraint value) \\
-$f_1, f_2$ & modal energy fractions of first and second spatial harmonics \\
-$f_{\mathrm{hi}}$ & modal energy fraction of harmonics $m \geq 3$ \\
-$f_t$ & temporal energy fraction (energy in time-varying modes) \\
-$L$ & cavity side length \\
-$m$ & spatial harmonic index \\
-$N$ & grid resolution (number of nodes per direction) \\
-$n$ & temporal harmonic index \\
-$p$ & kinematic pressure \\
-$P_{\mathrm{lid}}$ & mechanical power injected by the lid, $\int_0^1 U_{\mathrm{lid}}\tau_w\,dx$ \\
-$Re$ & Reynolds number, $U_0 L/\nu$ \\
-$T$ & forcing period \\
-$t$ & time \\
-$U_0$ & reference lid velocity scale \\
-$U_{\mathrm{lid}}$ & tangential lid velocity \\
-$\mathbf{u}$ & velocity vector field $(u,v)$ \\
-$x, y$ & Cartesian coordinates \\
-$K$ & number of retained modes in control expansion \\
-$A_\epsilon$ & amplitude threshold for mode classification \\
-$R_K$ & ratio of kinetic energy in retained modes \\
-\hline
-\multicolumn{2}{|l|}{\textbf{Greek letters}} \\
-\hline
-$\delta$ & corner taper width \\
-$\nu$ & kinematic viscosity \\
-$\tau_w$ & wall shear stress \\
-$\mathbf{S}$ & strain-rate tensor, $\frac{1}{2}(\nabla\mathbf{u} + \nabla\mathbf{u}^T)$ \\
-\hline
-\multicolumn{2}{|l|}{\textbf{Abbreviations}} \\
-\hline
-GCI & grid convergence index \\
-LBM & lattice Boltzmann method \\
-MRT & multiple-relaxation-time \\
-PINN & physics-informed neural network \\
-\hline
+\footnotesize
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.78\textwidth}@{}}
+\toprule
+\multicolumn{2}{@{}l}{\textit{Roman symbols}}\\
+\midrule
+\(A_\varepsilon\) & half-spread of \(D(t)\) over the cycle, i.e.\ the variability concealed by a single cycle-mean number\\
+\(AR\) & cavity aspect ratio, \(L_x/L_y\)\\
+\(C_3\) & spectral rank concentration, sum of the three largest control-energy fractions\\
+\(D\) & instantaneous viscous dissipation rate, \((2/Re)\int_\Omega \mathbf{S}\!:\!\mathbf{S}\,d\Omega\)\\
+\(\Dbar\) & cycle-mean dissipation, \(\langle D\rangle_t\)\\
+\(E_{\mathrm{act}}\) & instantaneous actuation energy of the lid profile, \(\int_0^1 U_{\mathrm{lid}}^2\,dx\)\\
+\(E_r\) & realized cycle-averaged actuation energy of a transferred control\\
+\(E^*\) & prescribed target actuation energy\\
+\(f_1,f_2,f_t\) & first-harmonic, second-harmonic, and explicitly time-dependent control-energy fractions\\
+\(H_N\) & normalized branch-selection entropy\\
+\(K\) & kinetic energy, \(\tfrac12\int_\Omega |\mathbf{u}|^2\,d\Omega\)\\
+\(L,L_x,L_y\) & cavity side, streamwise and wall-normal lengths\\
+\(N\) & number of lattice nodes per cavity side (LBM resolution)\\
+\(P_{\mathrm{lid}}\) & mechanical power injected through the lid, \(\int_0^1 U_{\mathrm{lid}}\tau_w\,dx\)\\
+\(R_K\) & ratio of fluctuating to mean kinetic energy\\
+\(Re\) & Reynolds number, \(U_{\mathrm{ref}}L/\nu\)\\
+\(\mathbf{S}\) & strain-rate tensor, \((\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T})/2\)\\
+\(t,T\) & time and forcing period\\
+\(\mathbf{u}=(u,v)\) & velocity vector and its streamwise/wall-normal components\\
+\(u'\) & fluctuating velocity, \(\mathbf{u}-\langle\mathbf{u}\rangle\)\\
+\(u'_{\mathrm{rms}}\) & root-mean-square temporal fluctuation at a fixed point\\
+\(U_{\mathrm{lid}}\) & lid velocity profile (the actuation)\\
+\(U_{\mathrm{ref}}\) & reference velocity, the amplitude of the uniform lid\\
+\(x,y\) & streamwise and wall-normal coordinates\\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Greek symbols and branch symbols}}\\
+\midrule
+\(B_1,B_2,B_3\) & empirical branch classes (second-harmonic dominated, time-dependent dominated, residual)\\
+\(B_{\mathrm{first}}\) & first-harmonic branch class of the full-spectrum audit\\
+\(\delta\) & corner taper width\\
+\(\varepsilon\) & integrated viscous dissipation accumulated over an LBM sampling window\\
+\(\lambda_{\mathrm{var}}\) & weight of the variance-regularization term of the training loss\\
+\(\nu\) & kinematic viscosity\\
+\(\tau_w\) & wall shear stress on the moving lid\\
+\(\psi\) & stream function\\
+\(\Omega\) & cavity domain\\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Abbreviations}}\\
+\midrule
+GCI & grid-convergence index\\
+LBM & lattice-Boltzmann method\\
+LOCO & leave-one-Reynolds-condition-out (cross-validation)\\
+MRT & multiple-relaxation-time\\
+PINN & physics-informed neural network\\
+RMSE & root-mean-square error\\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -151,7 +158,7 @@ questions. Comparing profiles at the same lid-velocity scale
 them at the same quadratic actuation norm
 $\Eact=\int_0^1U_{\mathrm{lid}}^2\,dx$ measures what a given control effort
 achieves. The two rankings need not agree, and only the second is a statement
-about efficiency. A further distinction, specific to time-dependent actuation, is
+about the energetic response at fixed actuation norm. A further distinction, specific to time-dependent actuation, is
 that the dissipation of the time-mean field is not the time mean of the
 instantaneous dissipation: because $D$ is quadratic in the velocity gradients,
 cycle-averaged dissipation always exceeds the dissipation of the mean flow, and
@@ -193,7 +200,7 @@ Section~\ref{sec:modes} defines the stationary modes and the three identified
 branches that are compared. Section~\ref{sec:methods} describes how the
 actuations are identified and how the flows are computed independently.
 Section~\ref{sec:stationary} reports the energetic response of the stationary
-modes, Section~\ref{sec:branches} the cycle-mean response of the time-dependent
+modes, Section~\ref{sec:branches_results} the cycle-mean response of the time-dependent
 branches, and Section~\ref{sec:interpretation} interprets both in terms of local
 strain and fluctuating gradients. Section~\ref{sec:conclusions} concludes.
 
@@ -376,9 +383,10 @@ energy of their control coefficients (details of the identification campaign and
 classification rules are provided in supplementary Tables~S1--S3 and Fig.~S3). Writing the lid as
 \begin{equation}
 U_{\mathrm{lid}}(x,t)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
-a_{mn}\sin(m\pi x)\cos(n\pi t),
+a_{mn}\sin(m\pi x)\cos\!\left(\frac{2n\pi t}{T}\right),
 \label{eq:fourier}
 \end{equation}
+with forcing period \(T=2\),
 the energy of coefficient $(m,n)$ is $\mathcal{E}_{m0}=\tfrac12a_{m0}^2$ and
 $\mathcal{E}_{mn}=\tfrac14a_{mn}^2$ for $n\ge1$, with normalized fractions
 $f_{mn}=\mathcal{E}_{mn}/\sum\mathcal{E}_{ij}$. The stationary second-harmonic
@@ -396,7 +404,7 @@ The $B_1$ representative is used in two forms. The \emph{full} series is the
 control as identified, including its small temporal content; the \emph{mean
 profile} is its time average, a stationary actuation that isolates the spatial
 structure. The stationary comparison of Sec.~\ref{sec:stationary} uses the mean
-profile and the cycle-mean comparison of Sec.~\ref{sec:branches} uses the full
+profile and the cycle-mean comparison of Sec.~\ref{sec:branch_compare} uses the full
 series, so that the effect of the spatial structure is never conflated with the
 effect of the temporal one. Representative profiles and their space--time
 structure are shown in Fig.~\ref{fig:signatures}; Table~\ref{tab:modes}
@@ -700,8 +708,7 @@ dissipation of the fluctuations, and there is no reason for that term to be smal
 when the actuation reverses sign. A mean-field diagnostic answers the question
 ``how much would this flow dissipate if it were steady?''; it does not answer
 ``how much does it dissipate?''. Figure~\ref{fig:cycle} and
-Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary
-Tables~S15--S16 and Fig.~S5 provide additional temporal statistics and phase-resolved
+Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary Table~S5 and Fig.~S5 provide additional temporal statistics and phase-resolved
 analyses for the three branches.
 
 \begin{figure}[t]
@@ -851,7 +858,9 @@ round ($1.22\times10^{-2}$, $3.76\times10^{-2}$ and $2.18\times10^{-2}$). Within
 the period, $D(t)$ varies by a factor $1.5$, $10.9$ and $4.2$ respectively, and
 the lid power of $B_2$ is negative for $14\%$ of the period: the flow returns
 energy through the lid while the Stokes layer spins down. The residual
-$\overline{P}_{\mathrm{lid}}-\Dbar$ is $-2.6\%$, $+5.6\%$ and $+3.8\%$.
+$\overline{P}_{\mathrm{lid}}-\Dbar$, computed with the wall velocity recovered at
+the boundary node rather than the prescribed profile (Sec.~S8.7), is
+$-2.9\%$, $-0.1\%$ and $-0.9\%$.
 
 \begin{table}[t]
 \centering
@@ -874,9 +883,9 @@ estimator, not a physical imbalance (Sec.~\ref{sec:budget}).}
 Branch & $\overline{E}_{\mathrm{act}}$ & $\overline{K}$ & $\overline{P}_{\mathrm{lid}}$
 & $\Dbar$ & $\sigma(\Dbar)$\\
 \midrule
-$B_1$ (full series) & 0.2500 & $1.15\times10^{-2}$ & $1.19\times10^{-2}$ & $1.22\times10^{-2}$ & $<0.1\%$\\
-$B_2$ (seed 5) & 0.2504 & $2.47\times10^{-4}$ & $3.97\times10^{-2}$ & $3.76\times10^{-2}$ & $<0.1\%$\\
-$B_3$ (seed 0) & 0.2503 & $3.98\times10^{-3}$ & $2.26\times10^{-2}$ & $2.18\times10^{-2}$ & $<0.1\%$\\
+$B_1$ (full series) & 0.2500 & $1.15\times10^{-2}$ & $1.18\times10^{-2}$ & $1.22\times10^{-2}$ & $<0.1\%$\\
+$B_2$ (seed 5) & 0.2504 & $2.47\times10^{-4}$ & $3.76\times10^{-2}$ & $3.76\times10^{-2}$ & $<0.1\%$\\
+$B_3$ (seed 0) & 0.2503 & $3.98\times10^{-3}$ & $2.16\times10^{-2}$ & $2.18\times10^{-2}$ & $<0.1\%$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -911,7 +920,8 @@ dissipation $D(t)$: instantaneous (thin), cycle mean (thick, with the block
 uncertainty as a band) and, dotted, the dissipation $D(\langle\mathbf{u}\rangle)$
 of the time-mean field, which is not substituted for the cycle mean. (d) Lid power
 $\Plid(t)$, positive into the fluid, with the same conventions; the annotations
-give the window-averaged residual $\overline{P}_{\mathrm{lid}}-\Dbar$. The
+give the window-averaged residual $\overline{P}_{\mathrm{lid}}-\Dbar$ computed
+with the recovered wall velocity (Sec.~S8.7). The
 kinetic-energy balance integrates to zero over one period of a periodic state, so
 the two cycle means must agree; the measured residual is the wall-shear estimator
 error discussed in the text.}
@@ -1056,12 +1066,10 @@ evaluation is what decides between them.
 \section*{Data availability}
 %----------------------------------------------------------------------
 
-The datasets generated and analysed during the current study, including the actuation
-series, field captures, post-processing scripts, and reproducible computational workflows,
-are available in the GitHub repository:
-\url{https://github.com/Ahmedalgeria778/PoF-R_lid_driven_paper} (commit history from
-October 2026). Additional data and materials are available from the corresponding author
-upon reasonable request.
+The actuation series, the field captures and the post-processing scripts that
+support the figures and tables of this article are available at
+\url{https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study} and from the
+corresponding author on reasonable request.
 
 \section*{Acknowledgments}
 The authors thank the Laboratory of Fluid Mechanics of the Ecole Militaire

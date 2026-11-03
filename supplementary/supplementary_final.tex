@@ -119,13 +119,14 @@ training epoch, preventing overfitting to any fixed quadrature set.
 
 \textbf{Interior PDE collocation:} \(N_{\mathrm{phys}}=4\,000\) points sampled
 uniformly at random over the computational domain
-\(\Omega\times[0,1]=[0,L_x]\times[0,1]\times[0,1]\), where the time coordinate
-\(t\in[0,1]\) represents the normalized phase \(\theta=t_{\mathrm{phys}}/T\) with
-\(T=2\) the physical period (see Sec.~S8.5 for the temporal convention). At each
-epoch, three Reynolds-number values are selected from the set
-\(\{100,300,500,700,900,1000\}\); each interior point is evaluated at all three
-selected \(Re\) values, giving an effective PDE sample size of
-\(3N_{\mathrm{phys}}=12\,000\) residual evaluations per epoch.
+\(\Omega\times[0,1]=[0,L_x]\times[0,1]\times[0,1]\). The time coordinate fed to
+the network is a normalised phase \(\theta=t_{\mathrm{phys}}/T\in[0,1]\), where
+\(T=2\) is the physical forcing period; the temporal basis is
+\(\cos(2\pi n\theta)\), periodic over \([0,1]\) by construction. At each epoch, three
+Reynolds-number values are selected from the set \(\{100,300,500,700,900,1000\}\);
+each interior point is evaluated at all three selected \(Re\) values, giving an
+effective PDE sample size of \(3N_{\mathrm{phys}}=12\,000\) residual evaluations
+per epoch.
 
 \textbf{Boundary collocation:} \(N_{\mathrm{BC}}=600\) points distributed across
 the boundary \(\partial\Omega\), split as \(200\) on \(\Gamma_{\mathrm{top}}\)
@@ -207,9 +208,11 @@ with \(N_{\mathrm{probe}}=20\) probe locations distributed uniformly in \(x\in[0
 \(t_0=0.5\), \(\delta=0.01\), \(Re_{\min}=100\), \(Re_{\max}=1000\).
 
 No initial-condition term is included by design. The temporal Fourier expansion
-and the cycle-averaged objective define a periodic space--time boundary-value
-problem, so training targets a statistically stationary periodic state rather
-than the transient from a prescribed initial field (Main Sec.~4.1).
+with basis \(\cos(2n\pi\theta)\) defines a periodic space--time boundary-value
+problem on \(\theta\in[0,1]\), so training targets a statistically stationary
+periodic state rather than the transient from a prescribed initial field (Main
+Sec.~2.1). Periodicity of the flow field is enforced by the basis and verified
+a posteriori in Sec.~S8.5.
 
 \textbf{Weight rationale.} The weight \(\lambda_{\mathrm{BC}}=15\) strongly
 enforces boundary conditions relative to the interior residual, preventing poorly
@@ -232,17 +235,21 @@ before the control network has been activated.
 
 The boundary actuation is expanded as in Main Sec.~3.2:
 \begin{equation}
-U_{\mathrm{lid}}(x,t,Re)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
-a_{mn}(Re)\sin\!\left(\frac{m\pi x}{L_x}\right)\cos(n\pi t),
+U_{\mathrm{lid}}(x,\theta,Re)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
+a_{mn}(Re)\sin\!\left(\frac{m\pi x}{L_x}\right)\cos(2n\pi\theta),
 \end{equation}
 with baseline truncation \(N_x=6\), \(N_t=5\), giving 30 nominal coefficients.
 The sine basis \(\sin(m\pi x/L_x)\) is chosen because it vanishes at
 \(x=0\) and \(x=L_x\) for all \(m\ge1\), automatically enforcing corner
-compatibility without any additional constraint. The cosine basis \(\cos(n\pi t)\)
-has the property that \(\cos(0\cdot\pi t)=1\), so the \(n=0\) terms represent
-purely stationary (time-independent) actuation. All mode indices in this manuscript
-use the physical (one-based) convention: the second spatial harmonic corresponds
-to \(m=2\), not \(m=1\).
+compatibility without any additional constraint. The cosine basis
+\(\cos(2n\pi\theta)\) has the property that \(\cos(0)=1\), so the \(n=0\) terms
+represent purely stationary (time-independent) actuation, and every term is
+periodic with unit period in \(\theta\). The physical time is
+\(t_{\mathrm{phys}}=T\theta\) with \(T=2\); the time derivative in the
+Navier--Stokes residual therefore carries the chain-rule factor
+\(\partial/\partial t_{\mathrm{phys}}=(1/T)\,\partial/\partial\theta\). All mode
+indices in this manuscript use the physical (one-based) convention: the second
+spatial harmonic corresponds to \(m=2\), not \(m=1\).
 
 \subsection{S2.2 Modal Energy Normalization and Quadrature}
 
@@ -317,196 +324,40 @@ distance to a boundary over the whole campaign is \(0.008\).
 \input{data_appendix/p3_table_threshold.tex}
 
 %=============================================================
-\section{S3. 185-Realization Campaign: Cell-Aggregated Dataset}
+\section{S3. Identification Campaigns: Summary}
 %=============================================================
 
-The broad \((Re,E^*)\) campaign evaluated 185 independent training runs across
-30 cells in the parameter domain (\(Re\in\{100,300,500,700,900,1000\}\),
-\(E^*\in\{0.1,0.25,0.5,1,2\}\)). The baseline cell size is \(N_s=5\) seeds
-per cell; selected cells of particular interest received 10, 15, or 20 seeds.
-The global aggregate counts are \(B_1\): 78 (42.2\%), \(B_2\): 81 (43.8\%),
-\(B_3\): 26 (14.1\%). Table~\ref{tab:s1_broad_map} reports aggregate metrics
-for all 30 cells.
+The broad \((Re,E^*)\) campaign (185 realizations), the variance-regularization
+sweep (90 realizations), the ten-seed multiplicity study, the loss-term ablation,
+the network capacity and control-truncation studies, the aspect-ratio dependence,
+and the Fourier versus modified-Chebyshev basis comparison are documented in full
+in Ref.~\cite{beniaiche2026} and in the data repository. This section collects
+the results that are directly needed to identify the three branch representatives
+used in the main text.
 
-\begin{longtable}{ccccccccl}
-\caption{Cell-aggregated statistics for the 30 cells of the broad campaign.
-\(\widehat P(B_k)\) are empirical recovery frequencies of branch clusters.
-\(H_N\) is the normalized branch-selection entropy. Small sample sizes per cell
-limit precision of frequency estimates (see Sec.~S4.2).}
-\label{tab:s1_broad_map}\\
-\toprule
-Cell ID & \(Re\) & \(E^*\) & \(N_s\) & \(\widehat P(B_1)\) & \(\widehat P(B_2)\) & \(\widehat P(B_3)\) & \(H_N\) & Dominant\\
-\midrule
-\endfirsthead
-\multicolumn{9}{c}{\small\textit{(Continued)}}\\
-\toprule
-Cell ID & \(Re\) & \(E^*\) & \(N_s\) & \(\widehat P(B_1)\) & \(\widehat P(B_2)\) & \(\widehat P(B_3)\) & \(H_N\) & Dominant\\
-\midrule
-\endhead
-\bottomrule
-\endlastfoot
-re100\_e0.1  & 100  & 0.10 & 5  & 0.00 & 0.80 & 0.20 & 0.455 & \(B_2\)\\
-re300\_e0.1  & 300  & 0.10 & 5  & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re500\_e0.1  & 500  & 0.10 & 5  & 0.80 & 0.20 & 0.00 & 0.455 & \(B_1\)\\
-re700\_e0.1  & 700  & 0.10 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-re900\_e0.1  & 900  & 0.10 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-re1000\_e0.1 & 1000 & 0.10 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-\midrule
-re100\_e0.25  & 100  & 0.25 & 5  & 0.00 & 0.80 & 0.20 & 0.455 & \(B_2\)\\
-re300\_e0.25  & 300  & 0.25 & 5  & 0.20 & 0.60 & 0.20 & 0.865 & \(B_2\)\\
-re500\_e0.25  & 500  & 0.25 & 15 & 0.467 & 0.400 & 0.133 & 0.902 & \(B_1\)\\
-re700\_e0.25  & 700  & 0.25 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re900\_e0.25  & 900  & 0.25 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re1000\_e0.25 & 1000 & 0.25 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-\midrule
-re100\_e0.5  & 100  & 0.50 & 5 & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re300\_e0.5  & 300  & 0.50 & 5 & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re500\_e0.5  & 500  & 0.50 & 5 & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re700\_e0.5  & 700  & 0.50 & 5 & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re900\_e0.5  & 900  & 0.50 & 5 & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re1000\_e0.5 & 1000 & 0.50 & 5 & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-\midrule
-re100\_e1  & 100  & 1.00 & 5  & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re300\_e1  & 300  & 1.00 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re500\_e1  & 500  & 1.00 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-re700\_e1  & 700  & 1.00 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-re900\_e1  & 900  & 1.00 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re1000\_e1 & 1000 & 1.00 & 20 & 0.550 & 0.200 & 0.250 & 0.908 & \(B_1\)\\
-\midrule
-re100\_e2  & 100  & 2.00 & 5  & 0.60 & 0.40 & 0.00 & 0.613 & \(B_1\)\\
-re300\_e2  & 300  & 2.00 & 5  & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re500\_e2  & 500  & 2.00 & 5  & 0.40 & 0.60 & 0.00 & 0.613 & \(B_2\)\\
-re700\_e2  & 700  & 2.00 & 15 & 0.200 & 0.400 & 0.400 & 0.960 & \(B_2/B_3\)\\
-re900\_e2  & 900  & 2.00 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-re1000\_e2 & 1000 & 2.00 & 5  & 0.40 & 0.40 & 0.20 & 0.960 & \(B_1/B_2\)\\
-\end{longtable}
+\subsection{S3.1 Branch classification and the \(B_{\mathrm{first}}\) class}
 
-The \(B_1\) branch is consistently accessible at moderate Reynolds numbers
-(\(Re=500\)--\(700\)) for low-to-moderate actuation energies, and at high
-\(Re=1000\) it has the highest accessibility frequency at \(E^*=1\) (55\%).
-The \(B_2\) branch dominates at low \(Re\) (\(100\)--\(300\)), consistent
-with the observation that temporal actuation patterns are more easily
-accessible when the flow is highly viscous and the second-harmonic outcome is
-less frequently recovered. The \(B_3\) branch appears
-primarily at high actuation energies and moderate-to-high Reynolds numbers.
+The branch clusters are defined by the dominance rule of Sec.~S2.3 applied to the
+normalized modal fractions \(f_1\), \(f_2\) and \(f_t\). The \(B_{\mathrm{first}}\)
+test (\(f_1>0.5\)) was added after a full-spectrum audit of all 185 realizations
+and of the \(\lambda_{\mathrm{var}}\) campaign. It is empty in the broad campaign
+(\(f_1\le0.122\) everywhere) but materializes in the ablation campaign when
+\(\mathcal{L}_{\mathrm{var}}\) is removed (Table~\ref{tab:bfirst_ablation}). The
+pooled frequencies \(\widehat P(B_1)=42.2\%\) and \(\widehat P(B_2)=43.8\%\) are
+stable to within three percentage points under variation of the dominance factor
+\(k\in[1.5,3]\) and floor \(\phi\in[0.4,0.6]\); the residual class \(B_3\) is more
+sensitive because it is defined as the complement.
 
-Two properties of the dataset condition every frequency quoted in the main text.
-Figure~\ref{fig:s3_calibration} shows them. First, the top-three modal
-concentration \(C_3\), the sum of the three largest energy fractions of the lid
-control, decreases monotonically from \(0.983\) at \(E^*=0.1\) to \(0.909\) at
-\(E^*=1\) and \(0.820\) at \(E^*=2\): raising the energy budget spreads the
-control over more harmonics, which is why the two dominant classes are sharply
-separated at low energy and why the residual class \(B_3\) is populated mainly at
-high energy. Second, the realized energy is not exactly the prescribed one. The
-cell mean of \(\langle E_r\rangle/E^*\) lies within \(3\%\) of unity for every
-\(E^*\ge0.25\), but at \(E^*=0.1\) all thirty realizations of that column
-overshoot, with a mean of \(1.209\) and a spread of \(1.086\)--\(1.269\). The
-energy penalty is therefore looser in the low-budget regime than elsewhere, and
-the \(E^*=0.1\) column of the map is explored at an actuation energy about
-\(20\%\) larger than its label. This is a property of the soft penalty
-formulation, not of the solver, and it does not affect the iso-energetic
-comparisons of Sec.~S8, which rescale each control to a common realized energy
-before the lattice-Boltzmann transfer.
+\input{data_appendix/p3_table_threshold.tex}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{fig17_modal_energy_calibration.png}
-\caption{Modal concentration and energy calibration over the 185 realizations of
-the broad \((Re,E^*)\) campaign. Left: top-three spectral concentration \(C_3\) of
-the lid control for every realization, colored by assigned branch class, with the
-cell mean. Right: realized over prescribed actuation energy, cell mean with the
-full seed spread. The dotted line is the nominal value \(E_r=E^*\).}
-\label{fig:s3_calibration}
-\end{figure}
+\subsection{S3.2 Ten-seed experiment and loss-term ablation at \(Re=500\), \(E^*=0.25\)}
 
-%=============================================================
-\section{S4. Complete \(\lambda_{\mathrm{var}}\) Campaign and Confidence Intervals}
-%=============================================================
-
-\subsection{S4.1 Campaign Design}
-
-The variance-regularization campaign comprised 90 realizations distributed
-across 18 parameter combinations: 3 operating points
-(\((Re,E^*)\in\{(500,0.25),(700,2),(1000,1)\}\)) times 6 values of
-\(\lambda_{\mathrm{var}}\in\{0,0.25,0.5,1,2,5\}\), with \(N_s=5\) independent
-random seeds per combination. All other training hyperparameters are held fixed
-at the reference values given in Sec.~S1.
-
-\subsection{S4.2 Binomial Wilson Score Confidence Intervals}
-
-For \(N_s=5\) trials, the 95\% Wilson score confidence intervals
-\([\mathrm{lo},\mathrm{hi}]\) for the empirical branch-selection frequency
-\(\widehat P=k/5\) are computed using the formula
-\begin{equation}
-\left[\frac{\hat p+\frac{z^2}{2N}\mp z\sqrt{\frac{\hat p(1-\hat p)}{N}+\frac{z^2}{4N^2}}}{1+z^2/N}\right],
-\end{equation}
-with \(z=1.96\) (95\% coverage) and \(N=5\). The resulting intervals are
-reported in Table~\ref{tab:s4_wilson}.
-
-\begin{table}[h]
-\centering
-\caption{95\% Wilson score confidence intervals for empirical branch-selection
-frequencies at \(N_s=5\).}
-\label{tab:s4_wilson}
-\small
-\begin{tabular}{ccc}
-\toprule
-\(k\) (successes) & \(\widehat P=k/5\) & 95\% CI \([\mathrm{lo},\mathrm{hi}]\)\\
-\midrule
-0 & 0.00 & [0.000, 0.434]\\
-1 & 0.20 & [0.036, 0.624]\\
-2 & 0.40 & [0.118, 0.769]\\
-3 & 0.60 & [0.231, 0.882]\\
-4 & 0.80 & [0.376, 0.964]\\
-5 & 1.00 & [0.566, 1.000]\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-These wide intervals reflect the small sample size (\(N_s=5\)) and should be
-interpreted accordingly. The main conclusions of the \(\lambda_{\mathrm{var}}\)
-campaign rest on the qualitative trends (e.g., all conditions yielding exclusively
-\(B_{\mathrm{first}}\) at \(\lambda_{\mathrm{var}}=0\), consistent across all 3
-operating points) rather than on precise frequency estimates at individual cells.
-The classification of those zero-weight controls is itself part of the audit of
-Sec.~S2.3: they are first-harmonic dominated, not the residual \(B_3\) class that
-the earlier three-class rule assigned them to.
-The sensitivity
-of the classification itself is analysed in Sec.~S2.3
-(Table~\ref{tab:s3_threshold}): the two dominant classes are stable to within
-three percentage points, while the share of the intermediate class \(B_3\) is
-accurate only to about \(\pm5\) points.
-
-\subsection{S4.3 Interpretation of Non-Monotonic Behavior}
-
-The non-monotonic dependence of \(\widehat P(B_1)\) on \(\lambda_{\mathrm{var}}\)
-observed at \((Re,E^*)=(500,0.25)\) (maximal at intermediate values, decreasing at
-large values) reflects the competing effects of variance regularization on the
-two structured branches. At small \(\lambda_{\mathrm{var}}\), the variance penalty
-provides a weak preference for spatially structured controls, leading to roughly
-equal \(B_1\) and \(B_2\) accessibility. At large \(\lambda_{\mathrm{var}}\), the
-variance penalty strongly rewards any spatially structured profile, and the
-time-dependent \(B_2\) branch (which generally achieves higher spatial variance
-due to its temporal oscillations producing an effective spatial pattern) becomes
-relatively more accessible. This operating-point-dependent response explains why
-the optimal \(\lambda_{\mathrm{var}}\) for \(B_1\) selection differs between
-conditions.
-
-%=============================================================
-\section{S5. Energy, Initialization, and Loss-Ablation Studies}
-%=============================================================
-
-\subsection{S5.2 Detailed Ten-Seed Experiment at \(Re=500,\,E^*=0.25\)}
-
-Table~\ref{tab:s2_ten_seeds} reports the complete seed-level metrics for the
-10-seed multiplicity study. The key result is the tight loss range \([1.371,1.394]\)
-across all seeds despite qualitatively distinct modal structures. Seed 9 achieves
-the lowest loss (\(1.371\)) and is classified as \(B_2\), while seed 4 achieves the
-highest loss (\(1.394\)) and is classified as \(B_3\). The four \(B_1\) realizations
-span losses from \(1.372\) to \(1.377\), interleaved with the four \(B_2\)
-realizations that span \(1.371\) to \(1.377\). This interleaving provides direct
-evidence that the loss landscape does not have a clear ordering between the two
-branch types.
+Table~\ref{tab:s2_ten_seeds} reports the seed-level metrics for the ten-seed
+multiplicity study. The tight loss range \([1.371,1.394]\) across qualitatively
+distinct modal structures confirms that the loss landscape does not order the
+branch types. Table~\ref{tab:s3_ablation} summarizes the ablation configurations:
+removing \(\mathcal{L}_{\mathrm{var}}\) shifts the outcome to \(B_{\mathrm{first}}\),
+while removing either of the other two terms leaves the branch unchanged.
 
 \begin{table}[h]
 \centering
@@ -531,23 +382,9 @@ Seed & \(E_r\) & \(f_2\) (\%) & \(f_t\) (\%) & Total loss & Classification\\
 \end{tabular}
 \end{table}
 
-\subsection{S5.3 Extended Loss-Term Ablation}
-
-Table~\ref{tab:s3_ablation} summarizes all ablation configurations, including
-dual-term removals and modified weight values. The single most important result
-is the complete modal-class shift when \(\mathcal{L}_{\mathrm{var}}\) is removed.
-The dual ablation results (removing both \(\mathcal{L}_{\mathrm{var}}\) and one
-other term) confirm that the shift is driven entirely by the absence of
-\(\mathcal{L}_{\mathrm{var}}\), not by any interaction with the removed secondary
-term. Reducing \(\lambda_{\mathrm{var}}\) to half its reference value causes a
-modest \(3\%\) decrease in \(f_2\), while doubling it increases \(f_2\) by
-\(0.6\%\), suggesting a nearly saturated response at the reference weight \(\lambda_{\mathrm{var}}=1\).
-
 \begin{table}[h]
 \centering
-\caption{Complete loss-term ablation at \(Re=500\), \(E^*=0.25\). Each entry is
-a single converged realization with the specified configuration and the same
-random seed as the reference Baseline.}
+\caption{Complete loss-term ablation at \(Re=500\), \(E^*=0.25\).}
 \label{tab:s3_ablation}
 \small
 \begin{tabular}{lcccc}
@@ -566,77 +403,18 @@ No \(\mathcal{L}_{\mathrm{var}},\mathcal{L}_{\mathrm{diss}}\) & 0.2578 & 0.3 & 5
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{fig07_loss_ablation.png}
-\caption{The eight configurations of Table~\ref{tab:s3_ablation} in graphical
-form: realized actuation energy, stationary second-harmonic fraction and total
-time-dependent fraction. Grey: baseline; red: the three configurations that remove
-\(\mathcal{L}_{\mathrm{var}}\); blue: the single removals of the other two terms;
-orange: the two rescalings of \(\lambda_{\mathrm{var}}\). Only the red
-configurations change the outcome class, and all eight keep \(E_r\) within
-\(4\%\) of the target.}
-\label{fig:s5_ablation}
-\end{figure}
-
-Figure~\ref{fig:s5_ablation} makes the two independent statements of the ablation
-visible. The realized energy is essentially unaffected by every configuration
-(\(0.2533\)--\(0.2598\), all within \(4\%\) of \(E^*=0.25\)), so the configurations
-are comparable at fixed budget; what changes is only the distribution of that
-budget between the harmonic families. The three \(\mathcal{L}_{\mathrm{var}}\)
-removals collapse \(f_2\) from \(92.2\%\) to \(0.2\)--\(0.3\%\) and raise \(f_t\)
-from \(1.3\%\) to \(5.0\)--\(5.1\%\), while the two other single-term removals
-leave both fractions unchanged to within \(0.1\) percentage points. Note that the
-ablated runs are not \(B_2\) either, and they are not the residual \(B_3\): with
-\(f_2=0.2\%\) and \(f_t=5.1\%\) the remaining energy sits in the stationary first
-harmonic, so the outcome is the first-harmonic class \(B_{\mathrm{first}}\) of the
-extended rule (Main Sec.~3.2). The archived five-seed repetition of
-this configuration confirms the point: \(f_1=87\)--\(99\%\), \(f_2\le2.5\%\),
-\(f_t\le12\%\) at all three operating points
-(Table~\ref{tab:bfirst_ablation}). The earlier label \(B_3\) for these runs was
-therefore a naming artifact of a rule that did not test the first harmonic.
-
 \input{data_appendix/p2_table_bfirst_ablation.tex}
 
-Table~\ref{tab:s3_loss_decomp} decomposes the converged loss into its weighted
-contributions for one representative realization of each branch type. The three
-total losses agree to better than \(0.3\%\), but the individual terms differ by up
-to a factor of \(2.4\) in the PDE contribution. In particular, the weighted
-variance term is essentially identical for all three branches
-(\(\lambda_{\mathrm{var}}\mathcal{L}_{\mathrm{var}}\approx0.2595\) in each case),
-so the variance penalty does not order the converged solutions; its role is to
-shape the path taken during training, consistent with the complete modal-class
-shift observed when it is removed. Differences between branches are therefore
-concentrated in the physical residuals (PDE, boundary condition and dissipation
-terms at the \(10^{-3}\) level), and similar total losses must not be read as
-similar physical performance.
+\subsection{S3.3 Network capacity, truncation, aspect ratio and basis}
 
-\begin{table}[h]
-\centering
-\caption{Decomposition of the converged weighted loss terms for one representative
-realization of each branch type at $(Re,E^*)=(500,0.25)$. Similar total losses do
-not imply comparable physical objectives.}
-\label{tab:s3_loss_decomp}
-\scriptsize
-\begin{tabular}{lcccccccc}
-\toprule
-Branch (seed) & $\lambda_{\mathrm{PDE}}\mathcal{L}_{\mathrm{PDE}}$ & $\lambda_{\mathrm{BC}}\mathcal{L}_{\mathrm{BC}}$ & $\lambda_{\mathrm{diss}}\mathcal{L}_{\mathrm{diss}}$ & $\lambda_{\mathrm{ctrl}}\mathcal{L}_{\mathrm{ctrl}}$ & $\lambda_{\mathrm{var}}\mathcal{L}_{\mathrm{var}}$ & $\mathcal{L}_{\mathrm{total}}$ & $E_r$ & $|E_r-E^*|^2$\\
-\midrule
-B1 (7) & 5.388e-03 & 1.438e-03 & 2.376e-04 & 1.802e-02 & 2.595e-01 & 1.3741 & 0.2595 & 9.008e-05\\
-B2 (3) & 2.901e-03 & 2.084e-03 & 5.149e-04 & 1.824e-02 & 2.595e-01 & 1.3725 & 0.2595 & 9.119e-05\\
-B3 (0) & 6.936e-03 & 2.586e-03 & 2.491e-04 & 1.797e-02 & 2.595e-01 & 1.3768 & 0.2595 & 8.985e-05\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-%=============================================================
-\section{S6. Network Capacity and Control-Truncation Studies}
-%=============================================================
-
-\subsection{S6.1 Network Capacity Sensitivity}
-
-Three network configurations were evaluated at \(Re=500\), \(E^*=0.25\); they are
-listed in Table~\ref{tab:s6_capacity}.
+The network capacity (Table~\ref{tab:s6_capacity}), control-space truncation
+(Table~\ref{tab:s6_truncation}), aspect-ratio (Table~\ref{tab:s7_aspect_ratio})
+and modified-Chebyshev basis (Sec.~S7.2--S7.4) studies confirm that the
+second-harmonic concentration is robust to the numerical parameters and is a
+physical property of the flow response. The Chebyshev controls, which have
+\(f_t>93\%\), produce the most dissipative cycle-mean states of all
+configurations examined, confirming that the representation choice determines
+the actual physical flow state.
 
 \begin{table}[h]
 \centering
@@ -653,20 +431,6 @@ Large   & 8 & 128 & \(\approx\)170\,000 & 0.2518 & 89.5 & 2.1\\
 \bottomrule
 \end{tabular}
 \end{table}
-
-The \(f_2\) values span only \([89.5\%,92.2\%]\), a range of \(2.7\%\) across
-a 40-fold increase in network parameters. This robustness suggests that the
-second-harmonic concentration is not imposed by the inductive bias of the network
-architecture but reflects a genuine optimization landscape feature. The large network
-shows a \(2.7\%\) decrease in \(f_2\) relative to the reference, which may reflect
-that increased expressivity allows the network to slightly distribute energy into
-higher harmonics that are otherwise suppressed by the effective regularization of
-limited parameter count.
-
-\subsection{S6.2 Control-Space Truncation Details}
-
-Six control basis truncations were evaluated at \(Re=500\), \(E^*=0.25\); the
-complete results are given in Table~\ref{tab:s6_truncation}.
 
 \begin{table}[h]
 \centering
@@ -687,24 +451,6 @@ complete results are given in Table~\ref{tab:s6_truncation}.
 \end{tabular}
 \end{table}
 
-The \((6,1)\) truncation (stationary modes only) achieves \(f_2=89.2\%\) and
-\(f_t=0.0\%\) by construction: with no temporal modes available, the optimizer
-can only select stationary controls and the second harmonic is the dominant choice.
-The close \(f_2\) values between \((6,1)\) and the other truncations suggest that
-temporal modes are not strongly favored by the optimizer when Fourier basis modes
-are available, confirming the intrinsic preference for the stationary second-harmonic
-structure. The somewhat lower \(f_2\) at the \((4,3)\) and \((8,x)\) bases may
-reflect the different Fourier mode structures available in the truncated space.
-
-%=============================================================
-\section{S7. Geometry and Control-Parametrization Studies}
-%=============================================================
-
-\subsection{S7.1 Cavity Aspect Ratio Details}
-
-The aspect-ratio sensitivity study evaluates three geometries at fixed
-\(Re=500\), \(E^*=0.25\), listed in Table~\ref{tab:s7_aspect_ratio}.
-
 \begin{table}[h]
 \centering
 \caption{Aspect-ratio sensitivity at \(Re=500\), \(E^*=0.25\).}
@@ -720,86 +466,6 @@ The aspect-ratio sensitivity study evaluates three geometries at fixed
 \bottomrule
 \end{tabular}
 \end{table}
-
-For \(AR=0.5\), the second harmonic of the Fourier basis is
-\(\sin(2\pi x/0.5)=\sin(4\pi x)\), which has a half-wavelength of \(0.25\)---much
-shorter than the cavity height. This shorter wavelength may be less efficient at
-redistributing the primary cavity vortex, explaining the reduced \(f_2=69.9\%\).
-For \(AR=2.0\), the second harmonic is \(\sin(2\pi x/2)=\sin(\pi x)\), which has
-a half-wavelength of \(1\)---equal to the cavity height, potentially generating a
-more favorable symmetric structure, consistent with \(f_2=91.2\%\).
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{fig09_aspect_ratio.png}
-\caption{Aspect-ratio dependence of the modal structure at \(Re=500\),
-\(E^*=0.25\): second-harmonic and temporal fractions (left) and second-mode
-amplitude and realized energy (right), for the three geometries of the table
-above. The realized energy stays within \(4.1\%\) of the target at every aspect
-ratio, so the drop of \(f_2\) at \(AR=0.5\) is a redistribution of the same
-budget, not a change of budget.}
-\label{fig:s7_aspect_ratio}
-\end{figure}
-
-Figure~\ref{fig:s7_aspect_ratio} shows the same data together with the two
-quantities that keep the comparison meaningful: \(E_r\) varies from \(0.2514\) to
-\(0.2603\), i.e.\ by less than \(3.5\%\) over the three geometries, while \(A_2\)
-falls from \(0.6835\) to \(0.6034\) at \(AR=0.5\) and \(f_t\) rises from
-\(1.3\%\) to \(26.7\%\). The compressed geometry therefore does not receive a
-larger budget; it spends a quarter of the same budget on time-dependent
-coefficients.
-
-\subsection{S7.2 Modified-Chebyshev Basis Construction}
-
-The modified-Chebyshev parameterization employs normalized Chebyshev polynomials
-\(T_k(\xi)\) evaluated at \(\xi=2x/L_x-1\in[-1,1]\), modified by the factor
-\((1-\xi^2)\) to enforce zero velocity at both lateral walls:
-\begin{equation}
-\psi_k(x)=(1-\xi^2)T_k(\xi),\quad k=0,1,2,\ldots
-\end{equation}
-The first four basis functions are:
-\begin{align}
-\psi_0(x)&=(1-\xi^2),\\
-\psi_1(x)&=(1-\xi^2)\xi,\\
-\psi_2(x)&=(1-\xi^2)(2\xi^2-1),\\
-\psi_3(x)&=(1-\xi^2)(4\xi^3-3\xi).
-\end{align}
-These functions are smooth, vanish at \(x=0\) and \(x=L_x\) for all \(k\), and
-provide a dense covering of the control space. However, unlike the Fourier sine
-basis, they are not orthogonal in the \(L^2[0,L_x]\) inner product, so modal
-energies computed in this basis are not directly comparable to the Fourier fractions
-\(f_2\) and \(f_t\).
-
-\subsection{S7.3 Basis Reconstruction Accuracy}
-
-The reconstruction error of the reference Fourier \(B_1\) control profile by the
-Chebyshev basis is measured as the RMSE between the target profile
-\(U_{\mathrm{lid,Fourier}}\) and its best approximation in the Chebyshev basis
-using the same number of coefficients. The Fourier basis achieves machine-precision
-reconstruction by construction (RMSE \(=1.6\times10^{-16}\)), while the Chebyshev
-basis achieves RMSE \(=3.8\times10^{-3}\), confirming that the two bases represent
-qualitatively different function classes despite both satisfying the lateral-wall
-zero conditions.
-
-\subsection{S7.4 Quasi-Stationarity as a Representation Diagnostic}
-
-The quasi-stationarity results reported in this section
-demonstrate that the representation choice determines not only the Fourier modal
-structure but the actual physical flow state. Fourier \(B_1\) controls produce
-\(R_K\le0.65\%\) at all tested \(Re\), consistent with a quasi-static flow response
-to the time-averaged lid profile. The Chebyshev controls, which have \(f_t>93\%\),
-impose strongly oscillatory boundary conditions that drive persistent unsteady
-flows with \(R_K\ge44\%\). This physical difference is quantitative, not merely
-terminological: when the Chebyshev flow is averaged over its oscillation period,
-its dissipation is \(2.0\times10^{-2}\) to \(1.5\times10^{-1}\), i.e.\ the
-\emph{largest} of all configurations examined, whereas the dissipation of its
-time-mean field (\(2.4\times10^{-4}\) to \(6.0\times10^{-4}\)) is the smallest
-(Sec.~S8.5). A comparison based on the mean field therefore reverses the ranking,
-which is why the two representations cannot be ranked on \(\varepsilon(\langle
-u\rangle)\) and why the temporal controls are reported as cycle averages. The LBM
-dissipation comparison of the main text (Main Table~2) is reported only for the
-quasi-stationary Fourier controls, for which a single steady-state dissipation
-value is well defined.
 
 %=============================================================
 \section{S8. Independent MRT-LBM Verification and Grid Uncertainty}
@@ -1022,37 +688,22 @@ not be read as the asymptotic ones.
 
 \subsection{S8.5 Cycle-averaged response of the temporal controls}
 
-\textbf{Temporal convention and periodicity.} The PINN operates on a normalized
-time variable \(t\in[0,1]\) that represents the phase
-\(\theta=t_{\mathrm{phys}}/T\), where \(t_{\mathrm{phys}}\) is the physical time
-and \(T=2\) is the forcing period. The temporal basis functions are
-\(\cos(n\pi t)=\cos(n\pi\theta)\) for integer \(n\geq 0\). The fundamental mode
-\(n=1\) has \(\cos(\pi\theta)\), which completes one full oscillation as
-\(\theta\) goes from 0 to 1, corresponding to one physical period
-\(t_{\mathrm{phys}}\in[0,T]\). When the control is exported for LBM simulation,
-the mapping \(t_{\mathrm{phys}}=T\theta=2\theta\) is applied, so the exported
-control on \(t_{\mathrm{phys}}\in[0,2]\) has the form
-\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})=\sum_{m,n}a_{mn}\sin(m\pi x)\cos(n\pi
-t_{\mathrm{phys}}/T)\). The time derivative in the Navier--Stokes residual uses
-the chain rule: \(\partial/\partial t_{\mathrm{phys}}=(1/T)\,\partial/\partial\theta\),
-so \(\partial_t u\) in the PINN residual is scaled by \(1/T=1/2\) relative to the
-derivative with respect to the normalized variable. Periodicity of the flow field
-is enforced by the periodic basis: since all temporal modes are
-\(\cos(n\pi\theta)\) with integer \(n\), the reconstructed field satisfies
-\(u(\theta+1)=u(\theta)\), which translates to
-\(u(t_{\mathrm{phys}}+T)=u(t_{\mathrm{phys}})\) in physical time. This periodicity
-is verified a posteriori by comparing the first and last phases of the LBM
-simulation after transient decay.
-
 The two temporal controls, the full Fourier series and the
-modified-Chebyshev series, are periodic with the forced
-period \(T=2\). The PINN residual is imposed on the normalized interval
-\(t\in[0,1]\); the fundamental cosine factor \(\cos(\pi t)\) therefore has period
-\(T=2\) in physical time, and the control is exported on \(t_{\mathrm{phys}}\in[0,2]\),
-one full period, and advanced by 256 lattice steps. The dissipation of such a flow is not a
+modified-Chebyshev series, are periodic with the physical forcing period
+\(T=2\). The PINN operates on the normalised phase
+\(\theta=t_{\mathrm{phys}}/T\in[0,1]\); the temporal basis
+\(\cos(2n\pi\theta)\) is periodic with unit period in \(\theta\) by
+construction, so the periodicity of the actuation is enforced analytically.
+The time derivative that enters the Navier--Stokes residual carries the
+chain-rule factor \(\partial/\partial t_{\mathrm{phys}}=(1/T)\,\partial/\partial\theta\).
+The control is exported on \(t_{\mathrm{phys}}\in[0,T]\), one full period, and
+advanced by 256 lattice steps. The periodicity of the resulting flow field is
+verified a posteriori: the phase averages of the first and second halves of the
+sampling window differ by at most \(1.0\times10^{-3}\) in relative field norm
+for all three branches (Main Fig.~7 caption). The dissipation of such a flow is not a
 single number: what a
 periodic actuation is charged for is the cycle average
-\(\bar\varepsilon=T^{-1}\!\int_0^T\varepsilon(t)\,dt\), whereas the diagnostics of
+\(\bar\varepsilon=T^{-1}\!\int_0^T\varepsilon(t_{\mathrm{phys}})\,dt_{\mathrm{phys}}\), whereas the diagnostics of
 Sec.~S8.4 report \(\varepsilon(\langle u\rangle)\), the dissipation of the
 \emph{time-mean} field. The two are not interchangeable. Because \(\varepsilon\) is
 a convex quadratic functional of the velocity gradient, Jensen's inequality gives
@@ -1069,11 +720,15 @@ quadrature depends on how much energy the response puts in higher harmonics. Thi
 was checked directly, accumulating
 \(\varepsilon(t)\) every fourth timestep over a window of one hundred forced
 periods after two hundred periods of transient. At \(Re=500\), for the quasi-steady
-Fourier control the direct average is \(1.236\times10^{-2}\) against
+Fourier control from the earlier eight-phase campaign (Sec.~S8.4, 100-period
+window) the direct average is \(1.236\times10^{-2}\) against
 \(1.237\times10^{-2}\) from the eight phases (\(0.07\%\)), and the dissipation of
 the mean field agrees to \(0.3\%\); the two estimates of the ratio
 \(\bar\varepsilon/\varepsilon(\langle u\rangle)\) agree to \(0.2\%\)
-(\(1.042\) against \(1.040\)). For the strongly unsteady modified-Chebyshev
+(\(1.042\) against \(1.040\)). For the dedicated branch capture of Sec.~S8.6
+(64-period window, same solver and lattice) the corresponding value is
+\(1.219\times10^{-2}\), the \(1.4\%\) difference reflecting the different
+sampling windows and realizations rather than a methodological discrepancy. For the strongly unsteady modified-Chebyshev
 control, whose fluctuations carry \(R_K=44\%\) of the kinetic energy, the direct
 average is \(4.06\times10^{-2}\) against \(3.85\times10^{-2}\) from the eight
 phases, i.e.\ the eight-phase value is \(5.4\%\) low: the higher harmonics that the
@@ -1261,8 +916,9 @@ residual \(\overline P_{\mathrm{lid}}/\overline D-1\) is \(-2.89\%\), \(-0.08\%\
 \(-0.87\%\) for \(B_1\), \(B_2\) and \(B_3\) when the recovered velocity is used,
 against \(+5.30\%\), \(+55.40\%\) and \(+43.56\%\) when the prescribed profile is used.
 The prescribed-velocity estimate is therefore discarded: it measures the slip of the
-boundary condition, not the power transmitted by the wall. All main-text values use
-the recovered velocity.
+boundary condition, not the power transmitted by the wall. All main-text values,
+including Main Table~4, use the recovered velocity, giving residuals of
+\(-2.9\%\), \(-0.1\%\) and \(-0.9\%\) for \(B_1\), \(B_2\) and \(B_3\).
 
 \emph{Derivative order.} Replacing the first-order one-sided derivative by the
 three-point second-order form
@@ -1296,13 +952,16 @@ significant digit of the budget.
 
 \clearpage
 %=============================================================
-\section{S9. Symbolic Regression Configuration and LOCO Details}
+\section{S9. Symbolic Regression: Configuration and LOCO Summary}
 %=============================================================
 
-\subsection{S9.1 PySR Configuration}
-
-Each fit---the six leave-one-condition-out refits of Sec.~S9.3---used the same
-configuration, listed in Table~\ref{tab:s9_pysr_config}.
+The symbolic-regression campaign uses PySR (Julia backend,
+SymbolicRegression.jl) with the hyperparameters listed in
+Table~\ref{tab:s9_pysr_config}. The full details of the search strategy,
+input--output specification, and per-fold expressions are given in the
+supplementary of Ref.~\cite{beniaiche2025energy}; we report here only the
+configuration and the leave-one-condition-out (LOCO) validation metrics that
+support the conclusions of the main text.
 
 \begin{table}[h]
 \centering
@@ -1321,60 +980,29 @@ Loss & \(L2\) distance\\
 Parsimony coefficient & 0.01\\
 Maximum expression size (nodes) & 30\\
 Model selection & Best accuracy on the Pareto frontier\\
-Random seed & 42, deterministic, serial parallelism\\
+Random seed & 42, deterministic\\
 Backend & Julia with SymbolicRegression.jl\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The search is run on standardized inputs and targets, and each returned expression is
-converted back to the physical variables \(x\) and \(Re\) before it is evaluated, so that
-the constants quoted in Sec.~S9.3 apply directly to \((x,Re)\) without rescaling.
-
-\subsection{S9.2 Input-Output Specification}
-
-The input dataset consists of \(1\,200\) \((x,Re)\) sample pairs, i.e.\ a
-\(200\)-point uniform grid on \(x\in[0,1]\) at each of
-\(Re\in\{100,300,500,700,900,1000\}\), restricted to \(B_1\)-classified realizations
-from the broad campaign. The intermediate
-Reynolds values \(Re\in\{400,600,800\}\) are not populated
-by any \(B_1\) realization in the campaign and are therefore excluded from the
-cross-validation. The target output is the branch-representative stationary
-control profile, taken as the time average of
-\(U_{\mathrm{lid}}(x,t;Re)\) over the sampling window \(t\in[0,2]\) on
-\(64\) time samples, extracted at a fixed actuation energy \(E^\ast=2.0\); among the sampled energy slices,
-\(E^\ast=2.0\) is the only one that populates all six Reynolds conditions with
-\(B_1\) realizations. The time-averaged profile is used because the \(B_1\)
-branch is dominated by the \(n=0\) (stationary) mode, so the time mean fully
-characterizes the leading spatial structure while suppressing residual
-temporal content. At each condition the representative (largest \(f_2\))
-realization is used; the representatives are the seeds listed in
-Table~\ref{tab:s5_loco_metrics}.
-
-The regressed quantity is the \emph{peak-normalized} profile,
-\(\bar U_{\mathrm{lid}}(x;Re)/\max_x|\bar U_{\mathrm{lid}}(x;Re)|\), so the expression
-returned by a fit is a shape and carries no amplitude. The dimensional profile is
-recovered by multiplying by the peak scale of the corresponding condition, listed in
-Table~\ref{tab:s5_loco_metrics}. Because the target is a time mean, no time variable
-appears in any of the returned expressions.
-
-\subsection{S9.3 LOCO Validation Results}
-
-PySR is a stochastic symbolic search: each refit returns the best expression of its own
-run, and the six refits are therefore six different expressions rather than six
-evaluations of one formula. Tables~\ref{tab:s5_loco_metrics}
-and~\ref{tab:s5_loco_expr} report, for each fold, the metrics of the expression that the
-fit returned and that expression exactly as recorded.
+The LOCO is performed on the \(E^\ast=2.0\) slice, the only energy level at
+which all six Reynolds conditions (\(Re\in\{100,300,500,700,900,1000\}\)) are
+populated with \(B_1\)-classified realizations. Table~\ref{tab:s5_loco_metrics}
+reports the per-fold metrics: the coefficient of determination \(R^2\) and the
+root-mean-square error (RMSE) are evaluated on the held-out peak-normalized
+profile (200-point grid); the peak scale converts the expression into the
+dimensional mean profile; \(E_r\) is the actuation energy of that dimensional
+profile, evaluated for both the data and the fold expression, and their
+relative difference \(\Delta E_r\) quantifies the amplitude error.
 
 \begin{table}[h]
 \centering
-\caption{Per-fold metrics of the recorded \(E^\ast=2.0\) LOCO fits. \(R^2\) and the
-root-mean-square error (RMSE) refer to the held-out peak-normalized profile on its
-\(200\)-point grid. ``Peak scale'' is \(\max_x|\bar U_{\mathrm{lid}}|\) of the data
-profile, which converts an expression into the dimensional mean profile.
-\(E_r(\cdot)=\int_0^1(\cdot)^2\,dx\) of that dimensional profile, evaluated for the data
-and for the fold expression, and their relative difference, are the amplitude error left
-by the description.}
+\caption{Per-fold metrics of the \(E^\ast=2.0\) LOCO. \(R^2\) and RMSE refer to
+the held-out peak-normalized profile. ``Peak scale'' is
+\(\max_x|\bar U_{\mathrm{lid}}|\) of the data profile. \(E_r\) is the actuation
+energy of the dimensional mean profile; \(\Delta E_r\) is the relative
+difference between the data and the fold expression.}
 \label{tab:s5_loco_metrics}
 \small
 \begin{tabular}{ccccccccc}
@@ -1391,52 +1019,17 @@ Held-out \(Re\) & Seed & \(f_2\) & \(R^2\) & RMSE & Peak scale & \(E_r^{\mathrm{
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\centering
-\caption{The six fold expressions of the \(E^\ast=2.0\) LOCO, recorded exactly as
-returned after conversion to \((x,Re)\). In this monospace notation \texttt{*} is
-multiplication and \texttt{**} is exponentiation; \texttt{x} and \texttt{Re} are the only
-variables. The expression held out at \(Re=500\), the best-scoring fold, contains no
-\(Re\) at all, which is the clearest indication that these are per-condition
-descriptions rather than one control law.}
-\label{tab:s5_loco_expr}
-\footnotesize
-\begin{tabular}{cp{0.76\textwidth}}
-\toprule
-Held-out \(Re\) & Expression\\
-\midrule
-100 & \texttt{\seqsplit{-0.656531744300912*sin(0.000443030877554443*Re + 8.35334751283491*x - 4.78611502315448) - 0.656531744300912*sin(0.000294144339569321*Re + 2.60149100747748*x - (0.00390434404721515*Re - 2.6549539521063)**2*(0.259675841445626*x - 0.129837920722813) - 1.50076365464588) + 0.0835326911204075}}\\
-300 & \texttt{\seqsplit{0.0355674592281737 - 0.94948430325695*sin(4.33312505481874*x + sin(3.44682419263376*x + 0.24729648*sin(5.87977914011404*exp(sin(0.003125*Re - 2.0))) - 1.91762330631688) - 2.25663605340937)}}\\
-500 & \texttt{\seqsplit{0.038002190814428 - 0.927540972495295*sin(3.4455988*sin(2.27531862008866*x - 1.20059356004433))}}\\
-700 & \texttt{\seqsplit{(-0.640381176720972*(1.62396632386904*x - 0.948239180502976)*(3.44682419263376*x - 1.72341209631688) + 1.1369819864629)*sin(-6.24748466244156*x + 0.4038995*cos(-0.00290619096859548*Re + 1.4645397440588*x + 0.895197070384071) + 3.12374233122078) + 0.0421374749638329}}\\
-900 & \texttt{\seqsplit{-1.40941323554341*x + 0.645040218519208*sin(-8.63782139306147*x + 0.4854202*sin(0.0032009219983224*Re - 1.23114080131396*x + 0.886964461529331)**2 + 4.31891069653074) + 0.749507753884623}}\\
-1000 & \texttt{\seqsplit{-1.39188046572375*x + 0.646718514892542*sin((0.000399479481056593*Re - 2.7101076405283)*(3.44682419263376*x - 1.72341209631688) + 0.31353217) + 0.783949939083173}}\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The LOCO \(R^2\) ranges from \(0.8238\) at the lowest Reynolds number
-(\(Re=100\)) to \(0.9718\) at \(Re=500\), with a mean of \(0.914\). The
-\(Re=100\) fold is the most demanding extrapolation case: it lies at the
-low-\(Re\) edge of the campaign, so that only the higher side (\(Re=300\)) is
-available for interpolation. Three of the six fits
-(\(Re=300,700,1000\)) return the same nested argument \(3.4468\,x-1.7234\), whose
-phase shift is exactly half a wavelength and which is therefore antisymmetric about the
-cavity centre; this recurrence, not a shared closed form, is the reproducible structural
-content of the symbolic analysis. The amplitude is not reproduced: the energy of the
-dimensional profile rebuilt from a fold expression differs from that of the data profile
-by \(-16.6\%\) to \(+10.5\%\), consistent with the fact that the regression target is a
-normalized shape. The result therefore shows that the \(B_1\) control family is
-described, fold by fold, by compact expressions across the six conditions at which it
-is reliably recovered, while the reduced fidelity at the low-\(Re\) edge is
-consistent with the weakening \(B_1/B_2\) separation reported in the main text.
-The coherence is, moreover, energy-dependent: repeating the LOCO on the
-\(E^\ast=0.5\) and \(E^\ast=1.0\) slices yields high scores at most folds but
-extrapolation failures at the corresponding edge conditions (\(Re=100\) for
-\(E^\ast=0.5\), and \(Re=700\) and \(Re=1000\) for \(E^\ast=1.0\)). The
-\(E^\ast=2.0\) slice is thus the only one yielding a uniformly positive LOCO, and
-is the one reported in Tables~\ref{tab:s5_loco_metrics}
-and~\ref{tab:s5_loco_expr} and in Sec.~S9.3.
+The mean \(R^2\) across the six folds is \(0.914\), with the lowest score
+(\(0.8238\)) at \(Re=100\), the most demanding extrapolation case. Three folds
+(\(Re=300,700,1000\)) return expressions sharing the same nested spatial
+argument \(3.4468\,x-1.7234\), which is antisymmetric about the cavity centre;
+this recurrence is the reproducible structural content of the symbolic
+analysis. The amplitude is not captured: \(\Delta E_r\) ranges from \(-16.6\%\)
+to \(+10.5\%\), consistent with the fact that the regression target is a
+normalized shape. Repeating the LOCO on the \(E^\ast=0.5\) and \(E^\ast=1.0\)
+slices yields extrapolation failures at the corresponding edge conditions; the
+\(E^\ast=2.0\) slice is thus the only one yielding uniformly positive LOCO
+scores across all six Reynolds numbers, and is the one reported here.
 
 %=============================================================
 \section{S10. Reproducibility and Computational Pipeline}
@@ -1528,7 +1121,7 @@ Corner-taper control & LBM-MRT & 3 & Table~\ref{tab:s5_corner}\\
 Temporal cycle mean & LBM-MRT & 6 & Table~\ref{tab:s5_temporal}\\
 Branch capture & LBM-MRT & 3 & Main Secs.~6.3--6.4; Main Table~4\\
 Branch iso-energetic transfers & LBM-MRT & 4 & Table~\ref{tab:branch_isoenergetic}\\
-LOCO symbolic refits & PySR & 6 & Tables~\ref{tab:s5_loco_metrics} and~\ref{tab:s5_loco_expr}\\
+LOCO symbolic refits & PySR & 6 & Table~\ref{tab:s5_loco_metrics}\\
 Classification sensitivity & reanalysis & 0 & Table~\ref{tab:s3_threshold}\\
 Dissipation-ratio GCI & derived & 0 & Table~\ref{tab:s5_ratio_gci}\\
 \bottomrule
