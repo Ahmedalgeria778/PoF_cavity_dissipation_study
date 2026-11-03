@@ -959,7 +959,7 @@ The symbolic-regression campaign uses PySR (Julia backend,
 SymbolicRegression.jl) with the hyperparameters listed in
 Table~\ref{tab:s9_pysr_config}. The full details of the search strategy,
 input--output specification, and per-fold expressions are given in the
-supplementary of Ref.~\cite{beniaiche2025energy}; we report here only the
+supplementary of Ref.~\cite{beniaiche2026}; we report here only the
 configuration and the leave-one-condition-out (LOCO) validation metrics that
 support the conclusions of the main text.
 
@@ -1109,8 +1109,8 @@ grand total is claimed.}
 \toprule
 Campaign & Method & Runs & Reported in\\
 \midrule
-Broad \((Re,E^*)\) campaign & PINN & 185 & Main Sec.~3.2; Table~\ref{tab:s1_broad_map}\\
-Variance-regularization sweep & PINN & 90 & Sec.~S4; Tables~\ref{tab:s4_wilson} and~\ref{tab:bfirst_ablation}\\
+Broad \((Re,E^*)\) campaign & PINN & 185 & Main Sec.~3.2; GitHub repository\\
+Variance-regularization sweep & PINN & 90 & Sec.~S4; GitHub repository\\
 Ten-seed multiplicity & PINN & 10 & Table~\ref{tab:s2_ten_seeds}\\
 Network capacity & PINN & 3 & Table~\ref{tab:s6_capacity}\\
 Control truncation & PINN & 6 & Table~\ref{tab:s6_truncation}\\
@@ -1138,9 +1138,9 @@ simulations.
 \subsection{S10.6 Data Availability}
 
 The cell-aggregated record of all 185 runs---realization counts, branch frequencies,
-modal statistics and energy calibration per cell---is reported in
-Supplementary Table~\ref{tab:s1_broad_map}; the seed-level records retained for the
-multiplicity and ablation studies are reported in
+modal statistics and energy calibration per cell---is available in the GitHub
+repository (\url{https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study});
+the seed-level records retained for the multiplicity and ablation studies are reported in
 Tables~\ref{tab:s2_ten_seeds} and~\ref{tab:s3_ablation}. Further details are
 available from the authors upon reasonable request.
 

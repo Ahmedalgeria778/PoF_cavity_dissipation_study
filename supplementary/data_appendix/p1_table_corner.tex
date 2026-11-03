@@ -1,0 +1,15 @@
+% Table P1c: corner-singularity control (auto-generated)
+\begin{table}[t]
+\centering
+\caption{Effect of the upper-corner velocity discontinuity on the grid convergence of the uniform lid at $Re=500$, $E^*=0.25$ and $N\in\{128,256,512\}$. The tapered lid has the same unit plateau but a raised-cosine taper $U=\frac12[1-\cos(\pi x/\delta)]$ of width $\delta=0.05$ at each upper corner, so its tangential velocity is continuous and the amplitude is rescaled to the same $E_r=0.25$. It is a different lid profile and does not replace the discontinuous lid in the iso-energetic ranking; it isolates the cause of the non-convergence.}
+\label{tab:lbm_corner}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Control & $\varepsilon_{128}$ & $\varepsilon_{256}$ & $\varepsilon_{512}$ & $p_{\mathrm{obs}}$ & GCI$_{512}$ (\%) & $\varepsilon_{512}/\varepsilon^{\mathrm{unif}}_{512}$\\
+\midrule
+Uniform lid (discontinuous) & 0.00774 & 0.00948 & 0.01102 & 0.18 & 130.71 & 1.000\\
+Uniform lid, $\delta=0.05$ taper & 0.00717 & 0.00815 & 0.00866 & 0.96 & 7.79 & 0.786\\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,17 @@
+% Table P1: iso-energetic comparison at Re=500 (auto-generated)
+\begin{table}[t]
+\centering
+\caption{Grid convergence and iso-energetic comparison at $Re=500$ with matched actuation energy $E^*=0.25$ ($E_r=\int_0^1 U_{\mathrm{lid}}^2\,dx$). $\varepsilon$ is the integrated viscous dissipation; $\mathrm{GCI}$ is the fine-grid Grid Convergence Index with $F_s=1.25$. The $B_1$ PINN mean control is used as computed ($E_r=0.2503$), i.e.\ without rescaling. A flagged GCI means that the triple does not satisfy the smooth-error assumption; this is the case for the uniform lid, discussed in the corner-singularity study.}
+\label{tab:s5_isoenergetic}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Control & $E_r$ & $\varepsilon_{128}$ & $\varepsilon_{256}$ & $\varepsilon_{512}$ & GCI$_{512}$ (\%) & $\varepsilon_{512}/\varepsilon^{\mathrm{unif}}_{512}$\\
+\midrule
+Uniform lid & 0.250 & 0.00774 & 0.00948 & 0.01102 & 130.71 & 1.000\\
+$k=1$ ($\sin\pi x$) & 0.250 & 0.00635 & 0.00688 & 0.00713 & 3.85 & 0.647\\
+$k=2$ ($\sin 2\pi x$) & 0.250 & 0.01012 & 0.01129 & 0.01185 & 5.62 & 1.076\\
+$B_1$ PINN mean & 0.250 & 0.01067 & 0.01189 & 0.01250 & 6.01 & 1.134\\
+\bottomrule
+\end{tabular}
+\end{table}

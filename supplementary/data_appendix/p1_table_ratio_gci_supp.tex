@@ -1,0 +1,20 @@
+% Table P1b: GCI of dissipation ratios (auto-generated)
+\begin{table}[t]
+\centering
+\caption{Grid convergence of the dissipation ratio $\varepsilon/\varepsilon_{\mathrm{ref}}$ at $Re=500$, $E^*=0.25$, formed on each grid before the Richardson extrapolation, so the quoted GCI refers to the quantity used in the text. Two references are used: the sharp uniform lid specified in the problem, whose own dissipation grows by $16\%$ between $N=256$ and $N=512$ and has no usable GCI, and a corner-regularized uniform lid (cosine taper $\delta=0.05$, the corner table above) at the same energy. With the sharp reference all three ratios drift by $18$--$21\%$ over the triple and two of them fall outside the admissible range of the estimator; with the regularized reference all three converge with $p_{\mathrm{obs}}\in[0.8,1.1]$ and GCIs of $1.4$--$3.1\%$. A dash means the estimator is not applicable.}
+\label{tab:s5_ratio_gci}
+\small
+\begin{tabular}{llcccccc}
+\toprule
+Reference & Control & ratio$_{128}$ & ratio$_{256}$ & ratio$_{512}$ & $p_{\mathrm{obs}}$ & GCI$_{\mathrm{ratio}}$ (\%) & ratio$_{\mathrm{exact}}$\\
+\midrule
+sharp lid & $k=1$ ($\sin\pi x$) & 0.821 & 0.725 & 0.647 & 0.28 & 72.37 & 0.272\\
+ & $k=2$ ($\sin 2\pi x$) & 1.309 & 1.191 & 1.076 & -- & -- & --\\
+ & $B_1$ PINN mean & 1.379 & 1.254 & 1.134 & -- & -- & --\\
+\midrule
+regularized lid & $k=1$ ($\sin\pi x$) & 0.886 & 0.843 & 0.823 & 1.03 & 3.06 & 0.802\\
+ & $k=2$ ($\sin 2\pi x$) & 1.413 & 1.384 & 1.368 & 0.82 & 1.91 & 1.347\\
+ & $B_1$ PINN mean & 1.488 & 1.458 & 1.443 & 0.97 & 1.39 & 1.427\\
+\bottomrule
+\end{tabular}
+\end{table}
