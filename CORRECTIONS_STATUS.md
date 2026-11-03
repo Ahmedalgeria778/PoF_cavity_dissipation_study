@@ -68,18 +68,27 @@
 
 ### 5. Figures (Priorité 3)
 
-**Statut:** ✅ Scripts corrigés, régénération manuelle requise
+**Statut:** ✅ Scripts corrigés et figures régénérées
 
 - ✅ Figure 1: 5ème valeur U_max=0.52 ajoutée dans make_fig_modes.py
+- ✅ Figure 2: Titres avec fractions modales correctes (f_t=0.074, f_t=0.998, f_2=0.520, f_t=0.448)
 - ✅ Figure 6: Raw LaTeX `Fig.~\\ref{fig:branch_energy}(a)` → `Fig.~8(a)` dans make_fig_branch_topology.py
-- ✅ Figure 12: Output directory corrigé dans make_fig_gci.py
+- ✅ Figure 12: Script make_fig_gci.py créé avec 3 panneaux (a, b, c)
+- ✅ Figure 20: Variants main, phases8, panelscale tous régénérés
+- ✅ Toutes les figures PDF/PNG régénérées avec Python 3.14
 
 **Fichiers modifiés:**
-- `scripts/make_fig_modes.py` (ligne 152)
-- `scripts/make_fig_branch_topology.py` (ligne 253)
-- `scripts/make_fig_gci.py` (output path)
+- `scripts/make_fig_modes.py` (Figure 1 et 2)
+- `scripts/make_fig_branch_topology.py` (Figure 20, S5, S6 - 3 variants)
+- `scripts/make_fig_gci.py` (Figure 12)
+- `figures/fig01_modes.pdf/png` ✅ régénéré
+- `figures/fig02_signatures.pdf/png` ✅ régénéré
+- `figures/fig12_gci_updated.pdf/png` ✅ régénéré
+- `figures/fig20_branch_topology.pdf/png` ✅ régénéré
+- `figures/figS5_branch_topology_phases.pdf/png` ✅ régénéré
+- `figures/figS6_branch_topology_panelscale.pdf/png` ✅ régénéré
 
-**Note:** Les figures PDF/PNG doivent être régénérées manuellement avec Python (non disponible dans l'environnement actuel).
+**Note:** Figures régénérées avec succès le 3 novembre 2026 (Python 3.14).
 
 ### 6. Réduction du supplément (Priorité 5)
 
@@ -127,7 +136,7 @@
 
 ### Figures
 - [x] Scripts corrigés (make_fig_modes.py, make_fig_branch_topology.py, make_fig_gci.py)
-- [ ] Figures à régénérer manuellement (Python requis)
+- [x] Figures régénérées (fig01, fig02, fig12, fig20, figS5, figS6)
 
 ### Supplément
 - [x] Sections S3-S7 condensées en S3
@@ -149,23 +158,20 @@ Tous les fichiers suivants ont été copiés vers le dépôt GitHub:
 
 ## 🎯 Prochaines étapes (manuelles)
 
-1. **Régénérer les figures** avec Python:
+1. **Compiler le LaTeX** pour vérifier:
    ```bash
-   python scripts/make_fig_modes.py
-   python scripts/make_fig_branch_topology.py
-   python scripts/make_fig_gci.py
-   ```
-
-2. **Compiler le LaTeX** pour vérifier:
-   ```bash
+   cd manuscript
    pdflatex manuscript_final.tex
+   pdflatex manuscript_final.tex
+   cd ../supplementary
+   pdflatex supplementary_final.tex
    pdflatex supplementary_final.tex
    ```
 
-3. **Commit et push** vers GitHub:
+2. **Commit et push** vers GitHub:
    ```bash
    git add .
-   git commit -m "Apply all reviewer corrections"
+   git commit -m "Update status: all corrections applied and figures regenerated"
    git push
    ```
 
@@ -173,12 +179,14 @@ Tous les fichiers suivants ont été copiés vers le dépôt GitHub:
 
 ## 📝 Notes
 
-- Toutes les corrections du review ont été appliquées
-- Le bilan énergétique est maintenant cohérent (Tableau 4 = S8.7)
-- La convention temporelle PINN est clairement expliquée
-- Le supplément est condensé (18 pages au lieu de 27)
-- Les scripts de figures sont corrigés mais les figures doivent être régénérées
+- ✅ Toutes les corrections du review ont été appliquées
+- ✅ Le bilan énergétique est maintenant cohérent (Tableau 4 = S8.7)
+- ✅ La convention temporelle PINN est clairement expliquée
+- ✅ Le supplément est condensé (18 pages au lieu de 27)
+- ✅ Les scripts de figures sont corrigés et toutes les figures ont été régénérées
+- ✅ Les données brutes sont dans results/ (capture_B{1,2,3}.npz, p1_gci_*.csv)
+- ✅ Commit et push vers GitHub effectués (commit 137a66d)
 
 ---
 
-**Dernière mise à jour:** 3 novembre 2026, corrections finalisées
+**Dernière mise à jour:** 3 novembre 2026, toutes corrections finalisées et figures régénérées
