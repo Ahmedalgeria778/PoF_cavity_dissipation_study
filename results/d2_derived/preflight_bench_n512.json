@@ -1,0 +1,29 @@
+{
+ "B1": {
+  "N": 512,
+  "forcing": "hold",
+  "measured_at": "2026-11-05 12:25:26",
+  "ms_per_step": 23.755341302603483,
+  "s_per_period": 486.50938987731934,
+  "s_per_step": 0.023755341302603483,
+  "steps_per_period": 20480
+ },
+ "B2": {
+  "N": 512,
+  "forcing": "hold",
+  "measured_at": "2026-11-05 12:26:20",
+  "ms_per_step": 23.045327747240663,
+  "s_per_period": 471.96831226348877,
+  "s_per_step": 0.023045327747240663,
+  "steps_per_period": 20480
+ },
+ "B3": {
+  "N": 512,
+  "forcing": "hold",
+  "measured_at": "2026-11-05 12:27:14",
+  "ms_per_step": 23.17700395360589,
+  "s_per_period": 474.66504096984863,
+  "s_per_step": 0.02317700395360589,
+  "steps_per_period": 20480
+ }
+}

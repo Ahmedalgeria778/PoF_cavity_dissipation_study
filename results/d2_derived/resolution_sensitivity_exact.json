@@ -1,0 +1,46 @@
+{
+  "cases": {
+    "B2": {
+      "256": {
+        "D": 0.014424576692513983,
+        "D_fluct": 0.013408631959762605,
+        "D_meanfield": 0.0010159447327513782,
+        "D_meanfield_recomputed": 0.0010159447327513782,
+        "E_r": 0.25,
+        "K": 0.0024228113849778955,
+        "K_fluct": 0.0018142460010235541,
+        "N": 256,
+        "P": 0.014324226720615221,
+        "R_K": 0.7488185057542589,
+        "balance_resid": -0.006956874647894639,
+        "capture_periods": 32,
+        "drift": 3.148928613768935e-07,
+        "file": "capture_B2_D2_N256_exact.npz",
+        "fluct_share": 0.9295684889471572,
+        "forcing": "exact",
+        "frequency_ok": true,
+        "has_probe": false,
+        "lid_max_error": 0.1013186951527516,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0256,
+        "omega_dissipation": 6.283185307179586,
+        "omega_dissipation_ratio": 2.0,
+        "omega_field": null,
+        "omega_field_ratio": null,
+        "phase_half_max": 1.4513355918109538e-05,
+        "ratio_D": 14.19819034195826,
+        "se_D": 1.3446287837888275e-10,
+        "se_Dfluct": 1.6597896000980043e-10,
+        "se_Dm": 9.730749973152486e-11,
+        "se_K": 1.1692562688504347e-10,
+        "se_P": 1.01836404473986e-10,
+        "seconds": 2360.5,
+        "steps_per_period": 10240,
+        "warm_periods": 24.0
+      }
+    }
+  },
+  "staircase_reference_rel": 0.00114,
+  "variation": {},
+  "wording": "grid-refinement sensitivity (not a GCI)"
+}

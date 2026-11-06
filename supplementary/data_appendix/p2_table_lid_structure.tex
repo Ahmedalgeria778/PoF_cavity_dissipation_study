@@ -1,0 +1,31 @@
+% Spatial decomposition of the three imposed lid series (see
+% scripts/lid_spatial_decomposition.py, results/lid_spatial_decomposition.json).
+\begin{table}[t]
+\centering
+\caption{Spatial sine decomposition of the imposed lid series of the three branch
+controls, harmonic by harmonic. $A_n(x)$ is the amplitude of temporal harmonic $n$
+of $U_{\mathrm{lid}}(x,t)$ ($n=0$ is the time mean); $a_{mn}$ is its coefficient in
+the basis $\sin(m\pi x)$ and $E_n$ its share of the actuation energy, with the
+convention $E_0=\int_0^1A_0^2\,dx$ and $E_n=\tfrac12\int_0^1A_n^2\,dx$ for $n\ge1$
+(Sec.~S2.2). The shares are computed from the series as imposed in the captures:
+the archived $B_1$ Fourier series has native norm $0.2534$ and is rescaled by
+$0.9933$ to the common $E^\ast=0.25$, the $B_2$ and $B_3$ series are stored already
+at that norm. The last column is the fraction of lid nodes whose velocity changes
+sign at least once during the period, counted on the interior nodes:
+$B_1$ reverses only at the midline node, where its stationary two-lobe profile has
+its node, whereas the reversing band of $B_3$ extends over $0.28<x<0.64$. Computed
+with \texttt{scripts/lid\_spatial\_decomposition.py} from the lid series archived in
+\texttt{data/lid\_series/}.}
+\label{tab:lid_structure}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llccccc}
+\toprule
+Control & $E_0$ & $a_{20}$ & $E_1/E_{\mathrm{tot}}$ & $a_{11}$ & share of $m=1$ in $A_1$ & reversing span\\
+\midrule
+$B_1$ (full series)  & $0.987$ & $+0.679$ & $0.012$ & $0.068$ & $0.397$ & $0.004$\\
+$B_2$ (seed 5)       & $0.002$ & $-0.001$ & $0.977$ & $0.981$ & $0.985$ & $1.000$\\
+$B_3$ (seed 0)       & $0.552$ & $-0.510$ & $0.433$ & $0.627$ & $0.909$ & $0.362$\\
+\bottomrule
+\end{tabular}
+\end{table}

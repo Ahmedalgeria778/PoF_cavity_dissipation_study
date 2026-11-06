@@ -1,0 +1,113 @@
+{
+ "B1": {
+  "eightbin_quadrature_D": 0.011934442327501637,
+  "quadrature_error_pct": 0.0016730535866482654,
+  "D_period_min": 0.009603247464453818,
+  "D_period_max": 0.013767116762682207,
+  "D_period_ratio": 1.4335897115679719,
+  "mean_profile_abs_peak": 0.7337649581135353,
+  "mean_speed_peak": 0.7337649593213263,
+  "rms_over_mean_peak": 0.1288828049944941,
+  "phase_field_deviation": [
+   0.10251384707189867,
+   0.05904019122489807,
+   0.037750655593065015,
+   0.08137291293691451,
+   0.10134348114525792,
+   0.05897216689738524,
+   0.031663176735120896,
+   0.08067974426904498
+  ],
+  "phase_field_deviation_max": 0.10251384707189867,
+  "vortex_max_pos": [
+   0.5725490196078431,
+   0.6941176470588235
+  ],
+  "vortex_min_pos": [
+   0.5333333333333333,
+   0.3137254901960784
+  ],
+  "vortex_max_val": 0.03553021367632129,
+  "vortex_min_val": -0.036302377183171294,
+  "energy_half_below_meanfield": 0.003456700143262342,
+  "lid_profile_peak": 0.7747700953353027,
+  "lid_harmonic_peak": 0.7747700953353032,
+  "lid_instantaneous_peak_waveform": 0.8157783149767164,
+  "Re_max_profile": 387.38504766765135,
+  "Re_max_instantaneous": 407.8891574883582
+ },
+ "B2": {
+  "eightbin_quadrature_D": 0.014408184263638095,
+  "quadrature_error_pct": -8.428840025942463e-06,
+  "D_period_min": 0.0038456352499162795,
+  "D_period_max": 0.02854963963858679,
+  "D_period_ratio": 7.423907308736137,
+  "mean_profile_abs_peak": 0.14153489973662364,
+  "mean_speed_peak": 0.14157456354298967,
+  "rms_over_mean_peak": 5.140435830641541,
+  "phase_field_deviation": [
+   2.7133451043842522,
+   2.271518381599849,
+   1.1476158649075043,
+   2.5516269128268894,
+   3.2880518425744625,
+   2.178579818934383,
+   1.2684197517793476,
+   2.267213005548859
+  ],
+  "phase_field_deviation_max": 3.2880518425744625,
+  "vortex_max_pos": [
+   0.8470588235294118,
+   0.23137254901960785
+  ],
+  "vortex_min_pos": [
+   0.8549019607843137,
+   0.7843137254901961
+  ],
+  "vortex_max_val": 0.011076798573059541,
+  "vortex_min_val": -0.01158157028629398,
+  "energy_half_below_meanfield": 4.919344358003092e-06,
+  "lid_profile_peak": 0.038207186730453764,
+  "lid_harmonic_peak": 1.0925996237348832,
+  "lid_instantaneous_peak_waveform": 1.227830239502566,
+  "Re_max_profile": 19.10359336522688,
+  "Re_max_instantaneous": 613.915119751283
+ },
+ "B3": {
+  "eightbin_quadrature_D": 0.011690568280490551,
+  "quadrature_error_pct": 0.003937191535308138,
+  "D_period_min": 0.007149083836522514,
+  "D_period_max": 0.017334771490298898,
+  "D_period_ratio": 2.424754260362814,
+  "mean_profile_abs_peak": 0.5983960203372973,
+  "mean_speed_peak": 0.5983960208993689,
+  "rms_over_mean_peak": 0.8897170971298957,
+  "phase_field_deviation": [
+   0.6791430164005604,
+   0.44598491979700916,
+   0.27875079766378535,
+   0.5141483493824001,
+   0.6021975416492205,
+   0.4691358558799672,
+   0.23258024481558462,
+   0.5543113054452738
+  ],
+  "phase_field_deviation_max": 0.6791430164005604,
+  "vortex_max_pos": [
+   0.8588235294117647,
+   0.19607843137254902
+  ],
+  "vortex_min_pos": [
+   0.796078431372549,
+   0.7686274509803921
+  ],
+  "vortex_max_val": 0.024010380596033217,
+  "vortex_min_val": -0.03490932503235862,
+  "energy_half_below_meanfield": 6.265466108271124e-05,
+  "lid_profile_peak": 0.6199138455950695,
+  "lid_harmonic_peak": 0.8213274836711395,
+  "lid_instantaneous_peak_waveform": 1.1643921648748814,
+  "Re_max_profile": 309.95692279753473,
+  "Re_max_instantaneous": 582.1960824374407
+ }
+}

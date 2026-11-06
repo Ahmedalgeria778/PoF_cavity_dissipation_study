@@ -48,11 +48,54 @@ desktop.ini
 *.swo
 *~
 
-# Large data files (available on request)
+# Large data files. The raw phase-resolved field archives of the temporal campaign
+# (results/09_d2_capture/capture_*.npz, ~0.4 GB, individual files above GitHub's
+# 100 MB per-file limit) are excluded and provided on request. Everything the text
+# needs as input or as provenance is committed.
 *.npz
 *.h5
 *.hdf5
 *.csv
+!data/lid_series/*.npz
+!data/lid_series/manifest.csv
+!data/lid_series_n512/*.npz
+!results/07_d2_smoke/smoke_d2.npz
+!results/08_stokes_analytic/*.npz
+!results/p1_gci_iso/*.csv
+!supplementary/data_appendix/*.csv
+!results/d2_derived/topology_numbers.txt
+!results/09_d2_capture/capture_d2_*.log
+
+# Working scratch (session logs, checkpoints, build output, invalid pre-D2 runs)
+_*.log
+_*.json
+_*_verdict.log
+results/_ckpt_test/
+results/_smoke/
+results/06_branch_figures/
+results/06_branch_figures_n512/
+results/d2_derived/_*
+build/
+manuscript/_stale_*
+supplementary/_stale_*
+draft_pof_new_paragraphs.md
+
+# Scripts and outputs of the pre-mapping protocol (before the temporal mapping of
+# Sec. 4.2). They read or write the superseded results/06_branch_figures/ captures,
+# so they reproduce no number of this paper and are not distributed.
+scripts/wall_power_closure.py
+results/wall_power_closure.json
+scripts/make_fig_branch_energy.py
+scripts/stokes_scaling_estimate.py
+results/stokes_scaling_estimate.json
+scripts/streaming_forcing_diagnostic.py
+results/streaming_forcing.json
+scripts/compare_stokes_d2_vs_old.py
+scripts/run_branch_capture_n512.py
+scripts/run_branch_capture_B1B3_n512.py
+
+# Orphan: no includegraphics in either document references it.
+supplementary/fig11_lbm_dissipation.png
 
 # Temporary files
 *.tmp

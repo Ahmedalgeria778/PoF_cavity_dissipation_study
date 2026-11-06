@@ -47,13 +47,21 @@ multiple-relaxation-time lattice-Boltzmann solver and compared at a common
 quadratic actuation norm. For stationary controls at $Re=500$, the first spatial
 harmonic reduces dissipation by $17.7\%$ relative to a corner-regularized
 uniform-lid reference, whereas the second harmonic and the mean profile of the
-second-mode-dominated branch increase it by $36.8\%$ and $44.3\%$, respectively.
+quasi-steady two-lobe branch increase it by $36.8\%$ and $44.3\%$, respectively.
 Grid-refinement and local strain-rate analyses associate this ordering with the
 redistribution of dissipation between corner shear layers and the cavity interior.
 For time-dependent branches, the cycle-mean dissipation differs markedly from the
-dissipation of the time-mean flow. In particular, the temporally dominated branch
-has a cycle-mean dissipation approximately $3.1$ times that of the predominantly
-stationary branch, despite its much weaker mean-flow contribution. The results
+dissipation of the time-mean flow: the fluctuating part of the strain field carries
+$92.9\%$, $53.7\%$ and $1.8\%$ of the cycle-mean cost of the lid-oscillatory, mixed
+and quasi-steady branches, respectively. The branch whose mean-field dissipation is
+fourteen times below its own cycle mean is consequently the most dissipative of the
+three, though by the modest factor of $1.2$, while the quasi-steady and mixed
+responses are indistinguishable to within $2\%$. A second-Stokes boundary-layer
+estimate built from the imposed lid signal alone accounts for $95\%$ and $98\%$ of
+the fluctuating dissipation of the two time-reversing branches, which locates their
+cost in the oscillatory wall layer rather than in the recirculation and explains why
+two actuations whose oscillatory energies differ by a factor of $2.3$ can cost the
+same over the cycle. The results
 demonstrate that the energetic cost of wall actuation depends on both the spatial
 organization and the temporal fluctuations of the resulting flow, and that physical
 performance must be assessed using cycle-averaged dissipation rather than modal
@@ -75,12 +83,12 @@ energy budget; mean-flow diagnostics; mode selection
 \toprule
 \multicolumn{2}{@{}l}{\textit{Roman symbols}}\\
 \midrule
-\(A_\varepsilon\) & half-spread of \(D(t)\) over the cycle, i.e.\ the variability concealed by a single cycle-mean number\\
+\(A_\varepsilon\) & half-spread of \(D(t)\) over the cycle, \(A_\varepsilon=(D_{\max}-D_{\min})/2\), i.e.\ the variability concealed by a single cycle-mean number\\
 \(AR\) & cavity aspect ratio, \(L_x/L_y\)\\
 \(C_3\) & spectral rank concentration, sum of the three largest control-energy fractions\\
 \(D\) & instantaneous viscous dissipation rate, \((2/Re)\int_\Omega \mathbf{S}\!:\!\mathbf{S}\,d\Omega\)\\
 \(\Dbar\) & cycle-mean dissipation, \(\langle D\rangle_t\)\\
-\(E_{\mathrm{act}}\) & instantaneous actuation energy of the lid profile, \(\int_0^1 U_{\mathrm{lid}}^2\,dx\)\\
+\(E_{\mathrm{act}}\) & instantaneous quadratic actuation norm of the lid profile, \(\int_0^1 U_{\mathrm{lid}}^2\,dx\)\\
 \(E_r\) & realized cycle-averaged actuation energy of a transferred control\\
 \(E^*\) & prescribed target actuation energy\\
 \(f_1,f_2,f_t\) & first-harmonic, second-harmonic, and explicitly time-dependent control-energy fractions\\
@@ -94,18 +102,19 @@ energy budget; mean-flow diagnostics; mode selection
 \(\mathbf{S}\) & strain-rate tensor, \((\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T})/2\)\\
 \(t,T\) & time and forcing period\\
 \(\mathbf{u}=(u,v)\) & velocity vector and its streamwise/wall-normal components\\
-\(u'\) & fluctuating velocity, \(\mathbf{u}-\langle\mathbf{u}\rangle\)\\
+\(\mathbf{u}'\) & fluctuating velocity vector, \(\mathbf{u}-\langle\mathbf{u}\rangle\)\\
 \(u'_{\mathrm{rms}}\) & root-mean-square temporal fluctuation at a fixed point\\
 \(U_{\mathrm{lid}}\) & lid velocity profile (the actuation)\\
-\(U_{\mathrm{ref}}\) & reference velocity, the amplitude of the uniform lid\\
+\(U_0\) & scaling velocity used to define \(Re=U_0 L/\nu\); the uniform lid at \(E^*=0.25\) has amplitude \(U_{\mathrm{uniform}}=0.5\,U_0\)\\
+\(U_{\mathrm{ref}}\) & reference velocity, equivalent to \(U_0\)\\
 \(x,y\) & streamwise and wall-normal coordinates\\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Greek symbols and branch symbols}}\\
 \midrule
-\(B_1,B_2,B_3\) & empirical branch classes (second-harmonic dominated, time-dependent dominated, residual)\\
+\(B_1,B_2,B_3\) & empirical branch classes: quasi-steady two-lobe, lid-oscillatory, mixed\\
 \(B_{\mathrm{first}}\) & first-harmonic branch class of the full-spectrum audit\\
 \(\delta\) & corner taper width\\
-\(\varepsilon\) & integrated viscous dissipation accumulated over an LBM sampling window\\
+\(\varepsilon(t;N)\) & instantaneous viscous dissipation rate integrated over the cavity domain at lattice resolution \(N\); its cycle average is \(\overline{\varepsilon}\)\\
 \(\lambda_{\mathrm{var}}\) & weight of the variance-regularization term of the training loss\\
 \(\nu\) & kinematic viscosity\\
 \(\tau_w\) & wall shear stress on the moving lid\\
@@ -116,7 +125,6 @@ energy budget; mean-flow diagnostics; mode selection
 \midrule
 GCI & grid-convergence index\\
 LBM & lattice-Boltzmann method\\
-LOCO & leave-one-Reynolds-condition-out (cross-validation)\\
 MRT & multiple-relaxation-time\\
 PINN & physics-informed neural network\\
 RMSE & root-mean-square error\\
@@ -139,7 +147,7 @@ same control effort, which one produces the less dissipative flow, and why?
 The canonical cavity solution and its benchmarks are well established
 \cite{ghia1982high,botella1998benchmark,shankardeshpande2000,albensoeder2005accurate,kuhlmann2019},
 and the flow has long served as a test bed for control strategies
-\cite{gadelhak2000,brunton2015closed}, yet its dissipation budget under
+\cite{gadelhak2000,brunton2015closed,rowley2017model,bewley2001dns,bergmann2005optimal,choi1994active,quadrio2004critical,rabsult2019drl,garnier2021drl}, yet its dissipation budget under
 distributed wall actuation has received comparatively little attention.
 
 The energetic mechanism is twofold, and the two parts can act in opposite
@@ -163,22 +171,25 @@ that the dissipation of the time-mean field is not the time mean of the
 instantaneous dissipation: because $D$ is quadratic in the velocity gradients,
 cycle-averaged dissipation always exceeds the dissipation of the mean flow, and
 the gap can be orders of magnitude when the fluctuations dominate
-\cite{pope2000,landau1987}.
+\cite{pope2000,landau1987,doering2002energy,beneddine2016conditions}.
 
 Spatially structured and time-periodic actuations can also support more than one
 hydrodynamic response. A periodic boundary-value problem of this type admits
 several coexisting branches, and which one is reached depends on the formulation,
 the regularization and the initialization of the identification procedure. A
 preceding study by Beniaiche \cite{beniaiche2026} investigated the identification
-and independent numerical verification of conditional modal collapse in
-physics-informed active control of the lid-driven cavity. It established that the
+of conditional modal collapse in
+physics-informed active control of the lid-driven cavity, building on modal
+decomposition and reduced-order modeling techniques
+\cite{schmid2010dmd,taira2017modal,sipp2010global,noack2003hierarchy}. It established that the
 identified actuation is not characterized by a unique, universally selected modal
 structure: predominantly stationary second-harmonic controls and strongly
 time-dependent alternatives can be recovered depending on initialization,
-regularization, and control parameterization. Independent MRT-LBM simulations
-further demonstrated that these identified controls can produce physically
-distinct cavity responses. The emphasis of that work was on branch identification,
-conditional accessibility, and independent numerical reproducibility. The present
+regularization, and control parameterization. In that work, as here, the network
+identifies candidate spatio-temporal wall-actuation profiles, which are then
+evaluated with an independent MRT-LBM solver; the solver is used to compute the
+response to a profile, not to validate the network. The emphasis of that work was on branch identification,
+conditional accessibility, and independent reproducibility of the responses. The present
 study addresses the complementary fluid-mechanical question of how these spatial
 and temporal actuation structures affect the viscous-dissipation budget of the
 resulting flow. Rather than treating modal recovery as a performance criterion, we
@@ -186,6 +197,53 @@ quantify the dissipation of stationary and periodic responses under a common
 quadratic actuation norm, distinguish the dissipation of the time-mean field from
 the cycle-mean dissipation, and identify the strain-rate distributions responsible
 for the observed energetic differences.
+
+The energetic question is not the one usually asked of an oscillating cavity.
+Cavities driven by a periodically moving lid have been studied for the patterns and
+the transport they produce: the lattice-Boltzmann computation of a cavity driven by
+an oscillating lid by Mendu and Das \cite{mendu2013oscillating}, the vortex
+dynamics and flow-pattern map of the oscillatory lid-driven rectangular cavity by
+Zhu et al.~\cite{zhu2020oscillatory}, Lagrangian transport in the time-periodic
+two-dimensional lid-driven square cavity by Babor and Kuhlmann
+\cite{babor2023transport}, and the chaotic mixing of suspensions in a
+time-periodic lid-driven cavity by Xu and Gilchrist \cite{xu2010mixing}. In each
+case the figure of merit is mixing, pattern selection or material transport. The
+dissipation that the actuation costs at a prescribed control energy is a different
+figure of merit---the one that governs actuator sizing and that an
+energy-respecting control or reduced-order model must reproduce---and it is the
+quantity computed here. Likewise, the gap between the dissipation of a mean field
+and the cycle mean of a quadratic functional is classical, the boundary-layer
+theory of oscillating walls is classical, and the steady streaming that the
+Reynolds stresses of the fluctuations drive is a subject with its own
+literature \cite{riley2001streaming}. What was missing, for this geometry, is the
+connection between the three: a measured dissipation cost at a common actuation
+norm, an estimate of the temporal part of that cost from the imposed lid signal
+alone, and a field-level account of why the mean field is a poor proxy for it.
+
+Three statements mark the novelty of the present contribution, and none of them is
+Jensen's inequality. First, the ranking of stationary actuations is shown to be a
+property of the constraint, not of the flow: the same three profiles are ordered
+differently at equal lid speed and at equal quadratic norm, and the inversion is
+associated with the change in peak velocity and hence in effective Reynolds number
+of each profile (Sec.~\ref{sec:stationary}). Second, the part of the cycle mean
+that the mean field misses is set by the oscillating Stokes layer: the
+second-Stokes scaling of the imposed lid harmonics accounts for $95\%$ and
+$98\%$ of the fluctuating dissipation of the two oscillatory branches, and because
+all three controls place nearly all of their oscillatory energy in the first
+temporal harmonic, the estimate collapses to the one-line form
+$D_{\mathrm{fluct}}\simeq f_t\overline{E}_{\mathrm{act}}\sqrt{\nu\omega_1/2}$.
+This turns an empirical ranking into a boundary-layer statement that can be
+checked without solving the field problem (Sec.~\ref{sec:scaling}). Third, the weak
+mean field of the oscillatory branch is
+consistent with a Reynolds-stress-driven steady-streaming mechanism, so the failure
+of mean-field diagnostics has a plausible dynamical explanation and not only an
+arithmetic one (Sec.~\ref{sec:topology}).
+Together the three statements have an energetic consequence that is the central
+result of this paper: at a matched actuation norm, three controls with very
+different structure---quasi-stationary, mixed and essentially oscillatory---dissipate
+within a narrow band, $\overline{D}=1.19\times10^{-2}$, $1.17\times10^{-2}$ and
+$1.44\times10^{-2}$, and the oscillatory branch that suppresses its mean flow most
+effectively pays for it almost exactly in fluctuations.
 
 The question addressed in this paper is accordingly:
 \begin{quote}
@@ -230,14 +288,15 @@ with $Re=U_0L/\nu$, subject to
 u=U_{\mathrm{lid}}(x,t),\ \ v=0\ \ \text{on } y=1 .
 \label{eq:bc}
 \end{equation}
-A pointwise tangential velocity along the lid idealizes an array of independently
-driven wall segments, or a distributed momentum source such as a
-dielectric-barrier-discharge actuator, whose near-wall forcing is equivalent in
-the time-averaged sense used here to a tangential wall velocity
-\cite{corke2010dbd}. Because $U_0$ is a scaling velocity and not a property of
-the lid, a profile may change sign along $x$ or in time; the amplitude of the
-actuation is fixed separately by the norm constraint introduced in
-Sec.~\ref{sec:norm}.
+A pointwise tangential velocity along the lid is an idealized boundary condition
+for distributed tangential control. It may represent an array of independently
+driven wall segments or approximate the time-averaged effect of a distributed
+momentum source such as a dielectric-barrier-discharge actuator
+\cite{corke2010dbd}; the present formulation does not assume a detailed physical
+equivalence with any particular actuation technology. Because $U_0$ is a scaling
+velocity and not a property of the lid, a profile may change sign along $x$ or in
+time; the amplitude of the actuation is fixed separately by the norm constraint
+introduced in Sec.~\ref{sec:norm}.
 
 \subsection{The quadratic actuation norm and the mechanical wall power}
 \label{sec:norm}
@@ -260,7 +319,32 @@ The second is the \emph{mechanical power} transmitted by the lid,
 \tau_w=\frac{1}{Re}\left.\frac{\partial u}{\partial y}\right|_{y=1},
 \label{eq:plid}
 \end{equation}
-positive when the wall does work on the fluid. $\Plid$ depends on the actuation
+positive when the wall does work on the fluid. Here $U_{\mathrm{lid}}$ is the
+prescribed wall velocity. In the numerical evaluation (Table~\ref{tab:budget}
+and Sec.~\ref{sec:budget}), the power is estimated using the recovered wall
+velocity $U_{\mathrm{wall}}^{\mathrm{rec}}$ and a finite-difference wall shear
+$\tau_w^{\mathrm{FD}}$:
+\begin{equation}
+\Plid^{\mathrm{rec}}(t)=\int_0^1 U_{\mathrm{wall}}^{\mathrm{rec}}(x,t)\,\tau_w^{\mathrm{FD}}(x,t)\,dx.
+\label{eq:plid_rec}
+\end{equation}
+This distinction is necessary because the LBM boundary condition does not enforce
+the prescribed velocity exactly at the wall node; the recovered velocity estimator
+gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$,
+$B_2$ and $B_3$, whereas using the prescribed velocity directly gives residuals of
+$+3.4\%$, $+4.6\%$ and $+4.7\%$ [on the phase-resolved fields, against
+$-2.9\%$, $-6.0\%$ and $-4.3\%$ for the recovered one] that measure
+boundary-condition slip rather than
+the energy balance (Sec.~\ref{sec:budget}). We note that $\Plid^{\mathrm{rec}}$ is a diagnostic
+of the power across the \emph{first fluid plane adjacent to the wall}
+($y=1-\Delta y$ in continuous coordinates, $y=N-2$ in lattice indices), not a
+direct evaluation of the mechanical work at the physical boundary $y=1$: both
+$U_{\mathrm{wall}}^{\mathrm{rec}}$ and $\tau_w^{\mathrm{FD}}$ are evaluated on
+that plane. As $\Delta y\to0$ the estimator converges to the wall power
+$\Plid$ of Eq.~\eqref{eq:plid}; the residuals reported above therefore verify the
+discrete energy budget indirectly rather than close it at the boundary, and are
+consistent with the exact identity $\overline{\Plid}=\Dbar$ of the continuous
+equations. $\Plid$ depends on the actuation
 and on the flow through the wall shear stress, and it is the quantity that enters
 the energy balance. Two actuations of equal $\overline{E}_{\mathrm{act}}$ can
 therefore inject very different amounts of power; conversely, a large norm does
@@ -282,6 +366,7 @@ comparison of Ref.~\cite{beniaiche2026}, in which the peak velocity was the same
 for all profiles and the norm differed by up to a factor of four.
 
 \subsection{Viscous dissipation and its cycle mean}
+\label{sec:dissipation}
 
 For an incompressible Newtonian fluid the instantaneous viscous dissipation rate is
 \begin{equation}
@@ -341,8 +426,8 @@ periodicity of the response, with that estimator uncertainty made explicit
 \subsection{Stationary reference profiles}
 
 Five stationary profiles define the comparison, all normalized to
-$E^\ast=0.25$. The \emph{uniform} lid $U_{\mathrm{lid}}=0.5$ is the reference of
-the problem statement; it carries a tangential-velocity discontinuity at the two
+$E^\ast=0.25$. The \emph{uniform} lid $U_{\mathrm{lid}}=0.5$ is the classical
+reference; it carries a tangential-velocity discontinuity at the two
 upper corners, which is retained because it is the classical boundary condition,
 but which is shown in Sec.~\ref{sec:corner} to prevent the convergence of its own
 dissipation. A \emph{corner-regularized uniform} lid, constructed with an initial
@@ -393,8 +478,8 @@ with a distributed profile $U_{\mathrm{lid}}(x,t)$; the three other walls are
 no-slip and stationary. (b) The five stationary actuation profiles compared in
 this study, all normalized to the same quadratic actuation norm
 $E^\ast=\int_0^1U_{\mathrm{lid}}^2\,dx=0.25$. The maximum wall velocity differs
-between profiles at equal norm: $U_{\max}=0.50$ for the uniform lid, $0.71$ for
-the two harmonics and $0.78$ for the $B_1$ mean profile.}
+between profiles at equal norm: $U_{\max}=0.50$ for the sharp uniform lid, $0.52$ for the
+corner-regularized uniform lid, $0.71$ for the two harmonics and $0.78$ for the $B_1$ mean profile.}
 \label{fig:modes}
 \end{figure}
 
@@ -405,7 +490,7 @@ The time-dependent actuations are three representatives identified by the
 physics-informed procedure of Sec.~\ref{sec:methods} and classified by the modal
 energy of their control coefficients (details of the identification campaign and
 classification rules are provided in Supplementary Secs.~S1--S3, particularly
-Sec.~S2.3, Tables~S2--S3 and Fig.~S1). Writing the lid as
+Sec.~S2.3 and Tables~S2--S3). Writing the lid as
 \begin{equation}
 U_{\mathrm{lid}}(x,t)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
 a_{mn}\sin(m\pi x)\cos\!\left(\frac{2n\pi t}{T}\right),
@@ -421,9 +506,29 @@ $f_t=\sum_{m=1}^{N_x}\sum_{n=1}^{N_t-1}f_{mn}$. The three classes are defined by
 second-harmonic dominated); $B_2$ has $f_t>2f_2$ and $f_t>0.5$ (temporally
 dominated); $B_3$ satisfies neither condition (mixed). At $Re=500$ and
 $E^\ast=0.25$ the representatives used here have
-$(f_2,f_t)=(0.93,0.07)$ for $B_1$, $(0.00,1.00)$ for $B_2$ (seed 5) and
+$(f_2,f_t)=(0.93,0.013)$ for $B_1$, $(0.00,1.00)$ for $B_2$ (seed 5) and
 $(0.52,0.45)$ for $B_3$ (seed 0), with a first-harmonic content
 $f_1=0.006$ for $B_3$ and below $0.02$ for the other two.
+
+Those rules are modal, but each class corresponds to a distinct wall motion, and
+stating it matters because the labels are only identifiers. Decomposing the three
+imposed lid series in the spatial sine basis, harmonic by harmonic
+(Supplementary Sec.~S2.3), gives the following. The stationary part of $B_1$ holds
+$98.7\%$ of its actuation energy and is $93\%$ the second spatial harmonic
+($a_{20}=0.68$): a two-lobe lid whose wall velocity keeps its sign over the whole
+span except at the midline node, where that profile vanishes and the residual
+oscillation sets the sign. $B_2$ puts $97.7\%$ of its energy in the first temporal
+harmonic, and
+$98.5\%$ of that harmonic in the single-lobe first spatial mode ($a_{11}=0.98$), so
+the whole wall reverses direction twice per period and its time mean is nearly
+zero. $B_3$ superposes the two: a stationary second-harmonic lid ($55\%$ of the
+energy, $94\%$ of it in $m=2$) and an oscillating single-lobe lid ($43\%$, $91\%$
+in $m=1$); the two cancel over the central band $0.28<x<0.64$, which is the $36\%$
+of the span that reverses. In words, then, the three
+classes are the \emph{quasi-steady two-lobe} branch ($B_1$), the
+\emph{lid-oscillatory} branch ($B_2$) and the \emph{mixed} branch ($B_3$); the
+symbols are kept in the tables and figures, where they denote particular recovered
+controls rather than a physical type.
 
 The $B_1$ representative is used in two forms. The \emph{full} series is the
 control as identified, including its small temporal content; the \emph{mean
@@ -465,7 +570,10 @@ $\overline{E}_{\mathrm{act}}=0.25$; the instantaneous norm of $B_1$, $B_2$ and $
 varies over the period. $f_2$ and $f_t$ are the stationary second-harmonic and
 total temporal energy fractions of the control coefficients. For the pure
 first-harmonic control, $f_1=1$ and $f_2=0$; for the pure second-harmonic control,
-$f_1=0$ and $f_2=1$.}
+$f_1=0$ and $f_2=1$. For $B_1$ mean profile the reported $f_2=0.93$ is inherited
+from the parent full series (the stationary second-harmonic fraction of the
+temporal mean of the parent coefficients); renormalizing the mean profile alone
+would give the same value because the mean profile has no temporal content.}
 \label{tab:modes}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -478,9 +586,9 @@ Uniform lid, $\delta=0.05$ & constant, tapered & 0.52 & 258 & --- & 0 & converge
 $k=1$ & $\sin\pi x$ & 0.71 & 354 & 0.00 & 0 & control\\
 $k=2$ & $\sin 2\pi x$ & 0.71 & 354 & 1.00 & 0 & control\\
 $B_1$ mean profile & mean of $B_1$ & 0.78 & 390 & 0.93 & 0 & stationary\\
-$B_1$ full series & Fourier series & 0.78 (0.82) & 388 (410) & 0.93 & 0.07 & branch\\
-$B_2$ seed 5 & temporal & 0.04 (1.23) & 20 (615) & 0.00 & 1.00 & unsteady\\
-$B_3$ seed 0 & mixed & 0.62 (1.16) & 311 (580) & 0.52 & 0.45 & intermediate\\
+$B_1$ full series & Fourier series & 0.77 (0.82) & 387 (408) & 0.93 & 0.013 & branch\\
+$B_2$ seed 5 & temporal & 0.04 (1.23) & 19 (614) & 0.00 & 1.00 & unsteady\\
+$B_3$ seed 0 & mixed & 0.62 (1.16) & 310 (582) & 0.52 & 0.45 & intermediate\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -493,7 +601,9 @@ $B_3$ seed 0 & mixed & 0.62 (1.16) & 311 (580) & 0.52 & 0.45 & intermediate\\
 \subsection{Identification of the actuation}
 
 The control coefficients $a_{mn}(Re)$ and the flow field are obtained simultaneously
-by a parametric physics-informed neural network with inputs $(x,y,t,\widetilde{Re})$
+by a parametric physics-informed neural network \cite{raissi2019pinn,cai2021pinnreview}
+with inputs $(x,y,\theta,\widetilde{Re})$, where
+$\theta=t_{\mathrm{phys}}/T\in[0,1]$ is the normalized phase,
 and a multi-objective loss combining the momentum and continuity residuals, the
 boundary conditions, a viscous-dissipation objective, the actuation-norm
 constraint $(\Eact-E^\ast)^2$, a spatial-variance regularizer and a
@@ -502,41 +612,85 @@ $Re\in[100,1000]$; the branch representatives at $Re=500$, $E^\ast=0.25$ are the
 exported on one forcing period and transferred without retraining. The network
 architecture, the sampling protocol, the loss weights, the training schedule and
 the branch-classification rules are reported in the Supplementary Material
-(Secs.~S1--S2) and in Ref.~\cite{beniaiche2026}; the present paper uses the
+(Secs.~S1--S2) and in Ref.~\cite{beniaiche2026}; the network identifies candidate
+spatio-temporal wall-actuation profiles, which are subsequently evaluated with the
+independent MRT-LBM solver of Sec.~\ref{sec:lbm}, and the present paper uses the
 identified controls as physical boundary data and does not re-examine the
 identification procedure. What matters here is only that the exported profile is
 the one the optimizer produced, without harmonic substitution or spatial
-idealization, and that its realized norm is the prescribed one to within
-$0.16\%$.
+idealization; where the norm of the exported waveform differs from the target it
+is rescaled by a single constant factor before imposition (the largest such
+factor is $0.7\%$, for $B_1$), and the realized cycle-mean norm is $0.2500$ for
+all three branches.
 
 \subsection{Independent MRT-LBM evaluation}
+\label{sec:lbm}
 
 The flows are computed with a multiple-relaxation-time D2Q9 lattice-Boltzmann
 solver \cite{dhumieres2002mrt,chen1998doolen} that is independent of the
 identification framework: a Cartesian lattice instead of scattered collocation, a
 different discretization of the same equations, and a different iteration
 strategy. Collision is performed in moment space with a diagonal relaxation
-matrix, and the moving lid is imposed with the Zou--He velocity boundary
-condition \cite{zou1997pressure,pan2006high}. The solver reproduces the benchmark
+matrix whose non-viscous rates take the conventional D2Q9 values
+(Supplementary Sec.~S4.1) \cite{lallemand2000theory}, and the moving lid is
+imposed with a Zou--He-type velocity boundary
+condition \cite{zou1997pressure}. The solver reproduces the benchmark
 centerline velocities of Ghia et al.~\cite{ghia1982high} with
 $L_2(u)=0.0051$ and $L_\infty(u)=0.0128$ at $Re=100$, and
 $L_2(u)=0.0141$ and $L_\infty(u)=0.0300$ at $Re=1000$ on the
-$256\times256$ lattice (Supplementary Sec.~S8.2), which fixes the resolution used
-for the controlled flows.
+$256\times256$ lattice (Supplementary Sec.~S4.2), which fixes the resolution used
+for the controlled flows. The lattice reference velocity is
+$U_{\mathrm{ref}}=0.05$, and the largest instantaneous lid speed imposed in the
+campaign is $1.23\,U_{\mathrm{ref}}$, so the maximum Mach number is
+$\mathrm{Ma}\approx0.11$, within the incompressible limit.
 
-Each actuation is advanced from rest with the lid switched on at $t=0$. At least
-200 forced periods are discarded, a drift test on the cycle-averaged dissipation
-fixes the end of the settling phase, and 64 consecutive periods are retained for
-the statistics. The same protocol is used for every case, so the comparison does
-not depend on the transient length. Instantaneous dissipation, kinetic energy and
-lid power are accumulated at every step; the cycle mean is a direct accumulation
-over the 64 sampled periods, not an eight-point phase quadrature, because the
-latter is $5\%$ low for the most unsteady responses. The wall shear in
-Eq.~\eqref{eq:plid} is evaluated with a first-order one-sided derivative of the
-recovered wall velocity, and the resulting estimator uncertainty is quantified in
-Sec.~\ref{sec:budget}.
+The temporal wall actuation is defined over the physical nondimensional period
+$T=2$, with Fourier components $\cos(2n\pi t/T)=\cos(n\pi t)$. The exported
+control coefficients are evaluated over one complete period and imposed on the
+independent MRT-LBM solver using a resolution-consistent temporal mapping. With
+lattice spacing $\Delta x=1/N$ and lattice reference velocity
+$U_{\mathrm{ref}}=0.05$, the nondimensional time increment is
+$\Delta t=U_{\mathrm{ref}}/N$. Accordingly, the number of lattice time steps per
+forcing period is
+\begin{equation}
+N_T=\frac{TN}{U_{\mathrm{ref}}}=40N .
+\label{eq:NT}
+\end{equation}
+For the $N=256$ simulations, this corresponds to $N_T=10\,240$ lattice steps per
+forcing period, and $N_T=20\,480$ at $N=512$; the temporal campaign is run at
+$N=256$ and the three branch captures are replicated at $N=512$ under this same
+mapping. This mapping preserves the same physical forcing frequency across
+spatial resolutions: the fundamental actuation frequency is
+$\omega_1=2\pi/T=\pi$ in cavity units for every lattice, and the oscillatory
+boundary-layer thickness $\delta_1=\sqrt{2\nu/\omega_1}=0.036$, i.e.\ about nine
+lattice cells at $N=256$ and eighteen at $N=512$, is resolved by the same margin
+at every resolution. Each
+of the $256$ samples of the exported waveform is held for $N_T/256$ consecutive
+lattice steps, i.e.\ $40$ at $N=256$ and $80$ at $N=512$, so its physical
+duration, $T/256$, is resolution-independent and the staircase it imposes is
+common to both grids,
+so the imposed signal is periodic to machine accuracy over the
+sampling window (Supplementary Sec.~S4.4).
+
+Each actuation is advanced from rest with the lid switched on at $t=0$. The end of
+the settling phase is fixed by a drift test on the cycle-averaged dissipation:
+successive three-period windows are compared until their mean changes by less than
+$2\times10^{-3}$ in relative terms, which terminates the transient after $24$
+forced periods for all three branches; $32$ consecutive periods are then retained
+for the statistics. The same protocol is used for every case, so the comparison
+does not depend on the transient length. Instantaneous dissipation, kinetic energy
+and lid power are accumulated at every eighth step, and the cycle mean is a direct
+time average over the $32$ sampled periods rather than a phase-quadrature
+reconstruction: an eight-bin phase quadrature of the same data reproduces the
+cycle-mean dissipation to within $0.004\%$, but it under-estimates the peakier lid
+power by $0.14\%$, $5.5\%$ and $3.9\%$ for $B_1$, $B_2$ and $B_3$, so the
+quadrature is used only as a cross-check. The wall
+shear in Eq.~\eqref{eq:plid} is evaluated with a first-order one-sided derivative
+of the recovered wall velocity, and the resulting estimator uncertainty
+is quantified in Sec.~\ref{sec:budget}.
 
 \subsection{Grid convergence and uncertainty}
+\label{sec:gci}
 
 The three stationary controls and both uniform references are computed on
 $N=128$, $256$ and $512$ lattices. The observed order of convergence
@@ -548,9 +702,22 @@ $p_{\mathrm{obs}}\notin[0.1,4]$, or when the GCI exceeds $100\%$: in those cases
 the smooth-error assumption underlying the estimator is not credible. The
 estimator is applied both to the absolute dissipation and to the dissipation
 ratios, since the ratios are the quantities used in the physical discussion and
-their errors need not cancel. The time-dependent branches are ranked on a single
-$N=256$ lattice, with two realizations per branch; that restriction is stated
-wherever those numbers are used.
+their errors need not cancel. The time-dependent comparison is performed with one
+realization per branch on the $N=256$ lattice and replicated on $N=512$ under the
+same temporal protocol; each branch representative is the
+periodic response to the single exported waveform of Sec.~\ref{sec:branches}, and
+the quoted numbers are therefore properties of those controls rather than of the
+identification classes they represent; that restriction is stated wherever those
+numbers are used. The replication is reported as a \emph{grid-refinement
+sensitivity}: two grids bound the variation of the cycle means, they do not
+determine a convergence order, so no extrapolation and no convergence index is
+computed for them. The refined runs raise $\Dbar$ by $5.4\%$, $7.3\%$ and $7.1\%$
+for $B_1$, $B_2$ and $B_3$, preserve the ordering $B_2>B_1>B_3$, and halve the
+power-balance residual of Sec.~\ref{sec:budget}; it is tabulated in Sec.~S4.5.
+Within a run, by contrast, the
+statistics are not single-sample:
+the cycle means of Sec.~\ref{sec:branch_compare} average $32$ forced periods and
+their block uncertainty is reported in Sec.~\ref{sec:budget}.
 
 %----------------------------------------------------------------------
 \section{Energetic response of stationary wall-actuation modes}
@@ -562,7 +729,7 @@ wherever those numbers are used.
 Table~\ref{tab:stationary} and Fig.~\ref{fig:gci} give the integrated dissipation
 of the five stationary controls at $Re=500$ and $E^\ast=0.25$. On the finest grid
 the first harmonic is the only control that lowers the dissipation relative to the
-uniform lid of the problem statement: $\varepsilon_{512}=0.00713$ against
+classical uniform lid: $\varepsilon_{512}=0.00713$ against
 $0.01102$, a ratio of $0.647$. The second harmonic raises it to $0.01185$
 (ratio $1.076$) and the $B_1$ mean profile to $0.01250$ (ratio $1.134$). The
 ordering $k=1<\text{uniform}<k=2\approx B_1$ is the central stationary result, and
@@ -683,7 +850,13 @@ first-harmonic lids recover the classical single primary vortex with a corner
 eddy. The reorganization shifts the strain-rate distribution towards larger
 values: the interior mean $\langle|\Sij|\rangle$ is $1.450$ for $k=2$, against
 $1.039$ for the uniform lid and $1.088$ for $k=1$, a $40\%$ increase at identical
-actuation norm.
+actuation norm. We note that $\langle|\Sij|\rangle$ is a first-moment diagnostic,
+whereas the dissipation is proportional to $|\Sij|^2$; a full spatial decomposition
+of $D$ by zones (corners, wall layers, interior) would provide a more quantitative
+mechanism argument. The corner peak of $169$ at $N=512$ is a grid-dependent
+quantity due to the velocity discontinuity singularity; its exact value should not
+be over-interpreted, though its presence and the effect of regularization are
+physically meaningful.
 
 The trade-off is explicit. The first harmonic removes almost all of the corner
 peak ($169$ to $15.0$) at a cost of $4.7\%$ in interior mean strain, and is a net
@@ -698,11 +871,11 @@ against $15.0$). Additional identification-sensitivity and control-representatio
 studies, including loss-term ablation, network-capacity sensitivity,
 control-space truncation, aspect-ratio dependence and Fourier versus
 modified-Chebyshev parametrizations, are documented in
-Supplementary Secs.~S3--S7, Tables~S3--S11 and Figs.~S1--S4.
+Supplementary Sec.~S3 and Tables~S4--S9.
 These studies characterize the robustness of branch identification;
 the dissipation ordering discussed here is established independently
 by the MRT-LBM calculations and their grid and estimator checks
-in Supplementary Secs.~S8.4--S8.7.
+in Supplementary Secs.~S4.4--S4.8.
 
 \begin{figure}[t]
 \centering
@@ -738,54 +911,69 @@ when the actuation reverses sign. A mean-field diagnostic answers the question
 ``how much would this flow dissipate if it were steady?''; it does not answer
 ``how much does it dissipate?''. Figure~\ref{fig:cycle} and
 Table~\ref{tab:cycle} show how far apart the two answers can be; supplementary
-Tables~S15--S16 provide additional cycle-averaged statistics and iso-energetic
-comparisons, while Figs.~S5--S6 provide the phase-resolved field captures.
+Tables~S13 and S14 provide additional cycle-averaged statistics and iso-energetic
+comparisons, while supplementary Figs.~S1 and S2 provide the phase-resolved field captures.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.94\textwidth]{figures/fig18_branch_iso_cycle.pdf}
-\caption{Iso-energetic comparison of the nine controls at $Re=500$,
-$\overline{E}_{\mathrm{act}}=0.25$ and $N=256$. Left: the two dissipation
-functionals of each control, the dissipation of the time-mean field (filled
+\caption{Iso-energetic comparison of the seven controls at $Re=500$,
+$\overline{E}_{\mathrm{act}}=0.25$ and $N=256$. (a) The two dissipation
+functionals of each control: the dissipation of the time-mean field (filled
 markers) and the cycle mean (open markers), joined by the gap between them; the
-two coincide for stationary controls. Right: cycle-mean dissipation against the
-temporal energy fraction $f_t$ of the lid control. The ordering in $f_t$ is the
-order in which the branches are recovered by the identification, and it is not the
-order of the dissipation cost.}
+two coincide for the stationary controls, whose span is shaded. (b) That
+gap---the fluctuating part of the cycle mean---against the temporal energy
+fraction $f_t$ of the lid control, together with the first-harmonic Stokes
+estimate $f_t\overline{E}_{\mathrm{act}}\sqrt{\nu\omega_1/2}$ (dashed line,
+no adjustable constant). The cycle-mean totals of the three branches lie within
+twenty per cent of one another and inside the stationary band except for $B_2$,
+while the fluctuating parts they conceal span two orders of magnitude and follow
+the boundary-layer estimate. The branch values are single realizations.}
 \label{fig:cycle}
 \end{figure}
 
 \subsection{Cycle-mean comparison of the three branches}
 \label{sec:branch_compare}
 
-Table~\ref{tab:cycle} collects the result. The five quasi-stationary controls span
+Table~\ref{tab:cycle} collects the result. The four stationary controls span
 less than a factor of two, from $6.88\times10^{-3}$ for $k=1$ to
-$1.22\times10^{-2}$ for the full $B_1$ series, and their mean-field and cycle-mean
-values coincide to within $4\%$; for the $B_1$ series the difference is
-$1.17\times10^{-2}$ against $1.22\times10^{-2}$, which is the residual effect of
-its small temporal content. The branches with substantial temporal content leave
-that band. $B_2$ dissipates $3.76\times10^{-2}$ over the cycle while its mean
-field dissipates $3.10\times10^{-5}$, a ratio of $1214$; its mean field holds only
-$6\%$ of the cycle-mean kinetic energy, so the mean motion is a shallow
+$1.19\times10^{-2}$ for the $B_1$ mean profile, and their mean-field and cycle-mean
+values coincide by construction; for the $B_1$ full series the two are
+$1.172\times10^{-2}$ and $1.193\times10^{-2}$, a difference of $1.8\%$, which is
+the residual effect of its small temporal content ($f_t=0.013$). The branches with
+substantial temporal content separate through their fluctuating part, but not
+through their total. $B_2$ dissipates $1.441\times10^{-2}$ over the cycle while its
+mean field dissipates $1.016\times10^{-3}$, a ratio of $14.2$; its mean field holds
+only $25\%$ of the cycle-mean kinetic energy, so the mean motion is a shallow
 recirculation under the lid, not a weakened copy of the instantaneous flow. $B_3$
-is intermediate: $D(\overline{\mathbf{u}})=5.05\times10^{-3}$ and
-$\Dbar=2.18\times10^{-2}$, a ratio of $4.3$. On the cycle average, and at the same
-actuation norm, $B_2$ costs $3.1$ times $B_1$ and $5.5$ times the least
-dissipative stationary control; its two realizations agree to $1.7\%$, whereas the
-two $B_3$ realizations differ by $23\%$, so the $B_3$ value quoted here is the
-lower of the two and must be read as a lower bound on that class.
+is intermediate in structure: $D(\overline{\mathbf{u}})=5.41\times10^{-3}$ against
+$\Dbar=1.169\times10^{-2}$, a ratio of $2.16$, with a fluctuating part that carries
+$53.7\%$ of its total cost. On the cycle average, and at the same actuation norm,
+the three branches lie within twenty per cent of one another: $B_2$ costs $1.21$
+times $B_1$ and $1.23$ times $B_3$, while $B_1$ and $B_3$ are indistinguishable to
+within $2\%$, although their temporal fractions span $0.013$, $0.448$ and $0.998$.
+The most oscillatory branch remains $2.1$ times as dissipative as the least
+dissipative stationary control $k=1$, so the unsteady actuations do not fall below
+the stationary band; they cluster at its upper edge. Each quoted value is a single
+realization of one exported waveform (Sec.~\ref{sec:gci}). Repeating the three
+captures on the $N=512$ lattice under the same protocol raises all three cycle
+means by $5.4$--$7.3\%$, leaves the ordering unchanged, and narrows the $B_1$--$B_3$
+separation from $2.1\%$ to $0.5\%$: the near-equality of those two branches, which
+their temporal fractions of $0.013$ and $0.448$ alone would not suggest, is
+strengthened rather than weakened by the refinement (Sec.~S4.5).
 
 \begin{table}[t]
 \centering
 \caption{Dissipation of the time-mean field and cycle-mean dissipation at
 $Re=500$, $N=256$ and cycle-mean actuation norm $\overline{E}_{\mathrm{act}}=0.25$.
 $D(\overline{\mathbf{u}})$ is the functional evaluated on the time-mean field;
-$\Dbar$ is the average of the instantaneous dissipation over the phase-resolved
-periodic response and is the performance index relevant to a periodic flow. The
-two coincide only in the steady limit. $A_\varepsilon$ is the half-spread of
-$D(t)$ over the cycle, i.e.\ the variability concealed by a single cycle-mean
-number. The $B_1$ mean profile row is stationary by construction; the $B_1$ full
-row is the identified series.}
+$\Dbar$ is the average of the instantaneous dissipation over the $32$ sampled
+periods of the periodic response and is the performance index relevant to a
+periodic flow. The two coincide only in the steady limit. $A_\varepsilon$ is the
+half-spread of the phase-resolved $D(t)$ over the cycle, i.e.\ the variability
+concealed by a single cycle-mean number. The $B_1$ mean profile row is stationary
+by construction; the $B_1$ full row is the identified series. The three branch
+rows are single realizations.}
 \label{tab:cycle}
 \small
 \begin{tabular}{lcccccc}
@@ -797,45 +985,122 @@ Uniform lid & 0.000 & 0.250 & $9.48\times10^{-3}$ & $9.48\times10^{-3}$ & 1.00 &
 $k=1$ ($\sin\pi x$) & 0.000 & 0.250 & $6.88\times10^{-3}$ & $6.88\times10^{-3}$ & 1.00 & $0$\\
 $k=2$ ($\sin 2\pi x$) & 0.000 & 0.250 & $1.13\times10^{-2}$ & $1.13\times10^{-2}$ & 1.00 & $0$\\
 $B_1$ mean profile & 0.000 & 0.250 & $1.19\times10^{-2}$ & $1.19\times10^{-2}$ & 1.00 & $0$\\
-$B_1$ full series & 0.074 & 0.250 & $1.17\times10^{-2}$ & $1.22\times10^{-2}$ & 1.04 & $2.4\times10^{-3}$\\
-$B_2$ seed 5 & 0.998 & 0.250 & $3.10\times10^{-5}$ & $3.76\times10^{-2}$ & 1214 & $3.6\times10^{-2}$\\
-$B_2$ seed 14 & 0.975 & 0.250 & $1.82\times10^{-4}$ & $3.70\times10^{-2}$ & 204 & $3.5\times10^{-2}$\\
-$B_3$ seed 0 & 0.448 & 0.250 & $5.05\times10^{-3}$ & $2.18\times10^{-2}$ & 4.3 & $1.5\times10^{-2}$\\
-$B_3$ seed 4 & 0.637 & 0.250 & $3.12\times10^{-3}$ & $2.69\times10^{-2}$ & 8.6 & $2.6\times10^{-2}$\\
+$B_1$ full series & 0.013 & 0.2500 & $1.172\times10^{-2}$ & $1.193\times10^{-2}$ & 1.02 & $1.8\times10^{-3}$\\
+$B_2$ seed 5 & 0.998 & 0.2500 & $1.016\times10^{-3}$ & $1.441\times10^{-2}$ & 14.2 & $1.0\times10^{-2}$\\
+$B_3$ seed 0 & 0.448 & 0.2500 & $5.413\times10^{-3}$ & $1.169\times10^{-2}$ & 2.16 & $4.3\times10^{-3}$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
+The corner-regularized uniform lid is used as the converged reference for the
+stationary grid study (Sec.~\ref{sec:stationary}) and is therefore not included
+in the seven-control comparison above, which retains the sharp uniform lid as the
+canonical cavity reference.
+
 Three statements follow, and they are the ones the paper retains. First, the
-mean-field functional is not a surrogate for the cycle mean: it can be three
-orders of magnitude too small and it reverses the ranking of the branches. Second,
-the temporal fraction $f_t$ orders the branches by accessibility, not by cost:
-$B_2$, the most strongly time-dependent control, is the most dissipative of the
-three at matched norm. Third, the ranking of the time-dependent branches
-($B_1<B_3<B_2$) is the same as the ranking of their mean-field dissipation read in
-reverse, which is a direct consequence of Eq.~\eqref{eq:jensen}: the branch that
-suppresses its mean flow most effectively is the one that pays most in
-fluctuations.
+mean-field functional is not a surrogate for the cycle mean: for the actuations
+whose wall velocity reverses in time it is too small by a factor $2.2$ ($B_3$) to
+a factor $14$ ($B_2$), and the difference is exactly the dissipation of the
+fluctuations, which carries $53.7\%$ and $92.9\%$ of the respective totals. Two
+branches whose totals agree to within $2\%$ can rest on opposite compositions of
+that total. Second, the temporal fraction $f_t$ of the actuation does not predict
+the cycle-mean cost monotonically: $B_2$ ($f_t=0.998$) is the most dissipative of
+the three, while $B_1$ ($f_t=0.013$) and $B_3$ ($f_t=0.448$), whose oscillatory
+actuation energies differ by a factor of $36$ ($3.1\times10^{-3}$ against
+$0.1120$ at the same $E^\ast=0.25$), cost the same to within $2.1\%$.
+Third, the ordering of the totals ($B_2>B_1\simeq B_3$) is not the ordering of the
+mean fields, which reads $B_1>B_3>B_2$: the branch that suppresses its mean flow
+most strongly is the one whose total cost stays essentially equal to those of its
+structurally different companions, because what it loses in mean-field dissipation
+it regains, term for term, in fluctuating dissipation
+(Eq.~\eqref{eq:jensen}).
+
+\subsection{Order-of-magnitude scaling of the temporal cost}
+\label{sec:scaling}
+
+The cycle-mean cost of the unsteady branches is not an accident of the
+identification; it is already visible in the boundary-layer scaling of the
+actuation. For a lid harmonic of peak amplitude $A_n$ and angular frequency
+$\omega_n$, the second problem of Stokes gives a time-mean dissipation per unit
+lid area $\tfrac12 A_n^2\sqrt{\nu\omega_n/2}$, with oscillatory layer thickness
+$\delta_n=\sqrt{2\nu/\omega_n}$. Summing over the temporal harmonics of the
+actually imposed lid series,
+\begin{equation}
+\Dbar_{\mathrm{St}}=\sum_{n\ge1}E_n\sqrt{\frac{\nu\omega_n}{2}},
+\qquad
+E_n=\frac12\int_0^1 A_n^2(x)\,dx ,
+\label{eq:stokes_est}
+\end{equation}
+where $A_n(x)$ is the amplitude of temporal harmonic $n$ of the lid signal and
+$E_n$ is the actuation energy it carries, so that
+$\sum_{n\ge1}E_n=f_t\overline{E}_{\mathrm{act}}$. The decomposition of the
+three imposed lid signals reproduces the realized norm of Table~\ref{tab:cycle}
+($0.2500$ for each branch) and its temporal fractions to within $0.001$ ($0.013$,
+$0.998$ and $0.448$), so it can also be read as an independent check of those
+numbers. At $Re=500$ ($\nu=2\times10^{-3}$) and $T=2$ ($\omega_n=n\pi$)
+Eq.~\eqref{eq:stokes_est} gives $\Dbar_{\mathrm{St}}=1.41\times10^{-2}$ for $B_2$,
+$6.38\times10^{-3}$ for $B_3$ and $1.81\times10^{-4}$ for $B_1$, against measured
+cycle means of $1.44\times10^{-2}$, $1.17\times10^{-2}$ and
+$1.19\times10^{-2}$.
+
+Three points follow. First, the boundary-layer estimate should be compared not to
+the total cycle-mean dissipation but to its fluctuating component
+$D_{\mathrm{fluct}}=\Dbar-D(\overline{\mathbf{u}})$, which the decomposition of
+Sec.~\ref{sec:dissipation} isolates exactly. The measured fluctuating parts are
+$1.339\times10^{-2}$ for $B_2$ and $6.28\times10^{-3}$ for $B_3$, against Stokes
+estimates of $1.41\times10^{-2}$ and $6.38\times10^{-3}$: the oscillatory
+boundary layer accounts for $95\%$ and $98\%$ of the fluctuation cost of the two
+time-reversing branches, with no adjustable constant. For $B_1$ the estimate is
+$1.81\times10^{-4}$ against a measured fluctuation of $2.15\times10^{-4}$, i.e.\ it
+falls $16\%$ short of a quantity that is itself a small difference of two larger
+ones and should not be over-read. Second, the scaling
+explains the headline ranking without invoking the field solution. The three
+controls concentrate essentially all of their oscillatory energy on the first
+temporal harmonic ($98\%$ for $B_2$, $96\%$ for $B_3$, $93\%$ for $B_1$), so
+Eq.~\eqref{eq:stokes_est} reduces to
+$\Dbar_{\mathrm{St}}\simeq f_t\overline{E}_{\mathrm{act}}\sqrt{\nu\omega_1/2}$:
+the fluctuating cost is set by the oscillatory actuation energy alone, not by how
+mixed the spatial structure is. Adding this term to the mean-field dissipation of
+the same run gives $1.190\times10^{-2}$, $1.51\times10^{-2}$ and
+$1.180\times10^{-2}$ for $B_1$, $B_2$ and $B_3$, against measured totals of
+$1.193\times10^{-2}$, $1.441\times10^{-2}$ and $1.169\times10^{-2}$, i.e.\ within
+$0.3\%$, $5\%$ and $0.9\%$. The near-degeneracy of the three costs is then a
+balance sheet rather than a coincidence: $B_1$ spends $1.17\times10^{-2}$ in its
+mean field and almost nothing in fluctuations, $B_3$ spends $5.4\times10^{-3}$ and
+$6.3\times10^{-3}$, and $B_2$ spends $1.0\times10^{-3}$ and $13.4\times10^{-3}$
+--- three different compositions, one total, except for $B_2$, which escapes the
+stationary floor and lands $21\%$ above it. An independent test of the
+$\sqrt{\omega_n}$ dependence remains available: single-harmonic excitations at
+$n=1,2,4$ with identical oscillatory energy but different spectra
+(Supplementary Sec.~S4.5 tabulates the harmonic budgets). Third, the estimate also
+makes the resolution requirement quantitative: at $Re=500$ the fundamental layer is
+$\delta_1=0.0357L$, i.e.\ about $9.1$ cells at $N=256$, and $\delta_4=0.0178L$,
+about $4.6$ cells, so the first-harmonic-dominated budgets above are resolved by
+construction, while harmonics above $n\approx4$ are marginal at this resolution.
 
 \subsection{Flow organization behind the cycle-mean cost}
 \label{sec:topology}
 
 The field-level organization explains the numbers (Figs.~\ref{fig:topology}
 and~\ref{fig:velocity}). The $B_1$ time-mean flow is the familiar pair of
-counter-rotating cells centred at $(0.31,0.54)$ and $(0.69,0.56)$, with
-$\max|\langle\mathbf{u}\rangle|=0.733$ and $\langle\psi\rangle\in[-0.036,0.035]$;
-half of its mean kinetic energy lies below $y=0.675$, so the cells fill the
-cavity. Its instantaneous states coincide with that mean to $2.7\%$ in field norm
-and its kinetic-energy fluctuation ratio is $R_K=4\times10^{-4}$, so it is
-quasi-stationary in the operational sense. The $B_2$ mean field is $19$ times
-weaker in stream function ($\max|\langle\psi\rangle|=0.0019$) and $18$ times weaker
-in peak speed ($0.042$, or $5.7\%$ of the $B_1$ value); its mean extrema sit at
-$y=0.89$--$0.92$ and half of the mean kinetic energy lies above $y=0.95$. Its
-streamwise fluctuation, by contrast, reaches $0.555$---thirteen times its own mean
-and $76\%$ of the $B_1$ mean peak. The $B_3$ flow keeps an intermediate mean
-circulation ($\max|\langle\mathbf{u}\rangle|=0.595$, $81\%$ of $B_1$) but places
-it close to the lid, with extrema at $(0.20,0.86)$ and $(0.77,0.81)$ and half of
-the mean kinetic energy above $y=0.91$; its fluctuation reaches $0.416$.
+counter-rotating cells centred at $(0.31,0.53)$ and $(0.69,0.57)$, with
+$\langle\psi\rangle\in[-0.0363,0.0355]$ and $\max|\langle\mathbf{u}\rangle|=0.734$;
+half of its mean kinetic energy lies below $y=0.671$ and only $30\%$ below
+$y=1/2$, so the cells fill the cavity. Its instantaneous states depart from that
+mean by at most $10\%$ in field norm and its kinetic-energy fluctuation ratio is
+$R_K=1.6\times10^{-3}$, so it is quasi-stationary in the operational sense. The
+$B_2$ mean field is $3.1$ times weaker in stream function
+($\max|\langle\psi\rangle|=0.0116$) and five times weaker in peak speed ($0.142$,
+or $19\%$ of the $B_1$ value), and it is confined: its mean extrema sit at
+$y=0.85$ and $y=0.86$, and half of the mean kinetic energy lies above $y=0.893$.
+Its streamwise fluctuation, by contrast, reaches $0.728$---$5.1$ times its own mean
+peak and $7.7$ times the $B_1$ fluctuation level, of the same order as the
+$B_1$ mean peak itself. The $B_3$ flow keeps an intermediate mean circulation
+($\max|\langle\mathbf{u}\rangle|=0.598$, $81\%$ of $B_1$) but places it close to
+the lid, with extrema at $(0.20,0.86)$ and $(0.77,0.80)$ and half of the mean
+kinetic energy above $y=0.888$; its fluctuation reaches $0.532$. The mean field
+holds $99.8\%$, $25\%$ and $87.5\%$ of the cycle-mean kinetic energy for the three
+branches, respectively.
 
 ``Weak mean flow'' is therefore not ``weak flow''. The controls with a strong
 temporal component do not produce a small perturbation around a mean
@@ -844,21 +1109,61 @@ instantaneous field while the mean is nearly zero. A figure that normalized each
 panel by its own maximum, or a diagnostic that used only the mean field, would
 hide exactly the contrast that defines the two unsteady branches.
 
+That contrast has a dynamical reading. For a time-periodic field the mean flow is
+not driven directly by the lid but by the divergence of the fluctuation Reynolds
+stress, $\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle$, and at
+Stokes order it satisfies $\nu\nabla^2\langle\mathbf{u}\rangle=\nabla\langle p\rangle-\mathbf{F}$:
+the classical steady-streaming problem \cite{riley2001streaming}. Evaluated on the
+three captures from eight phase bins, the streamwise normal stress at the lid plane
+is $0.203$ for $B_2$ and $7.0\times10^{-2}$ for $B_3$ against
+$2.2\times10^{-3}$ for $B_1$, and the resulting forcing has root-mean-square
+magnitude $5.3\times10^{-2}$ for $B_2$, i.e.\ $26\%$ of the root-mean-square of the
+viscous term $\nu\nabla^2\langle\mathbf{u}\rangle$ of its own mean field ($24\%$ at
+their respective maxima). For $B_3$ the same ratio is $6.7\%$ ($10\%$ at the
+maxima) and for $B_1$ it is $0.27\%$. The vorticity source $\nabla\times\mathbf{F}$
+of $B_2$ peaks at $+23.7$ just below the lid, at $(0.36,0.99)$, and that of $B_3$ at
+$-22.1$ at $(0.64,0.99)$, while the $B_1$ source stays below $1.1$ everywhere;
+the two unsteady sources have opposite sign and sit on either side of the midline,
+at heights above the mean extrema reported above, which is consistent with mean
+cells that hug the lid instead of filling the cavity. The source changes sign across
+the upper quarter of the domain ($47\%$ and $52\%$ of the cells positive for $B_2$
+and $B_3$), so it feeds a counter-rotating pair rather than a one-signed jet, which
+is why the $B_2$ mean is a weak pair of cells and not a unidirectional streaming
+channel.
+Two limits bound this reading: the mean pressure gradient and mean advection were
+not recovered, so the comparison is a magnitude budget of the forcing against the
+viscous term and not a closed balance; and the eight-bin quadrature lets the
+self-product of the higher lid harmonics alias into the phase mean, an energy share
+of $1.2\times10^{-4}$ in $B_2$, so aliasing cannot account for the factor $92$
+between the lid normal stresses of $B_2$ and $B_1$, nor for the factor $32$
+between $B_3$ and $B_1$. What the diagnostic
+does establish is
+structural: the $B_2$ mean circulation is consistent with a Reynolds-stress-driven
+steady-streaming mechanism, not a stationary recirculation driven by a steady lid.
+The spatial distribution of the fluctuation forcing is compatible with the observed
+near-lid mean cells, although a closed mean-vorticity budget is not yet available.
+It is therefore legitimate to treat its mean field as energetically negligible while
+its fluctuations carry nearly the whole cost. The forcing and stress magnitudes are
+tabulated with their definitions and their limits in
+Supplementary Sec.~S4.7.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig20_branch_topology.pdf}
 \caption{Flow topology of the three branch controls at $Re=500$,
 $E^\ast=0.25$ and $N=256$, on one stream-function scale and one set of contour
-levels common to all panels. Rows: $B_1$ (full series, $f_t=0.074$), $B_2$
+levels common to all panels. Rows: $B_1$ (full series, $f_t=0.013$), $B_2$
 (seed 5, $f_t=0.998$) and $B_3$ (seed 0, $f_2=0.520$, $f_t=0.448$). (a) Time mean
 $\langle\psi\rangle$ with the streamlines of the mean flow; the circle marks its
 negative extremum. (b)--(e) Instantaneous $\psi$ and streamlines at
 $t/T=0,1/4,1/2,3/4$ for $B_2$ and $B_3$; the four phases belong to the same
-periodic state, whose first- and second-half phase averages differ by at most
-$1.0\times10^{-3}$ in relative field norm. For $B_1$ the instantaneous states
-coincide with the mean to $2.7\%$, so the four panels are replaced by that
-statement. The common scale is deliberate: the $B_2$ mean cell is $19$ times
-weaker than the $B_1$ one and is nearly invisible, which is the point.}
+periodic state, whose phase averages, recomputed over the first and over the second
+half of the capture, differ by at most $1.5\times10^{-5}$ for $B_2$ and
+$2.6\times10^{-4}$ for $B_3$ in relative field norm. For $B_1$ the instantaneous
+states lie within $10\%$ of the mean, so the four panels are replaced by that
+statement. The common scale is deliberate: the $B_2$ mean cell is three times
+weaker in stream function than the $B_1$ one and is confined to the top decile of
+the cavity, which is the point.}
 \label{fig:topology}
 \end{figure}
 
@@ -873,7 +1178,7 @@ zero contours of the mean fields. (d) $\bar u$ along $x=1/4$ with the
 $\pm u'_{\mathrm{rms}}$ band; the midline $x=1/2$ is not used because the
 antisymmetric controls have $u\equiv0$ there. (e) $\bar v$ along $y=1/2$, with
 $\bar v$ on the abscissa. The bands are temporal standard deviations over the
-sixty-four sampled periods, not confidence intervals.}
+thirty-two sampled periods, not confidence intervals.}
 \label{fig:velocity}
 \end{figure}
 
@@ -881,63 +1186,86 @@ sixty-four sampled periods, not confidence intervals.}
 \label{sec:budget}
 
 Table~\ref{tab:budget} and Fig.~\ref{fig:energy} close the comparison with the
-budget of Eq.~\eqref{eq:budget}. The kinetic energy separates the branches by two
-orders of magnitude ($1.15\times10^{-2}$, $2.47\times10^{-4}$ and
-$3.98\times10^{-3}$), while the cycle-mean dissipation orders them the other way
-round ($1.22\times10^{-2}$, $3.76\times10^{-2}$ and $2.18\times10^{-2}$). Within
-the period, $D(t)$ varies by a factor $1.5$, $10.9$ and $4.2$ respectively, and
-the lid power of $B_2$ is negative for $14\%$ of the period: the flow returns
-energy through the lid while the Stokes layer spins down. The residual
-$\overline{P}_{\mathrm{lid}}-\Dbar$, computed with the wall velocity recovered at
-the boundary node rather than the prescribed profile (Sec.~S8.7), is
-$-2.9\%$, $-0.1\%$ and $-0.9\%$.
+budget of Eq.~\eqref{eq:budget}. The cycle-mean kinetic energy spans a range of a
+factor $4.8$ across the three branches ($1.161\times10^{-2}$,
+$2.423\times10^{-3}$ and $5.526\times10^{-3}$), while the cycle-mean dissipation
+orders them nearly flat ($1.193\times10^{-2}$, $1.441\times10^{-2}$ and
+$1.169\times10^{-2}$). Within the period, $D(t)$ varies by a factor $1.43$, $7.42$
+and $2.42$ respectively, and the lid power of $B_2$ is negative for $17\%$ of the
+period: the flow returns energy through the lid while the Stokes layer spins down.
+The residual $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\Dbar$, computed with the
+wall velocity recovered at the boundary node rather than the prescribed profile
+(Sec.~S4.8) --- i.e.\ across the first fluid plane adjacent to the wall, not at
+the physical wall itself --- is
+$-2.8\%$, $-0.6\%$ and $-0.4\%$.
 
 \begin{table}[t]
 \centering
 \caption{Mechanical energy budget of the three branch controls at $Re=500$ and
 $N=256$, at the common cycle-mean actuation norm $E^\ast=0.25$: $B_1$ is the full
-series ($f_t=0.074$), $B_2$ is seed 5 ($f_t=0.998$) and $B_3$ is seed 0
-($f_2=0.520$, $f_t=0.448$). All quantities are cycle averages over 64 forced
-periods of the instantaneous fields; $\Dbar$ is never replaced by
-$D(\overline{\mathbf{u}})$. $\sigma(\Dbar)$ is the block standard error over eight
-blocks of eight cycles, expanded by $t_{7,0.975}=2.365$; it is below $0.1\%$ for
-all three branches because the response is periodic to better than $10^{-3}$, so
-the physically relevant uncertainty is the seed-to-seed spread ($1.7\%$ within
-$B_2$, $23\%$ within $B_3$). The residual
-$\overline{P}_{\mathrm{lid}}-\Dbar$ is the first-order truncation of the wall-shear
+series ($f_t=0.013$), $B_2$ is seed 5 ($f_t=0.998$) and $B_3$ is seed 0
+($f_2=0.520$, $f_t=0.448$). All quantities are cycle averages over the $32$ forced
+periods retained after the settling phase, taken from the instantaneous fields
+recorded every eighth lattice step; $\Dbar$ is never replaced by
+$D(\overline{\mathbf{u}})$. $\sigma(\Dbar)$ is the block standard error over four
+blocks of eight cycles, expanded by $t_{3,0.975}=3.182$; it is below $0.1\%$ for
+all three branches because the response is periodic to better than $10^{-3}$ (the
+cycle-to-cycle standard deviation of $\Dbar$ is $7.0\times10^{-6}$ in relative
+terms for $B_1$, $2.4\times10^{-8}$ for $B_2$ and $1.2\times10^{-5}$ for $B_3$),
+so the estimator error of the last column, not the sampling error, is what limits
+the closure. The power $\overline{P}_{\mathrm{lid}}$ is the numerical estimator
+$\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$ computed with the
+wall velocity recovered at the boundary node [Eq.~\eqref{eq:plid_rec}], not the
+prescribed velocity; it evaluates the power crossing the \emph{first fluid plane
+adjacent to the wall} rather than the physical wall itself, so it provides an
+indirect verification of the discrete energy budget. The resulting residual
+$\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\Dbar$ is the first-order truncation of the wall-shear
 estimator, not a physical imbalance (Sec.~\ref{sec:budget}).}
 \label{tab:budget}
 \small
 \begin{tabular}{lccccc}
 \toprule
-Branch & $\overline{E}_{\mathrm{act}}$ & $\overline{K}$ & $\overline{P}_{\mathrm{lid}}$
+Branch & $\overline{E}_{\mathrm{act}}$ & $\overline{K}$ & $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$
 & $\Dbar$ & $\sigma(\Dbar)$\\
 \midrule
-$B_1$ (full series) & 0.2500 & $1.15\times10^{-2}$ & $1.18\times10^{-2}$ & $1.22\times10^{-2}$ & $<0.1\%$\\
-$B_2$ (seed 5) & 0.2504 & $2.47\times10^{-4}$ & $3.76\times10^{-2}$ & $3.76\times10^{-2}$ & $<0.1\%$\\
-$B_3$ (seed 0) & 0.2503 & $3.98\times10^{-3}$ & $2.16\times10^{-2}$ & $2.18\times10^{-2}$ & $<0.1\%$\\
+$B_1$ (full series) & 0.2500 & $1.161\times10^{-2}$ & $1.160\times10^{-2}$ & $1.193\times10^{-2}$ & $<0.1\%$\\
+$B_2$ (seed 5) & 0.2500 & $2.423\times10^{-3}$ & $1.432\times10^{-2}$ & $1.441\times10^{-2}$ & $<0.1\%$\\
+$B_3$ (seed 0) & 0.2500 & $5.526\times10^{-3}$ & $1.164\times10^{-2}$ & $1.169\times10^{-2}$ & $<0.1\%$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The residual is two to three orders of magnitude larger than the drift of $K$ over
-the sampling window, which is at most $1.5\times10^{-2}\%$ of $\Dbar$; it is
-therefore not a failure of periodicity. It is the truncation error of the
-one-sided wall-shear estimate. Two checks bound that error. First, the first-order
-estimator reproduces the independently accumulated $\Plid$ of the same fields to
-$0.3\%$ for $B_1$, so it is internally consistent; the residual is a property of
-the estimator, not of the accumulation. Second, replacing it by a second-order
-one-sided derivative on the same fields moves the $B_1$ mean-field residual from
-$-2.87\%$ to $+0.58\%$, i.e.\ it crosses zero, which shows that the estimator
-uncertainty is of the order of the residual itself (a few per cent). Applied to
-the branch cycle means, the same change moves the $B_1$ residual to $+1.4\%$ but
-inflates the $B_2$ and $B_3$ residuals, because the three-point stencil amplifies
-lattice-scale noise in the thin Stokes layer. We therefore retain the first-order
+The residual is two to three orders of magnitude larger than the drift of the
+sampling window itself: the difference between the kinetic energy averaged over the
+first and over the last half of the $32$ retained periods is at most
+$5.6\times10^{-3}\%$ of $\Dbar$, and the corresponding drift of $\Dbar$ is below
+$1.5\times10^{-3}\%$; the residual is therefore not a failure of periodicity. It is
+the truncation error of the one-sided wall-shear estimate. Two checks bound that
+error. First, the estimator accumulated at every lattice step and the same
+estimator evaluated on the eight phase-resolved fields agree to $0.14\%$ for $B_1$,
+whose lid power is nearly sinusoidal; for $B_2$ and $B_3$ the phase reconstruction
+is $5.5\%$ and $3.9\%$ below the step-by-step accumulator, the quadrature shortfall
+already documented in Sec.~\ref{sec:lbm}, so the table quotes the accumulator.
+Second, replacing the first-order one-sided derivative by a second-order one on the
+$B_1$ mean field moves its residual from $-3.06\%$ to $+0.39\%$, i.e.\ it crosses
+zero, which shows that the estimator uncertainty is of the order of the residual
+itself (a few per cent). The same substitution amplifies lattice-scale noise in the
+thin Stokes layer of the two unsteady branches and is not used.
+Third, refining the lattice from $N=256$ to $N=512$ on the same temporal protocol
+divides the three residuals by $2.1$, $1.9$ and $2.4$ --- the factor of two that a
+first-order stencil predicts under $\Delta x\to\Delta x/2$ --- and moves them to
+$-1.4\%$, $-0.3\%$ and $-0.2\%$, while the largest slip of the velocity boundary
+condition drops by $38$--$47\%$ (Secs.~S4.5 and S4.8). The residual is thus
+\emph{measured} to be a truncation error of the estimator, not merely argued to be
+one.
+We therefore retain the first-order
 estimator for all three branches, report the residual as measured, and present
 Eq.~\eqref{eq:closure} as an energetic verification with a few-per-cent estimator
 uncertainty rather than as an exact closure. This is sufficient for the
-conclusions drawn here, which rest on differences of a factor of three, not on
-the third significant digit.
+conclusions drawn here, which rest on the composition of the cycle mean into mean
+and fluctuating parts --- factors of $1.02$, $2.2$ and $14$ --- and on a
+twenty-per-cent separation between the branch totals, not on the third significant
+digit.
 
 \begin{figure}[t]
 \centering
@@ -945,13 +1273,16 @@ the third significant digit.
 \caption{Phase-resolved energetic response of the three branches at $Re=500$ and
 $E^\ast=0.25$. (a) Instantaneous actuation norm $\Eact(t)$ over one forced period,
 normalized by the common cycle-mean target. (b) Kinetic energy $K(t)$ over the
-first eight of the sixty-four sampled periods (logarithmic ordinate). (c) Viscous
+first eight of the thirty-two sampled periods (logarithmic ordinate). (c) Viscous
 dissipation $D(t)$: instantaneous (thin), cycle mean (thick, with the block
 uncertainty as a band) and, dotted, the dissipation $D(\langle\mathbf{u}\rangle)$
 of the time-mean field, which is not substituted for the cycle mean. (d) Lid power
 $\Plid(t)$, positive into the fluid, with the same conventions; the annotations
-give the window-averaged residual $\overline{P}_{\mathrm{lid}}-\Dbar$ computed
-with the recovered wall velocity (Sec.~S8.7). The
+give the residual between the cycle means of the two signals,
+$-2.8$, $-0.6$ and $-0.4\%$, both computed with the wall velocity recovered at the
+boundary node. Sec.~S4.8 compares this estimator with the one built on the
+prescribed lid velocity, whose residuals are $+3.4$, $+4.6$ and $+4.7\%$, and
+bounds their difference. The
 kinetic-energy balance integrates to zero over one period of a periodic state, so
 the two cycle means must agree; the measured residual is the wall-shear estimator
 error discussed in the text.}
@@ -981,23 +1312,48 @@ cost of a spatial actuation mode is thus controlled by the volume over which it
 raises the strain, not by the peak it removes; a mode that is ``smoother'' at the
 wall need not be less dissipative in the bulk.
 
+A purely spectral argument would over-predict that separation, and the size of the
+error is informative. For a Stokes flow in a half-space beneath a wall that moves
+tangentially as $A\sin(k\pi x)$, the stream function $\psi=Ay\,e^{-k\pi y}\sin(k\pi x)$
+yields a wall shear $\left.\partial u/\partial y\right|_{y=0}=-2k\pi A\sin(k\pi x)$,
+so the maximum wall traction is $2\mu k\pi A$ and the dissipation of the layer
+integrates to $\nu k\pi A^2$, linear in $k$. Two modes of equal peak amplitude have
+equal quadratic norm, so the second harmonic should dissipate exactly twice the first.
+Measured, it dissipates $1.66$ times as much at $N=512$ ($0.01185/0.00713$), $1.64$
+at $N=256$ and $1.59$ at $N=128$ (Table~\ref{tab:stationary}): the wall-traction
+argument gets the direction of the effect, but the observed separation is $17\%$
+below the half-space prediction at every resolution. Two effects move the ratio down.
+The layer depth $(k\pi)^{-1}$ is not small against the cavity height for $k=1$ or
+$2$, so the side and bottom walls modify the map rather than leaving a half-space;
+and the interior is inertial ($Re_{\max}=354$ at matched norm), which moves strain
+out of the wall layer and into the bulk. The absolute value of the estimate makes
+the second point sharply: at $\nu=2\times10^{-3}$ and $A=0.707$ the layer contributes
+$3.14\times10^{-3}$ to the $k=1$ dissipation against a measured $7.13\times10^{-3}$,
+so a Stokes wall layer accounts for $44\%$ of the cost; the remaining $56\%$ is not
+captured by the half-space estimate and reflects the combined effects of
+finite-domain geometry, streamwise gradients and inertia. Whether the ratio tends
+to the Stokes value as $Re$ decreases is a direct test of the inertial explanation,
+and it is the natural next calculation for the stationary pair.
+
 \subsection{Why temporal forcing increases the cycle-mean dissipation}
 
 For a periodic control the relevant functional is the cycle mean of a quadratic
 quantity, and the fluctuations are a first-order contribution to it, not a
 correction. Equation~\eqref{eq:jensen} makes this explicit, and the $B_2$ branch
-is its clearest illustration: a mean field that dissipates $3.1\times10^{-5}$ and
-a cycle mean that dissipates $3.8\times10^{-2}$, with the mean field holding $6\%$
+is its clearest illustration: a mean field that dissipates $1.02\times10^{-3}$ and
+a cycle mean that dissipates $1.44\times10^{-2}$, with the mean field holding $25\%$
 of the kinetic energy. The physical reason is that the oscillating lid generates a
 Stokes layer whose wall-normal gradients are large and reverse twice per period;
 the instantaneous strain is therefore large wherever the instantaneous velocity
 is large, and the time average of its square cannot be recovered from the average
 velocity. The same mechanism explains why the lid power of $B_2$ is negative for
-$14\%$ of the period: while the Stokes layer spins down, the flow pushes the wall
+$17\%$ of the period: while the Stokes layer spins down, the flow pushes the wall
 and returns part of the energy that it received earlier. A control designer who
 evaluates such a state from its mean field will conclude that it is almost
 frictionless, whereas the cycle average ranks it as the most dissipative of the
-three branches.
+three branches --- by a factor of only $1.2$, however, because the two branches
+whose mean flow survives ($B_1$ and $B_3$) pay in the mean what $B_2$ pays in the
+fluctuation.
 
 \subsection{What branch accessibility does and does not imply}
 
@@ -1006,11 +1362,13 @@ physics-informed optimization whose loss contains a dissipation objective, an
 actuation-norm constraint and a spatial-variance regularizer, and whose outcome
 depends on the initialization and on the regularization weight
 \cite{beniaiche2026}. At $Re=500$ and $E^\ast=0.25$ the stationary
-second-harmonic structure is the most frequently recovered one, and the full
+second-harmonic structure is one of the most frequently recovered ones, and the full
 $B_1$ series is quasi-stationary and reproducible; that is a statement about the
 variational landscape, and it is confirmed here by the independent solver. It is
 not a statement about efficiency. At the same actuation norm the branch most
-frequently recovered is a net dissipation penalty relative to the first harmonic,
+frequently recovered (pooled over the classification campaign
+$\widehat{P}(B_1)=42.2\%$ and $\widehat{P}(B_2)=43.8\%$, i.e.\ the two are
+comparable in frequency) is a net dissipation penalty relative to the first harmonic,
 and the branch with the strongest temporal content, which is also recovered in a
 reproducible way, is the most dissipative of the three. The operational
 conclusion is that accessibility and physical performance are different
@@ -1019,16 +1377,46 @@ only its mean-field dissipation, can invert the energetic ranking of the
 actuations it compares.
 
 Two limits of this statement must be stated explicitly, because they define its
-scope. First, the temporal comparison covers three representative realizations at
-a single Reynolds number ($Re=500$) and a single grid ($N=256$), with two
-realizations for $B_2$ and $B_3$; the within-class spread is $1.7\%$ for $B_2$ but
-$23\%$ for $B_3$, so the $B_3$ cost is a lower bound on its class. The stationary
-comparison, by contrast, rests on three grids and two reference lids. Second, the
-$B_1$ temporal content is small but not zero ($f_t=0.074$), and its cycle mean
-exceeds its mean-field value by $4\%$; the quasi-stationary limit is approached,
-not attained. Generalization to other Reynolds numbers, to three-dimensional
-cavities, or to actuations with a different spatial support is not implied by the
-present results.
+scope. First, the temporal comparison covers one realization per branch at a
+single Reynolds number ($Re=500$), on two grids. Each realization is
+internally converged --- the drift of $\Dbar$ between the two halves of the
+sampling window is below
+$1.5\times10^{-5}$ in relative terms and the phase-resolved fields reproduce to
+better than $2\times10^{-3}$ in relative norm (Sec.~\ref{sec:budget}) --- but the
+spread across different
+initializations of the identification network is not sampled here, so the branch
+values should be read as properties of the three profiles that were exported, not
+as class means or as bounds on an entire class. The stationary
+comparison, by contrast, rests on three grids and two reference lids. The temporal
+branches $B_2$ and $B_3$ contain harmonics up to $n=4$ in the Fourier basis
+$\cos(2n\pi t/T)$; at $Re=500$ the corresponding Stokes layer thickness is
+$\delta_n=\sqrt{2\nu/(n\pi)}\approx0.018L$ for $n=4$ and $0.036L$ for the
+fundamental, which represents about $4.6$ and $9$ grid cells at $N=256$
+(Sec.~\ref{sec:scaling}), and twice that at $N=512$. Since both branches
+concentrate $93\%$ or more of their oscillatory energy on the fundamental, this
+marginal resolution of the higher harmonics is not what sets their cost, and the
+refined captures quantify how much of the cost is resolution at all: they move
+$\Dbar$ by $+7.3\%$ ($B_2$) and $+7.1\%$ ($B_3$), leave the fluctuating shares at
+$92.8\%$ and $54.8\%$, and preserve the ordering of the branches, so the residual
+resolution dependence of the temporal comparison is bounded at the seven-per-cent
+level, well inside the $20.7$--$23.5\%$ by which $B_2$ exceeds the other two branches
+at both grids. Second, the
+$B_1$ temporal content is small but not zero ($f_t=0.013$), and its cycle mean
+exceeds its mean-field value by $1.8\%$ at $Re=500$; the quasi-stationary limit is approached,
+not attained. The identification campaign already shows that the temporal
+composition of the optimum changes with Reynolds number: the controls identified at
+$Re=1000$ in the preceding study \cite{beniaiche2026} carry a substantially larger
+temporal energy fraction than $B_1$ does at $Re=500$, so the Jensen gap between
+$\overline{D}$ and $D(\overline{\mathbf{u}})$ is expected to widen with $Re$. The
+present three captures hold $Re$ fixed, so they cannot separate that evolution from
+a pure Reynolds effect; an independent test would require transferring the same
+control to different Reynolds numbers with consistent normalization, which is beyond
+the scope of this article. What they do show, at fixed $Re$ and fixed actuation
+energy, is that the distinction is not merely formal: the ratio
+$\overline{D}/D(\overline{\mathbf{u}})$ spans $1.02$ to $14.2$ across the three
+branches, and that spread is a property of the temporal composition of the control,
+not of its amplitude. Generalization to three-dimensional cavities, or to actuations
+with a different spatial support is not implied by the present results.
 
 %----------------------------------------------------------------------
 \section{Conclusions}
@@ -1058,18 +1446,27 @@ fixes the rms wall velocity but not the peak, and therefore not the effective
 Reynolds number ($Re_{\max}=250$ for the uniform lid, $354$ for the harmonics,
 $390$ for the $B_1$ mean profile at $E^\ast=0.25$).
 \item \emph{The cycle-mean dissipation of a time-dependent actuation is not the
-dissipation of its mean field.} For the temporally dominated branch the two
-differ by a factor $1214$, and the branch that is most strongly damped in the mean
-is the most dissipative on the cycle ($3.76\times10^{-2}$, i.e.\ $3.1$ times the
-quasi-stationary branch and $5.5$ times the first harmonic). The fluctuating part
-of the strain field carries the cost, and Eq.~\eqref{eq:jensen} makes that
-statement exact.
-\item \emph{The branch recovered by optimization is not the branch that minimizes
-dissipation at fixed control effort.} The most frequently recovered stationary
-structure is a net penalty at matched norm, and the most strongly time-dependent
-branch is the most dissipative of the three. Accessibility, reproducibility and
-physical performance are distinct properties of an actuation, and only the last is
-measured by the cycle-mean dissipation.
+dissipation of its mean field, and structurally different actuations can cost the
+same.} For the lid-oscillatory branch the two
+differ by a factor $14.2$, and the fluctuating part of the strain field carries
+$92.9\%$ of its cycle-mean cost; for the mixed branch it carries $53.7\%$, and for
+the quasi-steady branch only $1.8\%$. The three branches nevertheless dissipate
+within twenty per cent of one another ($1.44$, $1.19$ and
+$1.17\times10^{-2}$ at a common actuation norm of $0.25$): the oscillatory branch
+is the most expensive not by a wide margin but by a modest factor of $1.2$, and the
+quasi-steady and mixed responses are energetically indistinguishable. The
+second-Stokes estimate of Sec.~\ref{sec:scaling} accounts for $95\%$ and $98\%$ of
+the fluctuating dissipation of the two time-reversing branches from the imposed lid
+signal alone, and the Reynolds-stress forcing of
+Sec.~\ref{sec:topology} is spatially consistent with a steady-streaming mechanism,
+although a closed mean-vorticity budget has not yet been established.
+\item \emph{At fixed control effort the dissipation is set by the structure of the
+actuation, not by the ease with which an optimizer finds it.} The quasi-steady
+two-lobe structure is one of the most frequently recovered ones and is a net penalty at
+matched norm; the lid-oscillatory branch is also recovered reproducibly and is the
+most dissipative of the three. Accessibility and reproducibility describe the
+variational problem that generated the candidates; the cycle-mean dissipation
+describes the fluid, and only the second is a performance index.
 \end{enumerate}
 
 The practical implication for modal flow control is that a comparison of actuation
@@ -1082,8 +1479,12 @@ dissipation, not the mean-field value and not the modal spectrum, is the
 performance index that follows from the energy identity.
 
 Three extensions follow directly. A grid study of the time-dependent branches
-would establish whether the factor-of-three separation is resolution-independent
-to the same degree as the stationary ranking. Retraining under an explicit
+would establish whether the near-degeneracy of the branch costs and their
+fluctuation shares are resolution-independent to the same degree as the stationary
+ranking. Single-harmonic lid excitations at $n=1,2,4$ with identical oscillatory
+energy would test the $\sqrt{\omega_n}$ dependence of Eq.~\eqref{eq:stokes_est}
+directly, rather than through the near-degeneracy that the present three spectra
+produce. Retraining under an explicit
 cycle-mean norm constraint, rather than rescaling an identified control after the
 fact, would separate the effect of the constraint from the effect of the
 identification path. Finally, three-dimensional cavities would introduce spanwise
@@ -1104,6 +1505,22 @@ corresponding author on reasonable request.
 \section*{Acknowledgments}
 The authors thank the Laboratory of Fluid Mechanics of the Ecole Militaire
 Polytechnique for computational support.
+
+\section*{Author declarations}
+
+\subsection*{Conflict of interest}
+The authors have no conflicts to disclose.
+
+\subsection*{Author contributions}
+\textbf{Beniaiche Ahmed:} Conceptualization (lead); Data curation (lead);
+Formal analysis (lead); Funding acquisition (lead); Investigation (lead);
+Methodology (lead); Software (lead); Validation (lead); Visualization (lead);
+Writing -- original draft (lead); Writing -- review and editing (lead).
+\textbf{Larabi Abderrahim:} Conceptualization (supporting); Formal analysis
+(supporting); Methodology (supporting); Supervision (lead); Writing -- review and
+editing (supporting).
+\textbf{Belkadi Mbarek:} Formal analysis (supporting); Supervision (supporting);
+Writing -- review and editing (supporting).
 
 \begin{thebibliography}{99}
 
@@ -1132,6 +1549,35 @@ H.~C.~Kuhlmann and F.~Roman\`o,
 ``The lid-driven cavity,'' in \textit{Computational Modelling of Bifurcations and
 Instabilities in Fluid Dynamics}, edited by A.~Gelfgat (Springer, Cham, 2019),
 pp.~233--309.
+
+\bibitem{mendu2013oscillating}
+S.~S.~Mendu and P.~K.~Das,
+``Fluid flow in a cavity driven by an oscillating lid---A simulation by lattice
+Boltzmann method,''
+Eur.\ J.\ Mech.\ B/Fluids \textbf{39}, 59--70 (2013).
+
+\bibitem{zhu2020oscillatory}
+J.~Zhu, L.~E.~Holmedal, H.~Wang and D.~Myrhaug,
+``Vortex dynamics and flow patterns in a two-dimensional oscillatory lid-driven
+rectangular cavity,''
+Eur.\ J.\ Mech.\ B/Fluids \textbf{79}, 255--269 (2020).
+
+\bibitem{babor2023transport}
+L.~Babor and H.~C.~Kuhlmann,
+``Lagrangian transport in the time-periodic two-dimensional lid-driven square
+cavity,''
+Phys.\ Fluids \textbf{35}, 033611 (2023).
+
+\bibitem{xu2010mixing}
+B.~Xu and J.~F.~Gilchrist,
+``Shear migration and chaotic mixing of particle suspensions in a time-periodic
+lid-driven cavity,''
+Phys.\ Fluids \textbf{22}, 053301 (2010).
+
+\bibitem{riley2001streaming}
+N.~Riley,
+``Steady streaming,''
+Annu.\ Rev.\ Fluid\ Mech.\ \textbf{33}, 43--65 (2001).
 
 \bibitem{gadelhak2000}
 M.~Gad-el-Hak,
@@ -1212,7 +1658,7 @@ B.~R.~Noack,
 AIAA J.\ \textbf{55}, 4013--4041 (2017).
 
 \bibitem{sipp2010global}
-D.~Sipp and A.~Lebedev,
+D.~Sipp and O.~N.~Lebedev,
 ``Global stability of base and mean flows: a general approach and its applications
 to cylinder and open cavity flows,'' J.\ Fluid Mech.\ \textbf{593}, 333--358 (2007).
 
@@ -1248,10 +1694,11 @@ Q.~Zou and X.~He,
 ``On pressure and velocity boundary conditions for the lattice Boltzmann BGK
 model,'' Phys.\ Fluids \textbf{9}, 1591--1598 (1997).
 
-\bibitem{pan2006high}
-X.~F.~Pan, A.~Xu, G.~Zhang, and S.~Jiang,
-``Lattice Boltzmann simulation of particle-laden turbulent channel flow,''
-Comput.\ Fluids \textbf{35}, 1432--1444 (2006).
+\bibitem{lallemand2000theory}
+P.~Lallemand and X.-S.~Luo,
+``Theory of the lattice Boltzmann method: Dispersion, dissipation, isotropy,
+Galilean invariance, and stability,'' Phys.\ Rev.\ E \textbf{61}, 6546--6559
+(2000).
 
 \bibitem{roache1994perspective}
 P.~J.~Roache,

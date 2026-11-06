@@ -1,0 +1,4 @@
+label,seed,path,E_target,LAMBDA_PDE,LAMBDA_BC,LAMBDA_DISS,LAMBDA_CTRL,LAMBDA_VAR,LAMBDA_RE,has_model
+B1,7,C:\Users\user\Documents\travail pc taki_final\Default Project\papier 2 date_14_09_2026\Paper2_branch_selection\results\01_ReE_star_map\re500_e0.25\seed_7,0.25,1.0,15.0,0.05,200.0,1.0,2.0,True
+B2,3,C:\Users\user\Documents\travail pc taki_final\Default Project\papier 2 date_14_09_2026\Paper2_branch_selection\results\01_ReE_star_map\re500_e0.25\seed_3,0.25,1.0,15.0,0.05,200.0,1.0,2.0,True
+B3,0,C:\Users\user\Documents\travail pc taki_final\Default Project\papier 2 date_14_09_2026\Paper2_branch_selection\results\01_ReE_star_map\re500_e0.25\seed_0,0.25,1.0,15.0,0.05,200.0,1.0,2.0,True

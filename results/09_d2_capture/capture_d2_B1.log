@@ -1,0 +1,3 @@
+[2026-11-04 20:34:23] START case=B1 file=fourier_Re500.npz N=256 period_lattice=10240 slowdown=40 omega_target=3.141593 E_raw=0.253394 scale=0.993281 E_realized=0.250000 CAPTURE=32 P
+[2026-11-04 20:49:39]    WARMUP iters=245760 (24.0 P) drift=7.46e-06 stopped=True 916s
+[2026-11-04 21:16:16] DONE  D2_N256 eps=1.193424e-02 K=1.160815e-02 P=1.160121e-02 eps_mf=1.171933e-02 P/eps=0.972 phase_half_max=1.87e-03 (2512s)

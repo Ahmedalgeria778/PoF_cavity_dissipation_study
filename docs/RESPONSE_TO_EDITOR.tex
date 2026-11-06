@@ -6,6 +6,8 @@
 \usepackage{hyperref}
 \usepackage{xcolor}
 \geometry{margin=2.4cm}
+\setlength{\emergencystretch}{2em}
+\newcommand{\brk}{\hspace{0pt}}
 
 \title{\bfseries Response to the Editor and Reviewers\\[6pt]
 Manuscript: \textit{Spatio-temporal wall-actuation modes and cycle-mean\\
@@ -74,9 +76,11 @@ physics.
   \texttt{supplementary\_final\_marked.pdf}: marked-up supplementary.
 \item \texttt{RESPONSE\_TO\_EDITOR.tex} and
   \texttt{RESPONSE\_TO\_EDITOR.pdf}: this point-by-point response.
-\item \texttt{highlight\_image.png}: highlight image for the table of contents
-  and potential cover.
-\item \texttt{figures/}: all figure source files (embedded in the PDFs).
+\item \texttt{figures/highlight\_image.png}: highlight image for the table of
+  contents and potential cover.
+\item \texttt{figures/}: source files of the figures (the 8 embedded in the
+  manuscript, the 2 in the supplementary, and the earlier diagnostic figures
+  kept for reproducibility).
 \end{itemize}
 
 \newpage
@@ -161,7 +165,8 @@ The PINN is mentioned only as the method used to identify the actuation
 branches, which are then transferred to the independent MRT-LBM solver for
 evaluation. The reproducibility audit, the 185-realization campaign, the
 $\lambda_{\mathrm{var}}$ sensitivity study, and the seed multiplicity analysis
-have been moved to the supplementary material (Sections~S8.1--S8.4).
+have been moved to the supplementary material (Sections~S1.1--S1.4, S2.3,
+S3.1--S3.3 and S5.1--S5.6).
 
 \vspace{1em}
 
@@ -176,13 +181,20 @@ flow, so that the contribution is set against fluid flow.''}
 \noindent\textbf{Response:} The new introduction (Sec.~1) begins with the
 physics of wall actuation in confined recirculating flows and cites the
 canonical cavity benchmarks \cite{ghia1982high,botella1998benchmark,
-shankardeshpande2000,albensoeder2005accurate,kuhlmann2019} and the active
-control literature \cite{ouazzani2025deep}. The reference list has been
+shankardeshpande2000,albensoeder2005accurate,kuhlmann2019} together with the
+flow-control literature carried over into the revised reference list
+(Gad-el-Hak 2000; Brunton \& Noack 2015; Rowley \& Dawson 2017; Bewley
+\emph{et al.}\ 2001; Bergmann \emph{et al.}\ 2005; Choi \emph{et al.}\ 1994;
+Quadrio \& Ricco 2004; Corke \emph{et al.}\ 2010; Rabault \emph{et al.}\ 2019;
+Garnier \emph{et al.}\ 2021), followed by the dissipation and energy-budget
+literature (Pope 2000; Landau \& Lifshitz; Doering \& Gibbon; Beneddine
+\emph{et al.}\ 2016). The reference list has been
 reorganized to prioritize fluid physics over machine learning. The preceding
-study \cite{Beniaiche2026} is cited in a single paragraph (lines~105--120 of
-the manuscript) that clearly distinguishes the antecedent work (branch
+study \cite{Beniaiche2026} is discussed in one dedicated paragraph of the
+introduction, which clearly distinguishes the antecedent work (branch
 identification and numerical reproducibility) from the present contribution
-(cycle-mean dissipation and strain-rate mechanisms).
+(cycle-mean dissipation and strain-rate mechanisms); it is cited elsewhere only
+where the present numbers are compared directly with that study.
 
 \vspace{1em}
 
@@ -198,19 +210,26 @@ well below the 15-figure limit. The figures are:
 \item Spatio-temporal actuation signatures (new).
 \item Grid convergence and reference sensitivity (old Fig.~10).
 \item Spatial origin of dissipation differences (old Fig.~16, now central).
-\item Cycle-mean versus mean-field dissipation (old Fig.~11).
+\item Iso-energetic comparison of the seven controls (old Fig.~11).
 \item Flow topology of the actuation branches (old Fig.~13).
 \item Mean velocity and fluctuation fields (old Fig.~14).
 \item Phase-resolved mechanical-energy response (old Fig.~15).
 \end{enumerate}
 
-The figures already published in Beniaiche (2026) (Figs.~1--9 of that paper)
-have been removed from the main text and are cited as antecedents. The
-PINN-related figures (branch selection map, 185-realization distribution,
-spectral averages, regularization sensitivity, entropy of selection, energy
-sweep, seed multiplicity, capacity truncation, Fourier vs.\ Chebyshev,
-quasi-stationarity diagnostic, symbolic regression) have been moved to the
-supplementary material.
+Eleven figures of the previous version are no longer in the main text. Nine of
+them (old Figs.~1--9: branch-selection map, the 185-realization distribution in
+modal space, spectral fingerprints, the $\lambda_{\mathrm{var}}$ probability and
+entropy panels, the energy sweep, seed multiplicity, capacity/truncation and the
+Fourier vs.\ Chebyshev comparison) report the identification campaigns that are
+already published in Beniaiche (2026); they are now cited as antecedents, and the
+selection-frequency and sensitivity numbers that the present paper still refers
+to are tabulated in the supplement (Tables~S2 and S4--S9). The remaining two (the
+quasi-stationarity diagnostic, old Fig.~12, and the symbolic-regression
+cross-validation, old Fig.~17) are not reported at all: neither is needed for the
+dissipation question posed here. The supplement contains two figures
+(Figs.~S1--S2): the eight phase bins of the branch captures that underlie
+Main Figs.~6--8, and the same layout with a separate stream-function scale per
+panel.
 
 \vspace{1em}
 
@@ -219,7 +238,7 @@ to lead with the actuation mode and dissipation physics.''}
 
 \vspace{0.5em}
 
-\noindent\textbf{:} The new title is:
+\noindent\textbf{Response:} The new title is:
 
 \begin{center}
 \textbf{Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation
@@ -256,10 +275,10 @@ should clearly show all changes made from the previous submission.''}
 
 \noindent\textbf{Response:} We have prepared both versions:
 \begin{itemize}
-\item \textbf{Clean version}: \texttt{manuscript\_final.tex} and
-  \texttt{manuscript\_final.pdf} (18 pages).
-\item \textbf{Marked-up version}: \texttt{manuscript\_final\_marked.tex} and
-  \texttt{manuscript\_final\_marked.pdf} (41 pages). The marked-up version uses
+\item \textbf{Clean version}: \texttt{manuscript\_final\brk.tex} and
+  \texttt{manuscript\_final\brk.pdf} (26 pages).
+\item \textbf{Marked-up version}: \texttt{manuscript\_final\brk\_marked\brk.tex} and
+  \texttt{manuscript\_final\brk\_marked\brk.pdf} (34 pages). The marked-up version uses
   a paragraph-level diff: old text that has been removed or replaced is shown in
   \textcolor{red}{red}, new or rewritten text is shown in
   \textcolor{blue}{blue}. Obsolete figures and tables from the previous version
@@ -268,10 +287,10 @@ should clearly show all changes made from the previous submission.''}
 
 The same approach has been applied to the supplementary material:
 \begin{itemize}
-\item \textbf{Clean version}: \texttt{supplementary\_final.tex} and
-  \texttt{supplementary\_final.pdf} (27 pages).
-\item \textbf{Marked-up version}: \texttt{supplementary\_final\_marked.tex} and
-  \texttt{supplementary\_final\_marked.pdf} (31 pages).
+\item \textbf{Clean version}: \texttt{supplementary\_final\brk.tex} and
+  \texttt{supplementary\_final\brk.pdf} (27 pages).
+\item \textbf{Marked-up version}: \texttt{supplementary\_final\brk\_marked\brk.tex} and
+  \texttt{supplementary\_final\brk\_marked\brk.pdf} (37 pages).
 \end{itemize}
 
 \vspace{1em}
@@ -286,12 +305,18 @@ since individual figure files are not being uploaded.''}
 
 \noindent\textbf{Response:} We have uploaded:
 \begin{itemize}
-\item \textbf{Source files}: \texttt{manuscript\_final.tex},
-  \texttt{supplementary\_final.tex}, \texttt{RESPONSE\_TO\_EDITOR.tex}.
-\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final.pdf} (18 pages),
-  \texttt{supplementary\_final.pdf} (27 pages), \texttt{RESPONSE\_TO\_EDITOR.pdf}.
-\item \textbf{Figures}: all 8 figures are embedded in the manuscript PDF and
-  visible in the text. The figure source files (PDF and PNG) are provided in the
+\item \textbf{Source files}: clean sources \texttt{manuscript\_final\brk.tex},
+  \texttt{supplementary\_final\brk.tex} (with its \texttt{data\_appendix/} table files),
+  marked-up sources \texttt{manuscript\_final\brk\_marked\brk.tex} and
+  \texttt{supplementary\_final\brk\_marked\brk.tex};\\
+  this letter, \texttt{RESPONSE\_TO\_EDITOR\brk.tex}.
+\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (26 pages),
+  \texttt{supplementary\_final\brk.pdf} (27 pages), the two marked-up PDFs
+  (34 and 37 pages), and
+  \texttt{RESPONSE\_TO\_EDITOR\brk.pdf}.
+\item \textbf{Figures}: the 8 figures of the manuscript and the 2 of the
+  supplementary material are embedded in the two PDFs and visible in the text.
+  Their source files (PDF and PNG) are provided in the
   \texttt{figures/} directory.
 \end{itemize}
 
@@ -305,14 +330,27 @@ Image.''}
 
 \vspace{0.5em}
 
-\noindent\textbf{Response:} We have prepared \texttt{highlight\_image.png},
-which shows the spatial distribution of the time-averaged strain-rate magnitude
-$|\overline{\mathbf{S}}|$ for the three actuation branches (uniform, B1, B2) at
-matched $E_{\mathrm{act}} = 0.25$ and $Re = 500$. This image directly
-represents the central finding of the paper: the spatial organization of the
-actuation modifies the strain-rate distribution and therefore the viscous
-dissipation. The image is visually striking (three contrasting flow topologies)
-and suitable for the table of contents and potential cover.
+\noindent\textbf{Response:} We have prepared \texttt{highlight\_image.png}
+(2220\,$\times$\,900 px at 300 dpi). It shows, for the three identified
+actuation branches $B_1$ (quasi-steady), $B_2$ (lid-oscillatory) and $B_3$
+(mixed) at matched actuation norm $\overline{E}_{\mathrm{act}} = 0.25$ and
+$Re = 500$, the spatial distribution of the cycle-mean local dissipation
+density $\langle\phi\rangle$ reconstructed from the eight phase bins of the
+captured periodic solution, with the streamlines of the time-mean flow
+overlaid and the cycle-mean dissipation $\overline{D}$ annotated on each
+panel. The three panels use a logarithmic colour scale of five decades, so
+the image compares \emph{where} the dissipation is produced rather than its
+absolute amplitude. This is exactly the central finding of the paper: at
+matched actuation energy the three branches organise the same cavity into
+radically different dissipation patterns --- space-filling two-cell
+dissipation for the quasi-steady branch $B_1$, dissipation confined to the
+oscillating Stokes layer under the lid for $B_2$ (whose time-mean flow
+carries only $25\%$ of the cycle-mean kinetic energy), and an intermediate
+organisation for $B_3$ --- and therefore different cycle-mean viscous costs. The image is generated from
+the archived field captures by \texttt{scripts/make\_highlight\_image\brk.py},
+so it is reproducible and uses no data other than those reported in the
+manuscript. It is visually striking (three contrasting topologies on one
+theme) and suitable for the table of contents and potential cover.
 
 \newpage
 
@@ -321,8 +359,10 @@ and suitable for the table of contents and potential cover.
 %----------------------------------------------------------------------
 
 \noindent\textit{Note: The reviewers' comments are not reproduced here because
-the Deputy Editor's comments already captured the main concerns. We address
-below the scientific points raised in the 14-point revision plan.}
+the Deputy Editor's comments already captured the main concerns. Points 1--14
+below follow the revision plan derived from those comments; Points 15--16
+additionally document the temporal mapping of the exported actuation onto the
+lattice, which is the protocol item a reader of Sec.~4 needs in full.}
 
 \vspace{1em}
 
@@ -331,8 +371,10 @@ below the scientific points raised in the 14-point revision plan.}
 The new title is \textit{Spatio-temporal wall-actuation modes and cycle-mean
 viscous dissipation in a lid-driven cavity}. The new abstract begins with the
 physical question and announces the main quantitative results (17.7\% reduction
-for $k=1$, 36.8\% and 44.3\% increase for $k=2$ and B1 mean, 3.1$\times$
-increase for B2 vs.\ B1). The new introduction (Sec.~1) presents the physics of
+for $k=1$, 36.8\% and 44.3\% increase for $k=2$ and B1 mean, fluctuating shares
+of 92.9\%, 53.7\% and 1.8\% of the cycle-mean cost for B2, B1 and B3, and a
+cycle-mean spread of the time-dependent branches by the modest factor of $1.2$).
+The new introduction (Sec.~1) presents the physics of
 wall actuation, the energy budget, and the central question.
 
 \vspace{0.5em}
@@ -353,7 +395,11 @@ All results already published in Beniaiche (2026) have been removed from the
 main text: second-harmonic fractions, energy sweep, 10-seed multiplicity, loss
 ablation, aspect-ratio dependence, Fourier vs.\ Chebyshev, quasi-stationarity
 diagnostic, same-lid-speed dissipation comparison, and symbolic regression.
-These results are cited as antecedents or moved to the supplementary material.
+The campaigns that the present argument still refers to are now reported as
+supplementary tables (Tables~S2 and S4--S9) and cited as antecedents; the
+quasi-stationarity diagnostic and the symbolic-regression study, which the
+dissipation question posed here does not use, have been dropped from both the
+manuscript and the supplement.
 
 \vspace{0.5em}
 
@@ -370,9 +416,12 @@ singularity and the reference dependence (Sec.~5.2) are preserved.
 
 The energy budget (Table~4) is presented as a verification with wall-shear
 estimate uncertainty, not as an exact closure. The first-order estimator gives
-residuals of $-2.6\%$, $+5.6\%$, $+3.8\%$ for B1, B2, B3. The second-order
-estimator reduces the B1 residual from $-2.87\%$ to $+0.58\%$ (see
-supplementary Section~S8.7). We do not claim exact closure but document the
+residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for B1, B2 and B3. Replacing it by a
+second-order one-sided derivative moves the B1 \emph{mean-field} residual from
+$-3.06\%$ to $+0.39\%$, i.e.\ across zero, which bounds the estimator
+uncertainty at a few per cent, and refining the lattice from $N=256$ to $N=512$
+divides the three residuals by $2.1$, $1.9$ and $2.4$ (see
+supplementary Section~S4.8 and Points 15--16 below). We do not claim exact closure but document the
 uncertainty.
 
 \vspace{0.5em}
@@ -381,8 +430,8 @@ uncertainty.
 
 The 8 figures and 4 tables are listed in the response to Editor Comment~4. The
 figure order follows the physical storyline: geometry $\to$ signatures $\to$
-convergence $\to$ mechanism $\to$ cycle-mean vs.\ mean-field $\to$ topology
-$\to$ mean/fluctuation fields $\to$ phase-resolved budget.
+convergence $\to$ mechanism $\to$ iso-energetic comparison of the seven controls
+$\to$ topology $\to$ mean and fluctuation fields $\to$ phase-resolved budget.
 
 \vspace{0.5em}
 
@@ -391,9 +440,11 @@ supplementary.}
 
 The 185-realization campaign, the $\lambda_{\mathrm{var}}$ sensitivity study,
 the seed multiplicity analysis, and the PINN hyperparameter tables have been
-moved to the supplementary material (Sections~S8.1--S8.4).
+moved to the supplementary material (Sections~S1.1--S1.4, S2.3 and
+S3.1--S3.3; the reproducibility inventory is in Sections~S5.1--S5.6).
 
-Additionally, the energy sweep campaign (formerly Section~S5.1 and Table~S5) has
+Additionally, the energy sweep campaign (Section~S5.1 and Table~S5 of the
+version originally submitted) has
 been \textbf{removed entirely} from the supplementary material. This analysis was
 already documented in our previous publication (Beniaiche 2026) and is not
 required for the physics-first narrative of the present manuscript. The new work
@@ -405,8 +456,8 @@ characterization does not depend on the energy sweep.
 \noindent\textbf{Point 8: Update of the bibliography and citation of Beniaiche
 (2026).}
 
-The bibliography contains 33 references, prioritizing fluid physics over machine
-learning. Beniaiche (2026) is cited in the introduction (line~105) and in the
+The bibliography contains 37 references, prioritizing fluid physics over machine
+learning. Beniaiche (2026) is cited in the introduction and in the
 bibliography as:
 
 \begin{quote}
@@ -431,7 +482,7 @@ dissipative. The PINN is mentioned only as a tool for identifying states.
 \noindent\textbf{Point 10: Explicit distinction between $E_{\mathrm{act}}$ and
 $P_{\mathrm{lid}}$.}
 
-Section~2.2 (lines~181--222) clearly states that $E_{\mathrm{act}} = \int
+Section~2.2 clearly states that $E_{\mathrm{act}} = \int
 U_{\mathrm{lid}}^2 \, dx$ is a quadratic actuation norm, not the mechanical
 work transmitted to the fluid. The mechanical wall power is $P_{\mathrm{lid}} =
 \int U_{\mathrm{lid}} \tau_w \, dx$. On cycle average, $\overline{P}_{\mathrm{lid}}
@@ -453,10 +504,19 @@ number.
 \noindent\textbf{Point 12: Energy budget presented as verification with
 uncertainty.}
 
-Section~6.4 (lines~780--820) presents the energy budget as a verification with
-wall-shear estimate uncertainty. The first-order estimator gives residuals of
-$-2.6\%$, $+5.6\%$, $+3.8\%$. The second-order sensitivity is documented in the
-supplementary (Section~S8.7). We do not claim exact closure.
+Section~6.5 and Table~4 present the energy budget as a verification with
+wall-shear estimate uncertainty. The recovered-velocity, first-order estimator
+gives cycle-mean residuals $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\overline{D}$ of
+$-2.8\%$, $-0.6\%$ and $-0.4\%$ for $B_1$, $B_2$ and $B_3$, i.e.\ the budget
+closes to a few per cent. The estimator built on the \emph{prescribed} lid
+velocity gives $+3.4$, $+4.6$ and $+4.7\%$, and the two brackets bound the
+estimator uncertainty (Section~S4.8). We do not claim exact closure. All of these
+percentages, together with the alternative estimators, are recomputed from the
+archived field captures by
+\texttt{scripts/d2\_derived\_quantities\brk.py}, whose output is
+\texttt{results/d2\_derived/d2\_summary.json}; the residual annotated in Fig.~8 is
+the one of the two recorded signals ($-2.8$, $-0.6$ and $-0.4\%$), and the caption
+states which estimator each number comes from.
 
 \vspace{0.5em}
 
@@ -471,9 +531,93 @@ errors related to obsolete macros or missing packages.
 
 \noindent\textbf{Point 14: Deep point-by-point verification.}
 
-We have performed a deep verification of the 14-point plan and the editor's
-comments. The checklist is provided in the supplementary material
-(Section~S8.8). All points have been addressed.
+We have performed a deep verification of the revision plan and the editor's
+comments. The reproducibility inventory and the data-availability statement are
+provided in the supplementary material
+(Sections~S5.5--S5.6). All points have been addressed.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 15: Temporal mapping of the exported actuation onto the
+lattice.}
+
+The protocol is stated in Sec.~4.2 of the manuscript and verified in
+supplementary Sections~S4.3 and S4.5. The actuation is defined over the physical
+nondimensional period $T=2$, with Fourier components
+$\cos(2n\pi t/T)=\cos(n\pi t)$, so the fundamental actuation frequency is
+$\omega_1=2\pi/T=\pi$ in cavity units on every grid. The lattice advances by
+$\Delta t=\Delta x/U_{\mathrm{ref}}$ with $\Delta x=1/N$ and
+$U_{\mathrm{ref}}=0.05$; one physical period therefore spans
+$N_T=TN/U_{\mathrm{ref}}=40N$ lattice steps, i.e.\ $N_T=10\,240$ at $N=256$ and
+$20\,480$ at $N=512$ (Eq.~14 of the manuscript). Each of the $256$ exported
+samples of the waveform is held for $N_T/256$ consecutive steps, i.e.\ $40$ at
+$N=256$ and $80$ at $N=512$, so its physical duration $T/256=7.8125\times10^{-3}$
+is resolution-independent and the staircase it imposes is common to both grids.
+The largest instantaneous lid speed of the campaign is $1.23\,U_{\mathrm{ref}}$,
+hence $\mathrm{Ma}\approx0.11$, and the oscillatory wall-layer thickness
+$\delta_1=\sqrt{2\nu/\omega_1}=0.036$ is about nine cells at $N=256$ and eighteen
+at $N=512$, so the same margin resolves that layer at both resolutions.
+
+Three checks close the mapping. \emph{(i) Frequency response.} A dedicated run
+whose lid is the pure harmonic $\sin(2\pi x)\cos(\omega_1 t)$, at the same
+$E^\ast$, $Re$, $N$ and $\omega_1$
+(\texttt{scripts/validate\_stokes\_analytic\brk.py}, Section~S4.3) records at the
+antinode a single-sided amplitude of $0.927$ at $\omega_1$ and no other
+significant line --- the imposed unit amplitude, recovered to within the
+$7.3\%$ slip of the velocity boundary condition --- and a wall-normal exponential
+decay of fitted length $5.4$ cells ($R^2=0.999$ over the eleven cells nearest the
+wall) against the half-space value $\delta=\sqrt{2\nu/\omega_1}=9.1$ cells. The
+layer is of the expected order and $41\%$ thinner, which is attributed to the
+non-uniform lid, the finite depth (about $28\delta$) and the steady shear
+superimposed by the return flow; the run is used as a frequency-response check of
+the solver and of the mapping, not as a quantitative benchmark of the layer
+thickness. \emph{(ii) Spectral purity of the branch runs.} A streamwise probe at
+the cavity centre, recorded over the whole sampling window, has its spectral peak
+at $3.141593$ for all three branches, with $97.5$--$99.5\%$ of its fluctuation
+energy in the five spectral bins around that peak, and the dissipation signal
+peaks at $\omega_1$ for the quasi-stationary $B_1$ and at $2\omega_1$ for $B_2$
+and $B_3$ (Section~S4.5). \emph{(iii) Effect of the hold.} Replaying $B_2$ at
+$N=256$ with the exact sample-time command instead of the $40$-step hold returns
+$\overline{D}=1.4425\times10^{-2}$ against $1.4408\times10^{-2}$, i.e.\
+$+0.114\%$, with the fluctuating part moved by $+0.12\%$ and the kinetic energy
+by $+0.005\%$, while the realized cycle-mean actuation energy stays within
+$1\times10^{-16}$ of the target $E^\ast=0.25$ on both grids; the
+staircase is therefore not the source of the reported differences.
+
+Every cycle mean quoted in the paper is a direct time average over the $32$
+retained forced periods, after a transient terminated by a drift test
+($24$ forced periods, successive three-period windows changing by less than
+$2\times10^{-3}$). The eight-bin phase quadrature of the same data reproduces
+$\overline{D}$ to within $0.004\%$ but under-estimates the peakier lid power by
+$0.14\%$, $5.5\%$ and $3.9\%$ for $B_1$, $B_2$ and $B_3$, so the quadrature is
+used only as a cross-check.
+
+\vspace{0.5em}
+
+\noindent\textbf{Point 16: Grid-refinement sensitivity of the time-dependent
+comparison.}
+
+The three branch runs were replicated at $N=512$ under the same temporal
+protocol, and the comparison is reported as a \emph{grid-refinement
+sensitivity}: two grids bound the variation of the cycle means, they do not
+determine a convergence order, so no extrapolation and no convergence index is
+computed for them (Sec.~4.3 and Table~S15). The refined runs raise
+$\overline{D}$ by $5.4\%$, $7.3\%$ and $7.1\%$ for $B_1$, $B_2$ and $B_3$,
+preserve the ordering $B_2>B_1\simeq B_3$, and narrow the $B_1$--$B_3$ gap from
+$2.1\%$ to $0.5\%$, so the central conclusion of Sec.~6 --- that the three
+branches lie within twenty per cent of one another on the cycle average while
+their fluctuating parts span two orders of magnitude --- is unchanged by the
+refinement. The power-balance residual of Sec.~6.5 is divided by $2.1$, $1.9$
+and $2.4$, i.e.\ the factor of two a first-order one-sided stencil predicts under
+$\Delta x\to\Delta x/2$, and moves to $-1.4\%$, $-0.3\%$ and $-0.2\%$, while the
+largest slip of the velocity boundary condition drops by $38$--$47\%$. The
+periodicity of the averaged state is not degraded: the half-window phase
+reproduction of the finer captures is $1.79\times10^{-3}$,
+$1.48\times10^{-5}$ and $2.69\times10^{-4}$ against $1.87\times10^{-3}$,
+$1.46\times10^{-5}$ and $2.61\times10^{-4}$ at $N=256$. Each finer run cost
+$\approx13.1$~h of single-threaded wall time against $\approx0.7$~h for the
+corresponding $N=256$ capture, which is why the phase-resolved fields are
+reported on the $N=256$ realization and the cycle-mean scalars on both grids.
 
 \newpage
 
@@ -493,21 +637,30 @@ question and announce the main quantitative results.
 wall actuation, the energy budget, and the central question. The PINN is
 mentioned only as a tool for identifying branches.
 
-\noindent\textbf{Sections:} Reorganized from 10 sections (focused on PINN
-identification) to 8 sections (focused on fluid physics).
+\noindent\textbf{Sections:} Reorganized from 9 sections (focused on PINN
+identification) to 8 sections (focused on fluid physics); the symbolic-regression
+section of the previous version has been dropped.
 
-\noindent\textbf{Figures:} Reduced from 17 figures to 8 figures. The 9 figures
-already published in Beniaiche (2026) have been removed.
+\noindent\textbf{Figures:} Reduced from 17 figures to 8 figures. Six figures are
+carried over (old Figs.~10--11, 13--16), two are new, and the eleven dropped
+figures are the nine identification-campaign figures already published in
+Beniaiche (2026) plus the quasi-stationarity and symbolic-regression diagnostics.
 
-\noindent\textbf{Tables:} Reduced from 18 tables to 4 tables. The 14 tables
-already published in Beniaiche (2026) or related to PINN hyperparameters have
-been moved to the supplementary.
+\noindent\textbf{Tables:} Reduced from 11 tables to 4 tables in the main text. The
+detail tables --- those already published in Beniaiche (2026) and those reporting
+the identification hyperparameters, the seed-level metrics and the
+grid-convergence data --- are collected in the supplement, which now holds
+19 tables (Tables~S1--S19).
 
 \noindent\textbf{References:} Reorganized to prioritize fluid physics over
-machine learning. Added Beniaiche (2026) as an antecedent.
+machine learning. Added Beniaiche (2026) as an antecedent. The bibliography grew
+from 25 to 37 entries, each checked against the publisher record before citing.
 
-\noindent\textbf{Supplementary material:} Expanded to include the PINN
-campaigns, hyperparameter tables, and the detailed verification checklist.
+\noindent\textbf{Supplementary material:} Restructured into five sections
+(S1--S5): PINN implementation, control-space and modal-analysis details,
+identification-campaign robustness, the independent MRT-LBM verification with
+grid uncertainty, and the reproducibility inventory. It contains 19 tables,
+2 figures and its own short bibliography.
 
 \noindent\textbf{Marked-up versions:} Prepared for both the manuscript and the
 supplementary material using a paragraph-level diff script.
@@ -548,11 +701,6 @@ H.~C.~Kuhlmann and F.~Romanò,
 ``The lid-driven cavity,''
 in \textit{Open Problems in Fluid Mechanics}, edited by H.~C.~Kuhlmann and
 F.~Romanò (Springer, 2019), pp.~233--309.
-
-\bibitem{ouazzani2025deep}
-A.~Ouazzani, M.~Belkadi, and A.~Beniaiche,
-``Deep reinforcement learning for active control of lid-driven cavity flow,''
-\textit{Phys. Fluids} \textbf{37}, 043608 (2025).
 
 \bibitem{Beniaiche2026}
 A.~Beniaiche,

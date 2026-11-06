@@ -27,7 +27,7 @@ import sys
 SECTION = re.compile(r"\\(sub)*section\*?\s*\{")
 CITE = re.compile(r"\\cite[a-zA-Z]*\{[^}]*\}")
 LABEL = re.compile(r"\\label\{[^}]*\}")
-REF = re.compile(r"\\eq?ref\{[^}]*\}")
+REF = re.compile(r"\\[A-Za-z]*ref\*?\{[^}]*\}")
 
 
 def strip_comments(text):
@@ -36,6 +36,37 @@ def strip_comments(text):
         m = re.search(r"(?<!\\)%", line)
         out.append((line[: m.start()] if m else line).rstrip())
     return "\n".join(out)
+
+
+MATH_BEGIN = re.compile(
+    r"\\begin\{(displaymath|equation|align|alignat|gather|multline|eqnarray|flalign)\*?\}")
+MATH_END = re.compile(
+    r"\\end\{(displaymath|equation|align|alignat|gather|multline|eqnarray|flalign)\*?\}")
+
+
+def math_delta(block):
+    """Unbalanced display math across a block: >0 means a display is left open."""
+    d = len(MATH_BEGIN.findall(block)) - len(MATH_END.findall(block))
+    d += len(re.findall(r"(?<!\\)\\\[", block)) - len(re.findall(r"(?<!\\)\\]", block))
+    d += len(re.findall(r"\$\$", block)) % 2
+    return d
+
+
+def split_blocks(body):
+    """Paragraph list, with displays that a blank line cut in half rejoined."""
+    parts = [b for b in re.split(r"\n\s*\n", body) if b.strip()]
+    merged = []
+    pending = ""
+    depth = 0
+    for b in parts:
+        pending = (pending + "\n\n" + b) if pending else b
+        depth += math_delta(b)
+        if depth <= 0:
+            merged.append(pending)
+            pending, depth = "", 0
+    if pending:
+        merged.append(pending)
+    return merged
 
 
 def normalise(block):
@@ -88,19 +119,15 @@ def drop_empty_math_lines(text):
     Stripping a \\label that stood on its own line leaves an empty line, which
     is a paragraph break inside a display environment and does not compile.
     """
-    math_begin = re.compile(
-        r"\\begin\{(displaymath|equation|align|gather|multline)\*?\}")
-    math_end = re.compile(
-        r"\\end\{(displaymath|equation|align|gather|multline)\*?\}")
     depth = 0
     out = []
     for line in text.split("\n"):
         stripped = line.strip()
-        if math_begin.search(stripped):
+        if MATH_BEGIN.search(stripped) or re.search(r"(?<!\\)\\\[", stripped):
             depth += 1
         if depth and stripped == "":
             continue
-        if math_end.search(stripped):
+        if MATH_END.search(stripped) or re.search(r"(?<!\\)\\]", stripped):
             depth = max(0, depth - 1)
         out.append(line)
     return "\n".join(out)
@@ -133,8 +160,8 @@ def main(old_path, new_path, out_path):
         head = r"\begin{document}"
         rest = new_body[len(head):]
 
-    old_blocks = [b for b in re.split(r"\n\s*\n", old_body) if b.strip()]
-    new_blocks = [b for b in re.split(r"\n\s*\n", rest) if b.strip()]
+    old_blocks = split_blocks(old_body)
+    new_blocks = split_blocks(rest)
 
     sm = difflib.SequenceMatcher(None, [normalise(b) for b in old_blocks],
                                  [normalise(b) for b in new_blocks],
@@ -157,8 +184,8 @@ def main(old_path, new_path, out_path):
     macros = r"""
 %-------------------------- marked-up version --------------------------
 \usepackage{xcolor}
-\newenvironment{chgadd}{\par\begingroup\color{blue}}{\endgroup\par}
-\newenvironment{chgdel}{\par\begingroup\color{red}}{\endgroup\par}
+\newenvironment{chgadd}{\par\color{blue}}{\par\color{black}}
+\newenvironment{chgdel}{\par\color{red}}{\par\color{black}}
 %-----------------------------------------------------------------------
 """
     preamble = preamble + macros
@@ -180,6 +207,7 @@ a mark.}}
 """
     text = (preamble + head + note + "\n\n" + "\n\n".join(out) +
             "\n\\end{document}\n")
+    text = drop_empty_math_lines(text)
     open(out_path, "w", encoding="utf-8").write(text)
     print("wrote", out_path, ":", len(old_blocks), "old blocks,",
           len(new_blocks), "new blocks")

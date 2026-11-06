@@ -1,0 +1,431 @@
+{
+  "absent": [],
+  "cases": {
+    "B1": {
+      "256": {
+        "D": 0.011934242661226755,
+        "D_fluct": 0.0002149088125437109,
+        "D_meanfield": 0.011719333848683044,
+        "D_meanfield_recomputed": 0.011719333848683044,
+        "E_r": 0.25,
+        "K": 0.01160815415867602,
+        "K_fluct": 1.909197026136218e-05,
+        "N": 256,
+        "P": 0.011601205546117259,
+        "R_K": 0.0016447033697508835,
+        "balance_resid": -0.027906011681118465,
+        "capture_periods": 32,
+        "drift": 7.455772792581201e-06,
+        "file": "capture_B1_D2_N256.npz",
+        "fluct_share": 0.018007746167415354,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": false,
+        "lid_max_error": 0.05991587177742019,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0256,
+        "omega_dissipation": 3.141592653589793,
+        "omega_dissipation_ratio": 1.0,
+        "omega_field": null,
+        "omega_field_ratio": null,
+        "phase_half_max": 0.0018687024621413999,
+        "ratio_D": 1.0183379717071428,
+        "resumed_from_checkpoint": false,
+        "se_D": 5.978662691855759e-08,
+        "se_Dfluct": 9.368607528743044e-08,
+        "se_Dm": 7.212932790802429e-08,
+        "se_K": 5.963674292127348e-08,
+        "se_P": 5.92064449070767e-08,
+        "seconds": 2511.8,
+        "steps_per_period": 10240,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      },
+      "512": {
+        "D": 0.012578209418696553,
+        "D_fluct": 0.00023858445842419446,
+        "D_meanfield": 0.012339624960272359,
+        "D_meanfield_recomputed": 0.012339624960272359,
+        "E_r": 0.2500000000000001,
+        "K": 0.011847570238567078,
+        "K_fluct": 2.035900002879764e-05,
+        "N": 512,
+        "P": 0.012407039926358677,
+        "R_K": 0.0017184114226665255,
+        "balance_resid": -0.01360841488959831,
+        "capture_periods": 32,
+        "drift": 7.267790597898244e-06,
+        "file": "capture_B1_D2_N512.npz",
+        "fluct_share": 0.018968078085069628,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": true,
+        "lid_max_error": 0.03202816127303898,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0512,
+        "omega_dissipation": 3.141592653589793,
+        "omega_dissipation_ratio": 1.0,
+        "omega_field": 3.141592653589793,
+        "omega_field_ratio": 1.0,
+        "phase_half_max": 0.0017883873937268014,
+        "ratio_D": 1.0193348225081655,
+        "resumed_from_checkpoint": false,
+        "se_D": 5.834676595924213e-08,
+        "se_Dfluct": 9.112821035238027e-08,
+        "se_Dm": 7.000004017231054e-08,
+        "se_K": 5.881945249678109e-08,
+        "se_P": 5.927295750358266e-08,
+        "seconds": 47125.4,
+        "steps_per_period": 20480,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      }
+    },
+    "B2": {
+      "256": {
+        "D": 0.014408185478080999,
+        "D_fluct": 0.013392323112292154,
+        "D_meanfield": 0.001015862365788844,
+        "D_meanfield_recomputed": 0.001015862365788844,
+        "E_r": 0.2500000000000001,
+        "K": 0.002422687461202574,
+        "K_fluct": 0.001814157986246602,
+        "N": 256,
+        "P": 0.014322231797158046,
+        "R_K": 0.7488204794464449,
+        "balance_resid": -0.005965614549709502,
+        "capture_periods": 32,
+        "drift": 3.2542873929172837e-07,
+        "file": "capture_B2_D2_N256.npz",
+        "fluct_share": 0.9294940804770827,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": false,
+        "lid_max_error": 0.1154860313369579,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0256,
+        "omega_dissipation": 6.283185307179586,
+        "omega_dissipation_ratio": 2.0,
+        "omega_field": null,
+        "omega_field_ratio": null,
+        "phase_half_max": 1.4614901585954615e-05,
+        "ratio_D": 14.183206272133786,
+        "resumed_from_checkpoint": false,
+        "se_D": 1.724385303146412e-10,
+        "se_Dfluct": 1.985968328502516e-10,
+        "se_Dm": 9.851728417428762e-11,
+        "se_K": 1.1701359669516982e-10,
+        "se_P": 9.416744950581826e-11,
+        "seconds": 2505.3,
+        "steps_per_period": 10240,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      },
+      "512": {
+        "D": 0.015464768192832642,
+        "D_fluct": 0.014350351621538296,
+        "D_meanfield": 0.0011144165712943476,
+        "D_meanfield_recomputed": 0.0011144165712943476,
+        "E_r": 0.25,
+        "K": 0.002533346227811895,
+        "K_fluct": 0.0019159183409167774,
+        "N": 512,
+        "P": 0.01541578368681122,
+        "R_K": 0.7562797062174944,
+        "balance_resid": -0.0031674904796908238,
+        "capture_periods": 32,
+        "drift": 3.1980486450332324e-07,
+        "file": "capture_B2_D2_N512.npz",
+        "fluct_share": 0.9279383591529785,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": true,
+        "lid_max_error": 0.07154483570686021,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0512,
+        "omega_dissipation": 6.283185307179586,
+        "omega_dissipation_ratio": 2.0,
+        "omega_field": 3.141592653589793,
+        "omega_field_ratio": 1.0,
+        "phase_half_max": 1.4754527136523955e-05,
+        "ratio_D": 13.877008464501717,
+        "resumed_from_checkpoint": false,
+        "se_D": 1.4682772590946417e-10,
+        "se_Dfluct": 1.9251882150335322e-10,
+        "se_Dm": 1.2451953877723465e-10,
+        "se_K": 1.20659054944192e-10,
+        "se_P": 7.360061295425678e-11,
+        "seconds": 47143.8,
+        "steps_per_period": 20480,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      }
+    },
+    "B3": {
+      "256": {
+        "D": 0.011690108018547177,
+        "D_fluct": 0.006277520215066898,
+        "D_meanfield": 0.005412587803480279,
+        "D_meanfield_recomputed": 0.005412587803480279,
+        "E_r": 0.25,
+        "K": 0.005525967190464973,
+        "K_fluct": 0.0006893637895477497,
+        "N": 256,
+        "P": 0.01163826464297792,
+        "R_K": 0.12474988826159576,
+        "balance_resid": -0.004434807230780431,
+        "capture_periods": 32,
+        "drift": 2.565664117457262e-05,
+        "file": "capture_B3_D2_N256.npz",
+        "fluct_share": 0.536994201003718,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": false,
+        "lid_max_error": 0.11826078177694299,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0256,
+        "omega_dissipation": 6.283185307179586,
+        "omega_dissipation_ratio": 2.0,
+        "omega_field": null,
+        "omega_field_ratio": null,
+        "phase_half_max": 0.0002608380522978755,
+        "ratio_D": 2.1598001626930596,
+        "resumed_from_checkpoint": false,
+        "se_D": 7.88460664492969e-08,
+        "se_Dfluct": 1.139606731785805e-07,
+        "se_Dm": 8.22820322840187e-08,
+        "se_K": 3.146143949028084e-07,
+        "se_P": 4.1068772646662455e-08,
+        "seconds": 2536.6,
+        "steps_per_period": 10240,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      },
+      "512": {
+        "D": 0.012518254804601232,
+        "D_fluct": 0.0068650787459280755,
+        "D_meanfield": 0.005653176058673157,
+        "D_meanfield_recomputed": 0.005653176058673157,
+        "E_r": 0.25,
+        "K": 0.005678095863099659,
+        "K_fluct": 0.0007331166290014643,
+        "N": 512,
+        "P": 0.012495104841271979,
+        "R_K": 0.12911311233150927,
+        "balance_resid": -0.0018492963828108226,
+        "capture_periods": 32,
+        "drift": 2.849870549550264e-05,
+        "file": "capture_B3_D2_N512.npz",
+        "fluct_share": 0.5484054169759138,
+        "forcing": "hold",
+        "frequency_criterion_error": 0.0,
+        "frequency_ok": true,
+        "has_probe": true,
+        "lid_max_error": 0.06944619876849456,
+        "meanfield_consistency": 0.0,
+        "nu_latt": 0.0512,
+        "omega_dissipation": 6.283185307179586,
+        "omega_dissipation_ratio": 2.0,
+        "omega_field": 3.141592653589793,
+        "omega_field_ratio": 1.0,
+        "phase_half_max": 0.00026856691849467206,
+        "ratio_D": 2.2143755430003997,
+        "resumed_from_checkpoint": false,
+        "se_D": 8.578026095482129e-08,
+        "se_Dfluct": 1.2357721577608095e-07,
+        "se_Dm": 8.895546688928585e-08,
+        "se_K": 3.301012950331286e-07,
+        "se_P": 4.866211477740788e-08,
+        "seconds": 47050.8,
+        "steps_per_period": 20480,
+        "warm_periods": 24.0,
+        "warm_stopped": true
+      }
+    }
+  },
+  "gate_warnings": {
+    "B1/N256": [
+      "residu de bilan -2.79% au-dessus du seuil indicatif de 2% : stencil de cisaillement de paroi du premier ordre, a confronter a N=512 (division par ~2 attendue)",
+      "sonde de champ absente : frequence du champ non verifiee sur cette capture"
+    ],
+    "B1/N512": [],
+    "B2/N256": [
+      "sonde de champ absente : frequence du champ non verifiee sur cette capture"
+    ],
+    "B2/N512": [],
+    "B3/N256": [
+      "sonde de champ absente : frequence du champ non verifiee sur cette capture"
+    ],
+    "B3/N512": []
+  },
+  "gates": {
+    "B1/N256": [],
+    "B1/N512": [],
+    "B2/N256": [],
+    "B2/N512": [],
+    "B3/N256": [],
+    "B3/N512": []
+  },
+  "staircase_reference_rel": 0.00114,
+  "variation": {
+    "B1": {
+      "D(ubar)": {
+        "from_256": 0.011719333848683044,
+        "rel": 0.05292887117974025,
+        "se_rel": 8.370255889674455e-06,
+        "to_512": 0.012339624960272359,
+        "verdict": "resolue"
+      },
+      "D_fluct": {
+        "from_256": 0.0002149088125437109,
+        "rel": 0.11016600762087456,
+        "se_rel": 0.0005795922101607637,
+        "to_512": 0.00023858445842419446,
+        "verdict": "resolue"
+      },
+      "Dbar": {
+        "from_256": 0.011934242661226755,
+        "rel": 0.053959583004121923,
+        "se_rel": 6.8274816589233096e-06,
+        "to_512": 0.012578209418696553,
+        "verdict": "resolue"
+      },
+      "K_fluct": {
+        "from_256": 1.909197026136218e-05,
+        "rel": 0.06636453703259945,
+        "se_rel": NaN,
+        "to_512": 2.035900002879764e-05,
+        "verdict": "-"
+      },
+      "Kbar": {
+        "from_256": 0.01160815415867602,
+        "rel": 0.020624819124418412,
+        "se_rel": 7.144359312159727e-06,
+        "to_512": 0.011847570238567078,
+        "verdict": "resolue"
+      },
+      "Pbar": {
+        "from_256": 0.011601205546117259,
+        "rel": 0.06946126219711006,
+        "se_rel": 6.9906120870149585e-06,
+        "to_512": 0.012407039926358677,
+        "verdict": "resolue"
+      },
+      "share_fluct": {
+        "from_256": 0.018007746167415354,
+        "rel": 0.0009603319176542738,
+        "to_512": 0.018968078085069628
+      }
+    },
+    "B2": {
+      "D(ubar)": {
+        "from_256": 0.001015862365788844,
+        "rel": 0.09701531312164867,
+        "se_rel": 1.4795158418304866e-07,
+        "to_512": 0.0011144165712943476,
+        "verdict": "resolue"
+      },
+      "D_fluct": {
+        "from_256": 0.013392323112292154,
+        "rel": 0.07153564778965153,
+        "se_rel": 1.9997065105432746e-08,
+        "to_512": 0.014350351621538296,
+        "verdict": "resolue"
+      },
+      "Dbar": {
+        "from_256": 0.014408185478080999,
+        "rel": 0.0733321150230201,
+        "se_rel": 1.5276705647787545e-08,
+        "to_512": 0.015464768192832642,
+        "verdict": "resolue"
+      },
+      "K_fluct": {
+        "from_256": 0.001814157986246602,
+        "rel": 0.05609233343602684,
+        "se_rel": NaN,
+        "to_512": 0.0019159183409167774,
+        "verdict": "-"
+      },
+      "Kbar": {
+        "from_256": 0.002422687461202574,
+        "rel": 0.045676038854137596,
+        "se_rel": 6.783258783904166e-08,
+        "to_512": 0.002533346227811895,
+        "verdict": "resolue"
+      },
+      "Pbar": {
+        "from_256": 0.014322231797158046,
+        "rel": 0.07635345560251071,
+        "se_rel": 8.125520501915054e-09,
+        "to_512": 0.01541578368681122,
+        "verdict": "resolue"
+      },
+      "share_fluct": {
+        "from_256": 0.9294940804770827,
+        "rel": -0.0015557213241041978,
+        "to_512": 0.9279383591529785
+      }
+    },
+    "B3": {
+      "D(ubar)": {
+        "from_256": 0.005412587803480279,
+        "rel": 0.04444976486814319,
+        "se_rel": 2.1879341281943097e-05,
+        "to_512": 0.005653176058673157,
+        "verdict": "resolue"
+      },
+      "D_fluct": {
+        "from_256": 0.006277520215066898,
+        "rel": 0.09359723437464323,
+        "se_rel": 2.5565403555690303e-05,
+        "to_512": 0.0068650787459280755,
+        "verdict": "resolue"
+      },
+      "Dbar": {
+        "from_256": 0.011690108018547177,
+        "rel": 0.07084167098714077,
+        "se_rel": 9.614900685282773e-06,
+        "to_512": 0.012518254804601232,
+        "verdict": "resolue"
+      },
+      "K_fluct": {
+        "from_256": 0.0006893637895477497,
+        "rel": 0.06346843294803498,
+        "se_rel": NaN,
+        "to_512": 0.0007331166290014643,
+        "verdict": "-"
+      },
+      "Kbar": {
+        "from_256": 0.005525967190464973,
+        "rel": 0.02752978209808821,
+        "se_rel": 8.137102590973484e-05,
+        "to_512": 0.005678095863099659,
+        "verdict": "resolue"
+      },
+      "Pbar": {
+        "from_256": 0.01163826464297792,
+        "rel": 0.07362267696937479,
+        "se_rel": 5.255407870701298e-06,
+        "to_512": 0.012495104841271979,
+        "verdict": "resolue"
+      },
+      "share_fluct": {
+        "from_256": 0.536994201003718,
+        "rel": 0.011411215972195854,
+        "to_512": 0.5484054169759138
+      }
+    },
+    "ranking_preserved": true,
+    "rel_change": {
+      "B1": 0.053959583004121923,
+      "B2": 0.0733321150230201,
+      "B3": 0.07084167098714077
+    }
+  },
+  "wording": "grid-refinement sensitivity (not a GCI)"
+}

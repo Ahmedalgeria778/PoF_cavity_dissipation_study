@@ -1,0 +1,66 @@
+=== B1 ===
+mean_speed_peak 0.54031
+mean_speed_peak_at 0.3451 0.9765
+psi_min -0.036302 psi_max 0.035530
+psi_max_at 0.6941 0.5725  psi_min_at 0.3137 0.5333
+mean_ke_half_below_y 0.6709  nine_tenth_above_y 0.9866
+frac_mean_ke_above_y0.9 0.2429
+ux_rms_peak 0.04823 at x 0.1961 y 0.9882
+uy_rms_peak 0.01413
+phase_dev_over_mean_rms_max 0.0579
+phase_field_deviation_max 0.0579
+tau_uu_lid 0.002205 tau_uu_max 0.002205 tau_uu_lid_peak_x 0.1961
+rms_F 1.143059e-03 rms_visc 4.293925e-01 ratio_rms 0.00266
+F_max 2.239403e-02 visc_max 5.174154e+00 ratio_max 0.00433
+S_peak 1.0917 at x 0.0824 y 0.9882
+F_peak 0.0224 at x 0.0824 y 0.9882
+top_quarter_positive_frac 0.505
+K_meanfield 1.158906e-02  K_cyclemean 1.160815e-02  ratio 0.9984
+drift_D_first_minus_last_half_pct +1.1093e-03
+K_halfwindow_drift_over_Dbar_pct +1.0764e-03
+cycle_to_cycle_sd_rel_D 7.0721e-06  K 6.8746e-06
+
+=== B2 ===
+mean_speed_peak 0.14157
+mean_speed_peak_at 0.7569 0.9569
+psi_min -0.011582 psi_max 0.011077
+psi_max_at 0.2314 0.8471  psi_min_at 0.7843 0.8549
+mean_ke_half_below_y 0.8925  nine_tenth_above_y 0.9715
+frac_mean_ke_above_y0.9 0.4855
+ux_rms_peak 0.46340 at x 0.4863 y 0.9882
+uy_rms_peak 0.05101
+phase_dev_over_mean_rms_max 2.5231
+phase_field_deviation_max 2.5231
+tau_uu_lid 0.203418 tau_uu_max 0.203418 tau_uu_lid_peak_x 0.4863
+rms_F 5.302245e-02 rms_visc 2.044975e-01 ratio_rms 0.25928
+F_max 6.367749e-01 visc_max 2.627774e+00 ratio_max 0.24232
+S_peak 23.7482 at x 0.3608 y 0.9882
+F_peak 0.6368 at x 0.3059 y 0.9882
+top_quarter_positive_frac 0.472
+K_meanfield 6.085202e-04  K_cyclemean 2.422687e-03  ratio 0.2512
+drift_D_first_minus_last_half_pct -2.8171e-06
+K_halfwindow_drift_over_Dbar_pct +1.8366e-06
+cycle_to_cycle_sd_rel_D 2.4434e-08  K 1.2526e-07
+
+=== B3 ===
+mean_speed_peak 0.48966
+mean_speed_peak_at 0.7333 0.9765
+psi_min -0.034909 psi_max 0.024010
+psi_max_at 0.1961 0.8588  psi_min_at 0.7686 0.7961
+mean_ke_half_below_y 0.8884  nine_tenth_above_y 0.9919
+frac_mean_ke_above_y0.9 0.4818
+ux_rms_peak 0.27204 at x 0.5490 y 0.9882
+uy_rms_peak 0.05530
+phase_dev_over_mean_rms_max 0.5278
+phase_field_deviation_max 0.5278
+tau_uu_lid 0.070025 tau_uu_max 0.070025 tau_uu_lid_peak_x 0.5490
+rms_F 1.972174e-02 rms_visc 2.932798e-01 ratio_rms 0.06725
+F_max 3.193653e-01 visc_max 3.118382e+00 ratio_max 0.10241
+S_peak -22.1050 at x 0.6431 y 0.9882
+F_peak 0.3194 at x 0.6745 y 0.9882
+top_quarter_positive_frac 0.519
+K_meanfield 4.836600e-03  K_cyclemean 5.525967e-03  ratio 0.8752
+drift_D_first_minus_last_half_pct +1.4227e-03
+K_halfwindow_drift_over_Dbar_pct +5.6143e-03
+cycle_to_cycle_sd_rel_D 1.2408e-05  K 9.7009e-05
+
