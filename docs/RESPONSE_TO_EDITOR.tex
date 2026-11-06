@@ -362,7 +362,10 @@ theme) and suitable for the table of contents and potential cover.
 the Deputy Editor's comments already captured the main concerns. Points 1--14
 below follow the revision plan derived from those comments; Points 15--16
 additionally document the temporal mapping of the exported actuation onto the
-lattice, which is the protocol item a reader of Sec.~4 needs in full.}
+lattice, which is the protocol item a reader of Sec.~4 needs in full; and Points
+17--21 record the changes made after a further audit of the identification code
+and of the discrete wall-power estimator, which is the protocol item a reader of
+Secs.~2.2 and 4.1 needs in full.}
 
 \vspace{1em}
 
@@ -605,7 +608,7 @@ computed for them (Sec.~4.3 and Table~S15). The refined runs raise
 $\overline{D}$ by $5.4\%$, $7.3\%$ and $7.1\%$ for $B_1$, $B_2$ and $B_3$,
 preserve the ordering $B_2>B_1\simeq B_3$, and narrow the $B_1$--$B_3$ gap from
 $2.1\%$ to $0.5\%$, so the central conclusion of Sec.~6 --- that the three
-branches lie within twenty per cent of one another on the cycle average while
+branches lie within a factor $1.23$ of one another on the cycle average while
 their fluctuating parts span two orders of magnitude --- is unchanged by the
 refinement. The power-balance residual of Sec.~6.5 is divided by $2.1$, $1.9$
 and $2.4$, i.e.\ the factor of two a first-order one-sided stencil predicts under
@@ -618,6 +621,126 @@ $1.46\times10^{-5}$ and $2.61\times10^{-4}$ at $N=256$. Each finer run cost
 $\approx13.1$~h of single-threaded wall time against $\approx0.7$~h for the
 corresponding $N=256$ capture, which is why the phase-resolved fields are
 reported on the $N=256$ realization and the cycle-mean scalars on both grids.
+Sec.~4.3 and Supplementary Sec.~S4.5 now state that division of labour
+explicitly --- the replication supplies scalar diagnostics only, and every field
+and phase-resolved quantity in the paper is an $N=256$ capture --- so that no
+figure is read as finer than it is.
+
+\vspace{1em}
+
+\noindent\textbf{Point 17: Two time variables in the identification, now
+distinguished.}
+
+A fresh audit of the training script confirms that the identification runs on a
+raw nondimensional clock $\tau$ sampled uniformly over $[0,T_{\max}]$ with
+$T_{\max}=1$, that the control is expanded there as
+$\sin(m\pi x)\cos(n\pi\tau)$, and that the momentum residual differentiates with
+respect to $\tau$ directly, with no $1/T$ chain factor. The manuscript and the
+supplement previously described that same variable as the normalized phase
+$\theta=t_{\mathrm{phys}}/T$ of the exported period, which conflated the two
+clocks. Sec.~4.1 and Supplementary Secs.~S1.1, S1.2 and S1.4 now state the
+distinction explicitly, in the order the computation performs it: the coefficient
+network returns the amplitudes $a_{mn}(Re)$, which carry no time variable; the
+flow network is trained on $\tau\in[0,1]$, which covers one half-period of the
+fundamental; and the exported wall actuation is the \emph{same} Fourier series
+re-evaluated on the physical clock over its complete period,
+$\cos(2n\pi t_{\mathrm{phys}}/T)=\cos(n\pi t_{\mathrm{phys}})$ with
+$0\le t_{\mathrm{phys}}\le T=2$, so the fundamental of what the lattice actually
+sees is $\omega_1=2\pi/T=\pi$ (Sec.~4.2, Eq.~14, Supplementary Sec.~S2.1). The PINN
+flow field is not periodicised and not transferred to the solver --- no endpoint
+condition is imposed on it --- and the periodic hydrodynamic response is
+established independently by the MRT-LBM calculation and verified a posteriori to
+$10^{-3}$ in relative field norm (Supplementary Sec.~S1.4). We also state why the
+constraint is not affected by the shorter training window:
+$\int_0^1\cos^2(n\pi\tau)\,d\tau=\int_0^1\cos^2(2n\pi\theta)\,d\theta=1/2$ with
+vanishing cross-terms on both windows, so the penalised quantity is the cycle
+mean of the exported signal even though the flow field was trained on half a
+period (Supplementary Sec.~S2.2).
+
+\vspace{1em}
+
+\noindent\textbf{Point 18: Direction of the Stokes comparison.}
+
+The abstract, the contribution list of Sec.~1, Sec.~6.3 and Sec.~8 previously said
+that the second-Stokes estimate ``accounts for $95\%$ and $98\%$'' of the
+fluctuating dissipation. That is the reciprocal of what the numbers say: the
+measured fluctuating parts are $1.339\times10^{-2}$ for $B_2$ and
+$6.278\times10^{-3}$ for $B_3$ against estimates of $1.411\times10^{-2}$ and
+$6.383\times10^{-3}$, so the measurements are $95\%$ and $98\%$ \emph{of the
+estimate} and the estimate is slightly the larger. The four places now read that
+``the estimate agrees with the measured fluctuating dissipation to within
+approximately $5\%$ for $B_2$ and $2\%$ for $B_3$, without an adjustable
+constant'', which states the accuracy of the approximation rather than a share of
+the budget. For the same reason the abstract no longer claims the estimate
+``locates'' the cost in the wall layer: the model is a half-space one, so the
+agreement supports a wall-layer interpretation of the dominant fluctuating cost
+rather than a spatial decomposition of the total, and Sec.~7.1 adds explicitly
+that the $56\%$ the estimate leaves unexplained for the $k=1$ profile is not
+thereby assigned to the cavity core.
+
+\vspace{1em}
+
+\noindent\textbf{Point 19: Definition of \(R_K\).}
+
+$R_K$ was described in the nomenclature as the ``ratio of fluctuating to mean
+kinetic energy'', but the reported values are computed against the total. With
+$\overline K=\overline K_{\mathrm{mean}}+\overline K_{\mathrm{fluct}}$ the
+definition is now
+$R_K=\overline K_{\mathrm{fluct}}/\overline K$, ``the fraction of the cycle-mean
+kinetic energy carried by temporal fluctuations'', which is what reproduces the
+table: $B_1$ $0.16\%$ against a mean field holding $99.8\%$, $B_2$ $74.9\%$
+against $25\%$, $B_3$ $12.5\%$ against $87.5\%$. The two supplement statements
+that read ``fluctuates by $R_K$ of its mean'' in Secs.~S4.3 and S4.5 now read
+``of the cycle-mean kinetic energy'', which matters most for $B_2$, where the old
+wording would have implied that the mean field retains three quarters of the
+energy instead of a quarter.
+
+\vspace{1em}
+
+\noindent\textbf{Point 20: Geometry of the discrete wall-power estimator.}
+
+The main text and the supplement disagreed about where
+$\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$ is evaluated: Sec.~2.2 placed both
+factors of the product on the plane $y=1-\Delta y$ (index $N-2$) while
+Supplementary Sec.~S4.8 wrote them on row $N-1$. We re-read the estimator in the
+solver, and it uses the lid node row for both factors,
+$U_{\mathrm{wall}}^{\mathrm{rec}}(x_j)=u_x(N-1,j)$ and
+$\tau_w^{\mathrm{FD}}(x_j)=Re^{-1}[u_x(N-1,j)-u_x(N-2,j)]/\Delta y$, with
+trapezoidal end weights. Eq.~(5) now carries those discrete definitions and
+Sec.~2.2, the caption of Table~4, Sec.~6.5 and Supplementary Sec.~S4.8 use the
+same single convention. The accompanying statement about the boundary condition
+was corrected in the same pass: the lid is imposed by half-way bounce-back with
+momentum injection into the two wall-facing populations, which enforces the moving
+wall at the hydrodynamic boundary half a lattice spacing outside row $N-1$; it
+therefore does \emph{not} make the recovered node velocity equal the commanded
+profile, and Supplementary Sec.~S4.1 no longer claims it does. That discrepancy is
+the slip already quantified in Sec.~6.5 --- $6.0\%$, $11.5\%$ and $11.8\%$ of the
+cavity speed at $N=256$, dropping to $3.2\%$, $7.2\%$ and $6.9\%$ at $N=512$ ---
+and Sec.~2.2 now explains the residuals of Table~4 through it, instead of leaving
+the reader to infer why the recovered and prescribed estimators bracket the
+closure.
+
+\vspace{1em}
+
+\noindent\textbf{Point 21: Quantitative statements made exact.}
+
+Four imprecise phrases were replaced by the numbers they summarise. Sec.~6.2, the
+caption of Fig.~5 and Sec.~8 said the branch totals lie ``within twenty per cent''
+of one another; $B_2$ is in fact $20.7\%$ above $B_1$ and $23.2\%$ above $B_3$ at
+$N=256$, and Sec.~6.2 and the Conclusions now give both ratios and bound the
+spread by a factor $1.23$. ``Indistinguishable within $2\%$'' for $B_1$ and $B_3$
+became ``nearly equal, $2.1\%$ apart at $N=256$ and $0.5\%$ apart at $N=512$'' in
+the abstract, Sec.~6.2, Sec.~8 and Supplementary Sec.~S4.5, which keeps the claim
+true at both resolutions instead of rounding one of them. The nomenclature now
+distinguishes $U_0$, the scaling velocity of the nondimensional problem, from
+$U_{\mathrm{ref}}=0.05$, the lattice reference velocity that sets
+$\Delta t=U_{\mathrm{ref}}/N$, and lists $E_{\mathrm{act}}$ as dimensionless with
+dimensional equivalent $U_0^2L$, since the constraint is written in the scaled
+variables of Eq.~(1). Finally, the single-harmonic test at $n=1,2,4$ is stated as
+work not yet done in Sec.~6.3 and Sec.~8: Supplementary Sec.~S4.5 tabulates the
+harmonic budgets of the three controls already used, it does not contain a
+mono-harmonic campaign, and the sentence pointing to it no longer suggests
+otherwise.
 
 \newpage
 

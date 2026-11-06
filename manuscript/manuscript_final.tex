@@ -56,12 +56,14 @@ $92.9\%$, $53.7\%$ and $1.8\%$ of the cycle-mean cost of the lid-oscillatory, mi
 and quasi-steady branches, respectively. The branch whose mean-field dissipation is
 fourteen times below its own cycle mean is consequently the most dissipative of the
 three, though by the modest factor of $1.2$, while the quasi-steady and mixed
-responses are indistinguishable to within $2\%$. A second-Stokes boundary-layer
-estimate built from the imposed lid signal alone accounts for $95\%$ and $98\%$ of
-the fluctuating dissipation of the two time-reversing branches, which locates their
-cost in the oscillatory wall layer rather than in the recirculation and explains why
-two actuations whose oscillatory energies differ by a factor of $2.3$ can cost the
-same over the cycle. The results
+responses differ by $2.1\%$ at $N=256$ and by $0.5\%$ at $N=512$. A second-Stokes
+boundary-layer estimate built from the imposed lid signal alone agrees with the
+measured fluctuating dissipation of the two time-reversing branches to within
+approximately $5\%$ and $2\%$, respectively, without an adjustable constant. The
+estimate is a half-space approximation, so this agreement supports a wall-layer
+interpretation of the dominant fluctuating cost rather than a spatial decomposition
+of the total dissipation, and it explains why two actuations whose oscillatory
+energies differ by a factor of $2.3$ can cost the same over the cycle. The results
 demonstrate that the energetic cost of wall actuation depends on both the spatial
 organization and the temporal fluctuations of the resulting flow, and that physical
 performance must be assessed using cycle-averaged dissipation rather than modal
@@ -97,7 +99,7 @@ energy budget; mean-flow diagnostics; mode selection
 \(L,L_x,L_y\) & cavity side, streamwise and wall-normal lengths\\
 \(N\) & number of lattice nodes per cavity side (LBM resolution)\\
 \(P_{\mathrm{lid}}\) & mechanical power injected through the lid, \(\int_0^1 U_{\mathrm{lid}}\tau_w\,dx\)\\
-\(R_K\) & ratio of fluctuating to mean kinetic energy\\
+\(R_K\) & fraction of the cycle-mean kinetic energy carried by temporal fluctuations, \(\overline K_{\mathrm{fluct}}/\overline K\) with \(\overline K=\overline K_{\mathrm{mean}}+\overline K_{\mathrm{fluct}}\)\\
 \(Re\) & Reynolds number, \(U_{\mathrm{ref}}L/\nu\)\\
 \(\mathbf{S}\) & strain-rate tensor, \((\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T})/2\)\\
 \(t,T\) & time and forcing period\\
@@ -105,8 +107,8 @@ energy budget; mean-flow diagnostics; mode selection
 \(\mathbf{u}'\) & fluctuating velocity vector, \(\mathbf{u}-\langle\mathbf{u}\rangle\)\\
 \(u'_{\mathrm{rms}}\) & root-mean-square temporal fluctuation at a fixed point\\
 \(U_{\mathrm{lid}}\) & lid velocity profile (the actuation)\\
-\(U_0\) & scaling velocity used to define \(Re=U_0 L/\nu\); the uniform lid at \(E^*=0.25\) has amplitude \(U_{\mathrm{uniform}}=0.5\,U_0\)\\
-\(U_{\mathrm{ref}}\) & reference velocity, equivalent to \(U_0\)\\
+\(U_0\) & scaling velocity of the nondimensional problem, \(Re=U_0 L/\nu\); the uniform lid at \(E^*=0.25\) has amplitude \(U_{\mathrm{uniform}}=0.5\,U_0\)\\
+\(U_{\mathrm{ref}}\) & lattice reference velocity of the MRT-LBM solver, \(0.05\) in lattice units; it plays the role of \(U_0\) in the lattice nondimensionalisation and sets \(\Delta t=U_{\mathrm{ref}}/N\)\\
 \(x,y\) & streamwise and wall-normal coordinates\\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Greek symbols and branch symbols}}\\
@@ -227,8 +229,9 @@ differently at equal lid speed and at equal quadratic norm, and the inversion is
 associated with the change in peak velocity and hence in effective Reynolds number
 of each profile (Sec.~\ref{sec:stationary}). Second, the part of the cycle mean
 that the mean field misses is set by the oscillating Stokes layer: the
-second-Stokes scaling of the imposed lid harmonics accounts for $95\%$ and
-$98\%$ of the fluctuating dissipation of the two oscillatory branches, and because
+second-Stokes scaling of the imposed lid harmonics agrees with the measured
+fluctuating dissipation of the two oscillatory branches to within approximately
+$5\%$ and $2\%$, respectively, and because
 all three controls place nearly all of their oscillatory energy in the first
 temporal harmonic, the estimate collapses to the one-line form
 $D_{\mathrm{fluct}}\simeq f_t\overline{E}_{\mathrm{act}}\sqrt{\nu\omega_1/2}$.
@@ -309,8 +312,10 @@ be conflated. The first is the \emph{quadratic actuation norm}
 \overline{E}_{\mathrm{act}}=\frac{1}{T}\int_0^T\Eact(t)\,dt,
 \label{eq:eact}
 \end{equation}
-which measures the squared amplitude of the commanded wall velocity, has units of
-$U_0^2L$, and is the quantity held fixed in all comparisons below. It is a norm of
+which measures the squared amplitude of the commanded wall velocity, is
+dimensionless in the scaling of Eq.~\eqref{eq:ns} and corresponds to $U_0^2L$ in
+dimensional variables, and is the quantity held fixed in all comparisons below.
+It is a norm of
 the boundary data, not a work: it contains no information about the fluid response.
 The second is the \emph{mechanical power} transmitted by the lid,
 \begin{equation}
@@ -325,9 +330,14 @@ and Sec.~\ref{sec:budget}), the power is estimated using the recovered wall
 velocity $U_{\mathrm{wall}}^{\mathrm{rec}}$ and a finite-difference wall shear
 $\tau_w^{\mathrm{FD}}$:
 \begin{equation}
-\Plid^{\mathrm{rec}}(t)=\int_0^1 U_{\mathrm{wall}}^{\mathrm{rec}}(x,t)\,\tau_w^{\mathrm{FD}}(x,t)\,dx.
+\Plid^{\mathrm{rec}}(t)=\int_0^1 U_{\mathrm{wall}}^{\mathrm{rec}}(x,t)\,\tau_w^{\mathrm{FD}}(x,t)\,dx,
 \label{eq:plid_rec}
 \end{equation}
+with $U_{\mathrm{wall}}^{\mathrm{rec}}(x_j,t)=u_x(N-1,j)$ the streamwise velocity of
+the lid node row and
+$\tau_w^{\mathrm{FD}}(x_j)=Re^{-1}[u_x(N-1,j)-u_x(N-2,j)]/\Delta y$ the one-sided
+wall-normal difference between that row and the interior row immediately beneath it
+(Supplementary Sec.~S4.8).
 This distinction is necessary because the LBM boundary condition does not enforce
 the prescribed velocity exactly at the wall node; the recovered velocity estimator
 gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$,
@@ -336,13 +346,17 @@ $+3.4\%$, $+4.6\%$ and $+4.7\%$ [on the phase-resolved fields, against
 $-2.9\%$, $-6.0\%$ and $-4.3\%$ for the recovered one] that measure
 boundary-condition slip rather than
 the energy balance (Sec.~\ref{sec:budget}). We note that $\Plid^{\mathrm{rec}}$ is a diagnostic
-of the power across the \emph{first fluid plane adjacent to the wall}
-($y=1-\Delta y$ in continuous coordinates, $y=N-2$ in lattice indices), not a
-direct evaluation of the mechanical work at the physical boundary $y=1$: both
-$U_{\mathrm{wall}}^{\mathrm{rec}}$ and $\tau_w^{\mathrm{FD}}$ are evaluated on
-that plane. As $\Delta y\to0$ the estimator converges to the wall power
-$\Plid$ of Eq.~\eqref{eq:plid}; the residuals reported above therefore verify the
-discrete energy budget indirectly rather than close it at the boundary, and are
+of the power across the \emph{last fluid row of the lattice}, the node row
+$i=N-1$ that carries the moving lid in the array layout, with the wall-normal
+derivative taken as the one-sided difference between rows $N-1$ and $N-2$
+(Supplementary Sec.~S4.8). Because the boundary condition is a half-way
+bounce-back with momentum injection, the hydrodynamic wall lies half a lattice
+spacing outside that row, so the row is a first-plane approximation of the wall
+rather than the wall itself: it tends to the wall power $\Plid$ of
+Eq.~\eqref{eq:plid} as $\Delta y\to0$, and it also explains why the recovered lid
+speed differs from the commanded one by the $3$--$12\%$ slip quoted above. The
+residuals reported above therefore verify the discrete energy budget indirectly
+rather than close it exactly at the boundary, and are
 consistent with the exact identity $\overline{\Plid}=\Dbar$ of the continuous
 equations. $\Plid$ depends on the actuation
 and on the flow through the wall shear stress, and it is the quantity that enters
@@ -602,8 +616,8 @@ $B_3$ seed 0 & mixed & 0.62 (1.16) & 310 (582) & 0.52 & 0.45 & intermediate\\
 
 The control coefficients $a_{mn}(Re)$ and the flow field are obtained simultaneously
 by a parametric physics-informed neural network \cite{raissi2019pinn,cai2021pinnreview}
-with inputs $(x,y,\theta,\widetilde{Re})$, where
-$\theta=t_{\mathrm{phys}}/T\in[0,1]$ is the normalized phase,
+with inputs $(x,y,\tau,\widetilde{Re})$, where
+$\tau\in[0,1]$ is the raw nondimensional training time,
 and a multi-objective loss combining the momentum and continuity residuals, the
 boundary conditions, a viscous-dissipation objective, the actuation-norm
 constraint $(\Eact-E^\ast)^2$, a spatial-variance regularizer and a
@@ -633,8 +647,9 @@ different discretization of the same equations, and a different iteration
 strategy. Collision is performed in moment space with a diagonal relaxation
 matrix whose non-viscous rates take the conventional D2Q9 values
 (Supplementary Sec.~S4.1) \cite{lallemand2000theory}, and the moving lid is
-imposed with a Zou--He-type velocity boundary
-condition \cite{zou1997pressure}. The solver reproduces the benchmark
+imposed by a half-way bounce-back with momentum injection on the two wall-facing
+populations, a velocity boundary condition of the
+Zou--He family \cite{zou1997pressure}. The solver reproduces the benchmark
 centerline velocities of Ghia et al.~\cite{ghia1982high} with
 $L_2(u)=0.0051$ and $L_\infty(u)=0.0128$ at $Re=100$, and
 $L_2(u)=0.0141$ and $L_\infty(u)=0.0300$ at $Re=1000$ on the
@@ -714,6 +729,8 @@ determine a convergence order, so no extrapolation and no convergence index is
 computed for them. The refined runs raise $\Dbar$ by $5.4\%$, $7.3\%$ and $7.1\%$
 for $B_1$, $B_2$ and $B_3$, preserve the ordering $B_2>B_1>B_3$, and halve the
 power-balance residual of Sec.~\ref{sec:budget}; it is tabulated in Sec.~S4.5.
+The replication supplies scalar diagnostics only: every field in this paper, and
+every phase-resolved quantity, is an $N=256$ capture.
 Within a run, by contrast, the
 statistics are not single-sample:
 the cycle means of Sec.~\ref{sec:branch_compare} average $32$ forced periods and
@@ -925,8 +942,8 @@ two coincide for the stationary controls, whose span is shaded. (b) That
 gap---the fluctuating part of the cycle mean---against the temporal energy
 fraction $f_t$ of the lid control, together with the first-harmonic Stokes
 estimate $f_t\overline{E}_{\mathrm{act}}\sqrt{\nu\omega_1/2}$ (dashed line,
-no adjustable constant). The cycle-mean totals of the three branches lie within
-twenty per cent of one another and inside the stationary band except for $B_2$,
+no adjustable constant). The cycle-mean totals of the three branches span a factor
+of at most $1.23$ and lie inside the stationary band except for $B_2$,
 while the fluctuating parts they conceal span two orders of magnitude and follow
 the boundary-layer estimate. The branch values are single realizations.}
 \label{fig:cycle}
@@ -949,9 +966,10 @@ recirculation under the lid, not a weakened copy of the instantaneous flow. $B_3
 is intermediate in structure: $D(\overline{\mathbf{u}})=5.41\times10^{-3}$ against
 $\Dbar=1.169\times10^{-2}$, a ratio of $2.16$, with a fluctuating part that carries
 $53.7\%$ of its total cost. On the cycle average, and at the same actuation norm,
-the three branches lie within twenty per cent of one another: $B_2$ costs $1.21$
-times $B_1$ and $1.23$ times $B_3$, while $B_1$ and $B_3$ are indistinguishable to
-within $2\%$, although their temporal fractions span $0.013$, $0.448$ and $0.998$.
+the three branches lie within a factor $1.23$ of one another: $B_2$ costs
+$20.7\%$ more than $B_1$ and $23.2\%$ more than $B_3$, while $B_1$ and $B_3$ are
+nearly equal, $2.1\%$ apart at $N=256$ and $0.5\%$ apart at $N=512$, although their
+temporal fractions span $0.013$, $0.448$ and $0.998$.
 The most oscillatory branch remains $2.1$ times as dissipative as the least
 dissipative stationary control $k=1$, so the unsteady actuations do not fall below
 the stationary band; they cluster at its upper edge. Each quoted value is a single
@@ -1048,9 +1066,12 @@ the total cycle-mean dissipation but to its fluctuating component
 $D_{\mathrm{fluct}}=\Dbar-D(\overline{\mathbf{u}})$, which the decomposition of
 Sec.~\ref{sec:dissipation} isolates exactly. The measured fluctuating parts are
 $1.339\times10^{-2}$ for $B_2$ and $6.28\times10^{-3}$ for $B_3$, against Stokes
-estimates of $1.41\times10^{-2}$ and $6.38\times10^{-3}$: the oscillatory
-boundary layer accounts for $95\%$ and $98\%$ of the fluctuation cost of the two
-time-reversing branches, with no adjustable constant. For $B_1$ the estimate is
+estimates of $1.41\times10^{-2}$ and $6.38\times10^{-3}$: the estimate reproduces
+the fluctuation cost of the two time-reversing branches to within approximately
+$5\%$ and $2\%$, respectively, with no adjustable constant. It is a half-space
+model of the oscillatory wall layer, so this agreement speaks to the origin of the
+fluctuating cost rather than to a spatial decomposition of the measured
+dissipation. For $B_1$ the estimate is
 $1.81\times10^{-4}$ against a measured fluctuation of $2.15\times10^{-4}$, i.e.\ it
 falls $16\%$ short of a quantity that is itself a small difference of two larger
 ones and should not be over-read. Second, the scaling
@@ -1069,10 +1090,11 @@ balance sheet rather than a coincidence: $B_1$ spends $1.17\times10^{-2}$ in its
 mean field and almost nothing in fluctuations, $B_3$ spends $5.4\times10^{-3}$ and
 $6.3\times10^{-3}$, and $B_2$ spends $1.0\times10^{-3}$ and $13.4\times10^{-3}$
 --- three different compositions, one total, except for $B_2$, which escapes the
-stationary floor and lands $21\%$ above it. An independent test of the
-$\sqrt{\omega_n}$ dependence remains available: single-harmonic excitations at
-$n=1,2,4$ with identical oscillatory energy but different spectra
-(Supplementary Sec.~S4.5 tabulates the harmonic budgets). Third, the estimate also
+stationary floor and lands $21\%$ above it. A direct test of the
+$\sqrt{\omega_n}$ dependence is left for future work: it requires single-harmonic
+excitations at $n=1,2,4$ with identical oscillatory energy, whereas
+Supplementary Sec.~S4.5 only tabulates the harmonic budgets of the three controls
+already used here. Third, the estimate also
 makes the resolution requirement quantitative: at $Re=500$ the fundamental layer is
 $\delta_1=0.0357L$, i.e.\ about $9.1$ cells at $N=256$, and $\delta_4=0.0178L$,
 about $4.6$ cells, so the first-harmonic-dominated budgets above are resolved by
@@ -1195,8 +1217,8 @@ and $2.42$ respectively, and the lid power of $B_2$ is negative for $17\%$ of th
 period: the flow returns energy through the lid while the Stokes layer spins down.
 The residual $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\Dbar$, computed with the
 wall velocity recovered at the boundary node rather than the prescribed profile
-(Sec.~S4.8) --- i.e.\ across the first fluid plane adjacent to the wall, not at
-the physical wall itself --- is
+(Sec.~S4.8) --- i.e.\ across the lid node row, which the half-way boundary
+condition places half a lattice spacing below the hydrodynamic wall --- is
 $-2.8\%$, $-0.6\%$ and $-0.4\%$.
 
 \begin{table}[t]
@@ -1216,9 +1238,9 @@ so the estimator error of the last column, not the sampling error, is what limit
 the closure. The power $\overline{P}_{\mathrm{lid}}$ is the numerical estimator
 $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$ computed with the
 wall velocity recovered at the boundary node [Eq.~\eqref{eq:plid_rec}], not the
-prescribed velocity; it evaluates the power crossing the \emph{first fluid plane
-adjacent to the wall} rather than the physical wall itself, so it provides an
-indirect verification of the discrete energy budget. The resulting residual
+prescribed velocity; it evaluates the power crossing the \emph{lid node row},
+half a lattice spacing below the physical wall, rather than the wall itself, so it
+provides an indirect verification of the discrete energy budget. The resulting residual
 $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\Dbar$ is the first-order truncation of the wall-shear
 estimator, not a physical imbalance (Sec.~\ref{sec:budget}).}
 \label{tab:budget}
@@ -1331,7 +1353,10 @@ the second point sharply: at $\nu=2\times10^{-3}$ and $A=0.707$ the layer contri
 $3.14\times10^{-3}$ to the $k=1$ dissipation against a measured $7.13\times10^{-3}$,
 so a Stokes wall layer accounts for $44\%$ of the cost; the remaining $56\%$ is not
 captured by the half-space estimate and reflects the combined effects of
-finite-domain geometry, streamwise gradients and inertia. Whether the ratio tends
+finite-domain geometry, streamwise gradients and inertia. It should not be read as
+dissipation located in the cavity core: the estimate covers only the near-wall
+region it models, and the strain that leaves the layer is redistributed between the
+interior and the other walls rather than assigned to either. Whether the ratio tends
 to the Stokes value as $Re$ decreases is a direct test of the inertial explanation,
 and it is the natural next calculation for the stationary pair.
 
@@ -1451,12 +1476,14 @@ same.} For the lid-oscillatory branch the two
 differ by a factor $14.2$, and the fluctuating part of the strain field carries
 $92.9\%$ of its cycle-mean cost; for the mixed branch it carries $53.7\%$, and for
 the quasi-steady branch only $1.8\%$. The three branches nevertheless dissipate
-within twenty per cent of one another ($1.44$, $1.19$ and
+within $21\%$ and $23\%$ of one another ($1.44$, $1.19$ and
 $1.17\times10^{-2}$ at a common actuation norm of $0.25$): the oscillatory branch
 is the most expensive not by a wide margin but by a modest factor of $1.2$, and the
-quasi-steady and mixed responses are energetically indistinguishable. The
-second-Stokes estimate of Sec.~\ref{sec:scaling} accounts for $95\%$ and $98\%$ of
-the fluctuating dissipation of the two time-reversing branches from the imposed lid
+quasi-steady and mixed responses are nearly equal, differing by $2.1\%$ at
+$N=256$ and by $0.5\%$ at $N=512$. The
+second-Stokes estimate of Sec.~\ref{sec:scaling} reproduces the fluctuating
+dissipation of the two time-reversing branches to within approximately $5\%$ and
+$2\%$ from the imposed lid
 signal alone, and the Reynolds-stress forcing of
 Sec.~\ref{sec:topology} is spatially consistent with a steady-streaming mechanism,
 although a closed mean-vorticity budget has not yet been established.

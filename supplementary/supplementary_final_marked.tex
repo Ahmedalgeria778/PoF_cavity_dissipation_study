@@ -50,6 +50,10 @@ a mark.}}
 \medskip
 
 
+\begin{chgdel}
+\medskip
+\end{chgdel}
+
 \begin{chgadd}
 
 \tableofcontents
@@ -119,6 +123,7 @@ networks share the same input normalization but have different widths and depths
 reflecting the different complexity of the flow field and the low-dimensional
 control space.
 
+\begin{chgdel}
 \textbf{Input normalization.} The spatial coordinates \((x,y)\in[0,L_x]\times[0,1]\)
 and time \(t\in[0,1]\) are fed directly to the networks. The Reynolds number is
 normalized to
@@ -128,7 +133,6 @@ normalized to
 so that the training range \(Re\in[100,1000]\) maps to \([-1,1]\), improving
 numerical conditioning of the gradient computations.
 
-\begin{chgdel}
 \textbf{Flow network.} Six hidden layers, each with 64 neurons, using hyperbolic
 tangent (\(\tanh\)) activation functions. Inputs: \((x,y,t,\widetilde{Re})\),
 dimension 4. Outputs: \((u,v,p)\), dimension 3. Total trainable parameters:
@@ -141,9 +145,22 @@ activation. Inputs: \((\widetilde{Re})\), dimension 1. Outputs:
 \end{chgdel}
 
 \begin{chgadd}
+\textbf{Input normalization.} The spatial coordinates \((x,y)\in[0,L_x]\times[0,1]\)
+are fed directly to the networks, and so is the raw training-time variable
+\(\tau\in[0,T_{\max}]=[0,1]\): the training clock is a dimensionless variable of
+the identification problem, not the physical forcing time. The exported signal is
+evaluated on a different clock, \(t_{\mathrm{phys}}\in[0,T]=[0,2]\)
+(Sec.~S2.1); the two are related below. The Reynolds number is
+normalized to
+\begin{equation}
+\widetilde{Re}=\frac{Re-550}{450}\in[-1,1],
+\end{equation}
+so that the training range \(Re\in[100,1000]\) maps to \([-1,1]\), improving
+numerical conditioning of the gradient computations.
+
 \textbf{Flow network.} Six hidden layers, each with 64 neurons, using hyperbolic
-tangent (\(\tanh\)) activation functions. Inputs: \((x,y,\theta,\widetilde{Re})\),
-where \(\theta=t_{\mathrm{phys}}/T\in[0,1]\) is the normalized phase,
+tangent (\(\tanh\)) activation functions. Inputs: \((x,y,\tau,\widetilde{Re})\),
+where \(\tau\in[0,1]\) is the raw nondimensional training time,
 dimension 4. Outputs: \((u,v,p)\), dimension 3. Total trainable parameters:
 \(4\times64 + 64 + 5\times(64\times64 + 64) + 64\times3 + 3 = 21\,315\).
 
@@ -192,6 +209,7 @@ Control & 4 hidden + I/O & 32 & \(\tanh\) & 1 & 30 (\(a_{mn}\))\\
 All collocation points are resampled from scratch at the beginning of each
 training epoch, preventing overfitting to any fixed quadrature set.
 
+\begin{chgdel}
 \textbf{Interior PDE collocation:} \(N_{\mathrm{phys}}=4\,000\) points sampled
 uniformly at random over the computational domain
 \(\Omega\times[0,1]=[0,L_x]\times[0,1]\times[0,1]\). The time coordinate fed to
@@ -202,6 +220,21 @@ Reynolds-number values are selected from the set \(\{100,300,500,700,900,1000\}\
 each interior point is evaluated at all three selected \(Re\) values, giving an
 effective PDE sample size of \(3N_{\mathrm{phys}}=12\,000\) residual evaluations
 per epoch.
+\end{chgdel}
+
+\begin{chgadd}
+\textbf{Interior PDE collocation:} \(N_{\mathrm{phys}}=4\,000\) points sampled
+uniformly at random over the computational domain
+\(\Omega\times[0,T_{\max}]=[0,L_x]\times[0,1]\times[0,1]\). The time coordinate fed
+to the network is the raw training variable \(\tau\in[0,T_{\max}]=[0,1]\), drawn
+uniformly, and the temporal basis of the control is \(\cos(n\pi\tau)\) over that
+interval; the full forcing period \(T=2\) is reached only on export (Sec.~S2.1),
+so the training window covers one half-period of the fundamental harmonic. At each epoch, three
+Reynolds-number values are selected from the set \(\{100,300,500,700,900,1000\}\);
+each interior point is evaluated at all three selected \(Re\) values, giving an
+effective PDE sample size of \(3N_{\mathrm{phys}}=12\,000\) residual evaluations
+per epoch.
+\end{chgadd}
 
 \textbf{Boundary collocation:} \(N_{\mathrm{BC}}=600\) points distributed across
 the boundary \(\partial\Omega\), split as \(200\) on \(\Gamma_{\mathrm{top}}\)
@@ -322,99 +355,6 @@ before the control network has been activated.
 %=============================================================
 
 \textbf{S2.1 Spatio-Temporal Fourier Basis}
-\end{chgdel}
-
-\begin{chgadd}
-\subsection{Multi-Objective Loss Formulation}
-
-The complete loss is
-\begin{equation}
-\label{eq:loss}
-\mathcal{L}=\lambda_{\mathrm{PDE}}\mathcal{L}_{\mathrm{PDE}}
-+\lambda_{\mathrm{BC}}\mathcal{L}_{\mathrm{BC}}
-+\lambda_{\mathrm{diss}}\mathcal{L}_{\mathrm{diss}}
-+\lambda_{\mathrm{ctrl}}\mathcal{L}_{\mathrm{ctrl}}
-+\lambda_{\mathrm{var}}\mathcal{L}_{\mathrm{var}}
-+\lambda_{Re}\mathcal{L}_{Re},
-\end{equation}
-with baseline weights \(\lambda_{\mathrm{PDE}}=1\), \(\lambda_{\mathrm{BC}}=15\),
-\(\lambda_{\mathrm{diss}}=0.05\), \(\lambda_{\mathrm{ctrl}}=200\),
-\(\lambda_{\mathrm{var}}=1\), \(\lambda_{Re}=2\). The individual components are:
-\begin{align}
-\mathcal{L}_{\mathrm{PDE}}&=\left\langle R_u^2+R_v^2+R_c^2\right\rangle_{\mathcal{X}_{\mathrm{int}}},\\
-\mathcal{L}_{\mathrm{BC}}&=\left\langle u^2+v^2\right\rangle_{\Gamma_{\mathrm{stat}}}
-+\left\langle(u-U_{\mathrm{lid}})^2+v^2\right\rangle_{\Gamma_{\mathrm{top}}},\\
-\mathcal{L}_{\mathrm{diss}}&=\int_\Omega\frac{1}{Re}
-\!\left[u_x^2+v_y^2+\tfrac{1}{2}(u_y+v_x)^2\right]d\Omega
-=\int_\Omega\nu\,S{:}S\,d\Omega,\\
-\mathcal{L}_{\mathrm{ctrl}}&=(E_r-E^*)^2,\\
-\mathcal{L}_{\mathrm{var}}&=-\log\!\left[\operatorname{Var}(U_{\mathrm{lid}})+10^{-5}\right],\\
-\mathcal{L}_{Re}&=\max\!\left[0,\;\delta-
-\frac{1}{N_{\mathrm{probe}}}\sum_{i=1}^{N_{\mathrm{probe}}}
-\!\left(U_{\mathrm{lid}}(x_i,t_0,Re_{\min})
--U_{\mathrm{lid}}(x_i,t_0,Re_{\max})\right)^2\right],
-\end{align}
-with \(N_{\mathrm{probe}}=20\) probe locations distributed uniformly in \(x\in[0,L_x]\),
-\(t_0=0.5\), \(\delta=0.01\), \(Re_{\min}=100\), \(Re_{\max}=1000\).
-
-The dissipation objective \(\mathcal{L}_{\mathrm{diss}}\) is one half of the physical
-viscous-dissipation rate defined in Main Eq.~(6):
-\begin{equation}
-\mathcal{L}_{\mathrm{diss}}=\frac{1}{2}D.
-\end{equation}
-The constant factor \(1/2\) is retained in the training weights; it does not affect
-the location of the minimum.
-This constant normalization is retained in the reported training weights; the
-relative weighting of the loss terms is therefore based on \(\mathcal{L}_{\mathrm{diss}}\),
-not on \(D\) directly.
-
-No initial-condition term is included by design. The temporal Fourier expansion
-with basis \(\cos(2n\pi\theta)\) defines a periodic space--time boundary-value
-problem on \(\theta\in[0,1]\), so training targets a statistically stationary
-periodic state rather than the transient from a prescribed initial field (Main
-Sec.~2.1). 
-
-Two distinct periodicity properties must be differentiated:
-\begin{enumerate}
-\item \emph{Periodicity of the wall actuation} \(U_{\mathrm{lid}}(x,\theta)\): this
-is enforced analytically by the Fourier basis \(\sin(m\pi x)\cos(2n\pi\theta)\) used
-to represent the control coefficients \(a_{mn}\). By construction, the actuation is
-exactly periodic in \(\theta\) with unit period.
-
-\item \emph{Periodicity of the flow field} \((u,v,p)\): the PINN flow network
-receives \((x,y,\theta,\widetilde{Re})\) as inputs and uses \(\tanh\) activations,
-which do not automatically enforce periodicity in \(\theta\). However, the PINN flow
-field is used only during training to satisfy the Navier-Stokes equations; it is not
-transferred to the LBM solver. The actual flow field used for dissipation
-calculations is computed by the MRT-LBM solver driven by the periodic
-\(U_{\mathrm{lid}}(x,\theta)\) from the PINN control network. The periodicity of
-this LBM-computed flow field is verified a posteriori in Sec.~S4.5 by comparing the
-phase averages of the first and second halves of the sampling window, with
-discrepancies below \(1.0\times10^{-3}\) in relative field norm for all three
-branches.
-\end{enumerate}
-
-\textbf{Weight rationale.} The weight \(\lambda_{\mathrm{BC}}=15\) strongly
-enforces boundary conditions relative to the interior residual, preventing poorly
-conditioned flow states where boundary violations dominate the solution.
-\(\lambda_{\mathrm{ctrl}}=200\) is large to enforce the energy constraint tightly
-(\(|E_r-E^*|/E^*<5\%\) at convergence for the reference configurations; deviations
-up to \(11\%\) occur in some sensitivity tests with modified capacity or truncation,
-as documented in Tables~S7--S8), ensuring that
-all realizations are compared at effectively the same actuation energy. The small
-value \(\lambda_{\mathrm{diss}}=0.05\) prevents the dissipation objective from
-overwhelming the PDE constraints during early training, which can cause the
-optimizer to ignore physical accuracy in favor of reducing dissipation. The
-regularizer \(10^{-5}\) in \(\mathcal{L}_{\mathrm{var}}\) prevents numerical
-issues when \(\operatorname{Var}(U_{\mathrm{lid}})=0\) at the beginning of training
-before the control network has been activated.
-
-%=============================================================
-\section{Control-Space and Modal-Analysis Details}
-%=============================================================
-
-\subsection{Spatio-Temporal Fourier Basis}
-\end{chgadd}
 
 The boundary actuation is expanded as in Main Sec.~3.2:
 \begin{equation}
@@ -434,7 +374,6 @@ Navier--Stokes residual therefore carries the chain-rule factor
 indices in this manuscript use the physical (one-based) convention: the second
 spatial harmonic corresponds to \(m=2\), not \(m=1\).
 
-\begin{chgdel}
 \textbf{S2.2 Modal Energy Normalization and Quadrature}
 
 The time-average of the squared basis functions satisfies
@@ -493,11 +432,147 @@ first harmonic (sub-structure analysis of Sec.~S2.3).
 \end{chgdel}
 
 \begin{chgadd}
+\subsection{Multi-Objective Loss Formulation}
+
+The complete loss is
+\begin{equation}
+\label{eq:loss}
+\mathcal{L}=\lambda_{\mathrm{PDE}}\mathcal{L}_{\mathrm{PDE}}
++\lambda_{\mathrm{BC}}\mathcal{L}_{\mathrm{BC}}
++\lambda_{\mathrm{diss}}\mathcal{L}_{\mathrm{diss}}
++\lambda_{\mathrm{ctrl}}\mathcal{L}_{\mathrm{ctrl}}
++\lambda_{\mathrm{var}}\mathcal{L}_{\mathrm{var}}
++\lambda_{Re}\mathcal{L}_{Re},
+\end{equation}
+with baseline weights \(\lambda_{\mathrm{PDE}}=1\), \(\lambda_{\mathrm{BC}}=15\),
+\(\lambda_{\mathrm{diss}}=0.05\), \(\lambda_{\mathrm{ctrl}}=200\),
+\(\lambda_{\mathrm{var}}=1\), \(\lambda_{Re}=2\). The individual components are:
+\begin{align}
+\mathcal{L}_{\mathrm{PDE}}&=\left\langle R_u^2+R_v^2+R_c^2\right\rangle_{\mathcal{X}_{\mathrm{int}}},\\
+\mathcal{L}_{\mathrm{BC}}&=\left\langle u^2+v^2\right\rangle_{\Gamma_{\mathrm{stat}}}
++\left\langle(u-U_{\mathrm{lid}})^2+v^2\right\rangle_{\Gamma_{\mathrm{top}}},\\
+\mathcal{L}_{\mathrm{diss}}&=\int_\Omega\frac{1}{Re}
+\!\left[u_x^2+v_y^2+\tfrac{1}{2}(u_y+v_x)^2\right]d\Omega
+=\int_\Omega\nu\,S{:}S\,d\Omega,\\
+\mathcal{L}_{\mathrm{ctrl}}&=(E_r-E^*)^2,\\
+\mathcal{L}_{\mathrm{var}}&=-\log\!\left[\operatorname{Var}(U_{\mathrm{lid}})+10^{-5}\right],\\
+\mathcal{L}_{Re}&=\max\!\left[0,\;\delta-
+\frac{1}{N_{\mathrm{probe}}}\sum_{i=1}^{N_{\mathrm{probe}}}
+\!\left(U_{\mathrm{lid}}(x_i,t_0,Re_{\min})
+-U_{\mathrm{lid}}(x_i,t_0,Re_{\max})\right)^2\right],
+\end{align}
+with \(N_{\mathrm{probe}}=20\) probe locations distributed uniformly in \(x\in[0,L_x]\),
+\(t_0=0.5\), \(\delta=0.01\), \(Re_{\min}=100\), \(Re_{\max}=1000\).
+
+The dissipation objective \(\mathcal{L}_{\mathrm{diss}}\) is one half of the physical
+viscous-dissipation rate defined in Main Eq.~(6):
+\begin{equation}
+\mathcal{L}_{\mathrm{diss}}=\frac{1}{2}D.
+\end{equation}
+The constant factor \(1/2\) is retained in the training weights; it does not affect
+the location of the minimum.
+This constant normalization is retained in the reported training weights; the
+relative weighting of the loss terms is therefore based on \(\mathcal{L}_{\mathrm{diss}}\),
+not on \(D\) directly.
+
+No initial-condition term is included by design. The identification solves a
+space--time boundary-value problem in the training variables
+\((x,y,\tau)\in[0,L_x]\times[0,1]\times[0,1]\), with the control expanded on the
+basis \(\cos(n\pi\tau)\), so training targets a stationary response of that
+problem rather than the transient from a prescribed initial field (Main
+Sec.~2.1). Time derivatives in the Navier--Stokes residual are taken directly with
+respect to \(\tau\), with no chain-rule factor: the residual is written in the
+training clock, and \(T_{\max}=1\) is its time unit.
+
+Three distinct properties must not be conflated:
+\begin{enumerate}
+\item \emph{The coefficient network.} The control network outputs the amplitudes
+\(a_{mn}(Re)\), which are independent of any time variable; they are the object
+identified by the training.
+
+\item \emph{The exported wall actuation} \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\):
+the same Fourier series is evaluated on the physical clock over the complete
+period \(0\le t_{\mathrm{phys}}\le T=2\), i.e.\ on the basis
+\(\cos(n\pi t_{\mathrm{phys}})=\cos(2n\pi\theta)\) with
+\(\theta=t_{\mathrm{phys}}/T\) (Sec.~S2.1). Because \(T\) is an integer multiple of
+the period \(2/n\) of every harmonic, this signal is exactly periodic over
+\([0,T]\); the training window \([0,1]\) covers one half-period of the
+fundamental, which is a restriction on the training clock only, not on the
+exported signal.
+
+\item \emph{The PINN flow field} \((u,v,p)\): the flow network
+receives \((x,y,\tau,\widetilde{Re})\) as inputs and uses \(\tanh\) activations,
+which do not enforce periodicity in \(\tau\), and no periodic endpoint condition is
+imposed on it. It is used only during training to satisfy the Navier--Stokes
+equations; it is not
+transferred to the LBM solver. The actual flow field used for dissipation
+calculations is computed by the MRT-LBM solver driven by the periodic
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) exported from the PINN control network. The periodicity of
+this LBM-computed flow field is verified a posteriori in Sec.~S4.5 by comparing the
+phase averages of the first and second halves of the sampling window, with
+discrepancies below \(1.0\times10^{-3}\) in relative field norm for all three
+branches.
+\end{enumerate}
+
+\textbf{Weight rationale.} The weight \(\lambda_{\mathrm{BC}}=15\) strongly
+enforces boundary conditions relative to the interior residual, preventing poorly
+conditioned flow states where boundary violations dominate the solution.
+\(\lambda_{\mathrm{ctrl}}=200\) is large to enforce the energy constraint tightly
+(\(|E_r-E^*|/E^*<5\%\) at convergence for the reference configurations; deviations
+up to \(11\%\) occur in some sensitivity tests with modified capacity or truncation,
+as documented in Tables~S7--S8), ensuring that
+all realizations are compared at effectively the same actuation energy. The small
+value \(\lambda_{\mathrm{diss}}=0.05\) prevents the dissipation objective from
+overwhelming the PDE constraints during early training, which can cause the
+optimizer to ignore physical accuracy in favor of reducing dissipation. The
+regularizer \(10^{-5}\) in \(\mathcal{L}_{\mathrm{var}}\) prevents numerical
+issues when \(\operatorname{Var}(U_{\mathrm{lid}})=0\) at the beginning of training
+before the control network has been activated.
+
+%=============================================================
+\section{Control-Space and Modal-Analysis Details}
+%=============================================================
+
+\subsection{Spatio-Temporal Fourier Basis}
+
+The boundary actuation is expanded as in Main Sec.~3.2, on the export clock
+\(t_{\mathrm{phys}}\) (equivalently on the normalized phase
+\(\theta=t_{\mathrm{phys}}/T\in[0,1]\)):
+\begin{equation}
+U_{\mathrm{lid}}(x,t_{\mathrm{phys}},Re)=\sum_{m=1}^{N_x}\sum_{n=0}^{N_t-1}
+a_{mn}(Re)\sin\!\left(\frac{m\pi x}{L_x}\right)
+\cos\!\left(\frac{2n\pi t_{\mathrm{phys}}}{T}\right),
+\qquad T=2 .
+\end{equation}
+The coefficients \(a_{mn}\) are those identified in the training clock
+\(\tau\in[0,1]\) of Sec.~S1.2, where the same series is written
+\(\cos(n\pi\tau)\); export re-evaluates that series over the complete period
+\(0\le t_{\mathrm{phys}}\le T=2\), so that
+\(\cos(2n\pi t_{\mathrm{phys}}/T)=\cos(n\pi t_{\mathrm{phys}})\). The baseline
+truncation is \(N_x=6\), \(N_t=5\), giving 30 nominal coefficients.
+The sine basis \(\sin(m\pi x/L_x)\) is chosen because it vanishes at
+\(x=0\) and \(x=L_x\) for all \(m\ge1\), automatically enforcing corner
+compatibility without any additional constraint. The cosine basis
+\(\cos(2n\pi t_{\mathrm{phys}}/T)\) has the property that \(\cos(0)=1\), so the \(n=0\) terms
+represent purely stationary (time-independent) actuation, and every term is
+periodic with period \(T\) in \(t_{\mathrm{phys}}\): the fundamental oscillates at
+\(\omega_1=2\pi/T=\pi\). The lattice is driven by this exported series, not by the
+PINN flow field, and the training residual differentiates with respect to
+\(\tau\) alone, so no chain-rule factor \(1/T\) enters the identification
+(Sec.~S1.4). All mode
+indices in this manuscript use the physical (one-based) convention: the second
+spatial harmonic corresponds to \(m=2\), not \(m=1\).
+
 \subsection{Modal Energy Normalization and Quadrature}
 
 The phase average of the squared temporal basis functions satisfies
 \(\langle\cos^2(0)\rangle_\theta=1\) and \(\langle\cos^2(2\pi n\theta)\rangle_\theta=\frac{1}{2}\)
-for \(n\ge1\). The space-average of the squared sine basis functions satisfies
+for \(n\ge1\). The same values hold for \(\cos(n\pi\tau)\) averaged over the
+training window \(\tau\in[0,1]\), because \(\int_0^1\cos^2(n\pi\tau)\,d\tau=
+\int_0^1\cos^2(2n\pi\theta)\,d\theta=\tfrac12\) and the cross terms vanish on both
+windows: the energy constraint applied during identification is therefore the cycle
+mean of the exported signal, even though the flow field itself is trained on the
+shorter window (Sec.~S1.4). The space-average of the squared sine basis functions satisfies
 \(\langle\sin^2(m\pi s)\rangle_s=\frac{1}{2}\) for all \(m\ge1\),
 where \(s=x/L_x\in[0,1]\). Therefore, the contribution of coefficient \(a_{mn}\)
 to the realized energy \(E_r=\langle U_{\mathrm{lid}}^2\rangle_{s,\theta}\) is:
@@ -966,12 +1041,18 @@ compressible corrections are unaffected by the Reynolds number; they provide
 numerical stability while maintaining second-order accuracy. The post-collision populations are streamed:
 \(f_i(\mathbf{x}+\mathbf{c}_i,t+1)=f_i^*(\mathbf{x},t)\).
 
-Lid boundary conditions are imposed with a velocity boundary condition of the
-Zou--He type \cite{zou1997pressure}: at the upper wall \((y=N-1\), lattice index), the populations
-whose streaming direction points out of the domain are replaced by the values that
-enforce the prescribed lid velocity \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\), so that the
-recovered macroscopic velocity matches
-the output of the identification. Bottom and lateral walls
+Lid boundary conditions are imposed on the node row \(i=N-1\) by half-way
+bounce-back with momentum injection into the two wall-facing populations
+(\(q=7,8\)), a velocity boundary condition of the Zou--He family
+\cite{zou1997pressure}. The injected momentum is the commanded lid speed
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) at that node, with the local density
+taken from the post-collision field. Because this scheme places the hydrodynamic
+wall half a lattice spacing outside the lid node row, it enforces the moving-wall
+condition at the wall, not the velocity at the node: the recovered streamwise
+velocity of row \(N-1\) differs from the commanded profile by the slip measured in
+Sec.~S4.8 (\(3.2\%\) to \(11.8\%\) of the cavity speed, resolution-dependent), and
+the power estimator of Sec.~S4.8 is therefore evaluated on that row rather than
+exactly at \(y=1\). Bottom and lateral walls
 use standard half-way bounce-back boundary conditions.
 
 \subsection{Ghia et al.\ Benchmark Validation}
@@ -1026,13 +1107,13 @@ and S4.8.
 
 The PINN-identified controls are transferred to the LBM solver by evaluating the
 control network output at the desired \(Re\) and discretizing the resulting
-\(U_{\mathrm{lid}}(x,\theta,Re)\) profile onto the lattice lid nodes. For the
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}},Re)\) profile onto the lattice lid nodes. For the
 stationary \(A_2\sin(2\pi x)\) and \(\sin(\pi x)\) configurations, the lid
 velocity is constant in time and is applied identically at every LBM timestep.
 
 For the \(B_1\) branch control, two distinct profiles must be differentiated:
 \begin{enumerate}
-\item The full \(B_1\) control \(U_{\mathrm{lid}}(x,\theta;500)\) used for the
+\item The full \(B_1\) control \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}};500)\) used for the
 dedicated branch capture is rescaled to the target cycle-mean actuation energy
 \(E^\ast=0.25\). Its native, unscaled Fourier export has
 \(\overline{E}_r=0.2535\). It contains both stationary and time-dependent Fourier
@@ -1077,8 +1158,8 @@ not exactly the control that the PINN produces. When the full time-dependent
 Fourier series is transferred instead, at the same target energy \(E^\ast=0.25\),
 \(Re=500\) and \(N=256\), its cycle-mean dissipation is
 \(1.1934\times10^{-2}\), i.e.\ \(0.34\%\) above the \(1.1894\times10^{-2}\) of the
-stationary run of its own time-mean profile, and the kinetic-energy fluctuation
-ratio of the response is \(R_K=0.16\%\). The two values are not the same pair of
+stationary run of its own time-mean profile, and the temporal fluctuations carry
+\(R_K=0.16\%\) of the cycle-mean kinetic energy. The two values are not the same pair of
 quantities, and the comparison is deliberately made between the two
 \emph{cycle means}: the stationary control and the time-dependent one are then
 within \(0.4\%\) of each other, while the dissipation of the time-mean \emph{field}
@@ -1315,13 +1396,15 @@ steady limit; the gap is the dissipation carried by the fluctuations.
 \subsection{Cycle-averaged response of the temporal controls}
 
 The three branch controls transferred to the lattice are periodic with the physical
-forcing period \(T=2\). The PINN operates on the normalised phase
+forcing period \(T=2\). The exported control is written on the normalized phase
 \(\theta=t_{\mathrm{phys}}/T\in[0,1]\); the temporal basis
 \(\cos(2n\pi\theta)\) is periodic with unit period in \(\theta\) by
 construction, so the periodicity of the actuation is enforced analytically.
-The time derivative that enters the Navier--Stokes residual carries the
-chain-rule factor \(\partial/\partial t_{\mathrm{phys}}=(1/T)\,\partial/\partial\theta\),
-so the fundamental of the exported control oscillates at
+The identification itself runs on the raw training clock \(\tau\in[0,1]\)
+(Sec.~S1.2), where the same basis reads \(\cos(n\pi\tau)\) and the Navier--Stokes
+residual differentiates with respect to \(\tau\) with no chain-rule factor; export
+evaluates that series at \(\tau\to t_{\mathrm{phys}}\) over the complete period, so
+the fundamental of the exported control oscillates at
 \(\omega_1=2\pi/T=\pi\).
 
 The lattice is driven so that this physical period is the one the solver sees. The
@@ -1447,7 +1530,8 @@ values, and is the variability that a single cycle-mean number conceals.
 
 Three readings of the table matter. First, \(B_1\) is quasi-stationary: its cycle
 mean exceeds the dissipation of its own time-mean field by \(1.8\%\) (ratio
-\(1.02\)), its kinetic energy fluctuates by \(R_K=0.16\%\) of its mean, and
+\(1.02\)), the temporal fluctuations carry \(R_K=0.16\%\) of the cycle-mean kinetic
+energy, and
 \(\varepsilon(t)\) spans a factor \(1.43\) across the cycle. The stationary transfer
 of Sec.~S4.4 is therefore an adequate representation of that branch. Second, \(B_2\)
 is the opposite case: \(92.9\%\) of its cycle mean is carried by the fluctuations,
@@ -1673,7 +1757,7 @@ as sampling noise. The cycle mean of the dissipation rises by
 mean-field part by \(+5.29\%\), \(+9.70\%\) and \(+4.45\%\); the fluctuating part by
 \(+11.02\%\), \(+7.15\%\) and \(+9.36\%\). The three fluctuating shares move by
 \(+0.10\), \(-0.20\) and \(+1.06\) percentage points, which is the sense in which
-the Jensen decomposition of Main Sec.~5.2 is grid-robust: refining the lattice
+the Jensen decomposition of Main Sec.~6.2 is grid-robust: refining the lattice
 changes the total cost of a branch by several per cent and its \emph{composition}
 by about one. The cycle-mean kinetic energy rises by \(+2.1\%\), \(+4.6\%\) and
 \(+2.8\%\), and the lid power by \(+6.9\%\), \(+7.6\%\) and \(+7.4\%\), that is, in
@@ -1684,12 +1768,12 @@ Two readings of the table carry weight for the main text. First, the ranking. Th
 ordering \(B_2>B_1>B_3\) is preserved, and the \(B_1\)--\(B_3\) separation, which is
 \(+2.09\%\) at \(N=256\), shrinks to \(+0.48\%\) at \(N=512\) --- both changes far
 outside the standard error, and the second one consistent with the claim of Main
-Sec.~5.2 that the two branches are indistinguishable in total cost even though
+Sec.~6.2 that the two branches are nearly equal in total cost even though
 their temporal fractions are \(0.013\) and \(0.448\). The \(B_2\) premium, on the
 other hand, is \(+20.7\%\) and \(+23.2\%\) over \(B_1\) and \(B_3\) at \(N=256\) and
 \(+22.9\%\) and \(+23.5\%\) at \(N=512\): the effect the paper is about does not
 move. Second, the closure. The balance residuals of
-Main Sec.~5.5, \(-2.79\%\), \(-0.60\%\) and \(-0.44\%\) at \(N=256\), become
+Main Sec.~6.5, \(-2.79\%\), \(-0.60\%\) and \(-0.44\%\) at \(N=256\), become
 \(-1.36\%\), \(-0.32\%\) and \(-0.18\%\) at \(N=512\): each is divided by \(2.1\),
 \(1.9\) and \(2.4\), and the largest discrete slip of the velocity boundary
 condition falls from \(6.0\%\), \(11.5\%\) and \(11.8\%\) of the cavity speed to
@@ -1705,7 +1789,7 @@ safety factor and no convergence index is computed from them, and the
 \(N=512\) values are not substituted for the headline numbers: Main Tables~3
 and~4 and Main Figs.~6--8 remain the \(N=256\) captures, and the finer runs enter
 only as the quoted sensitivity band. The one place where the refinement changes the
-discussion is the Stokes-layer resolution argument of Sec.~S4.5 and Main Sec.~7.3:
+discussion is the Stokes-layer resolution argument of Sec.~S4.5 and Main Sec.~6.3:
 at \(N=256\) the fundamental and the fourth harmonic of the imposed control fill
 about \(9\) and \(4.6\) cells, so the higher harmonics of \(B_2\) and \(B_3\) were
 marginally resolved; at \(N=512\) they fill \(18\) and \(9.2\), and the two
@@ -2114,9 +2198,13 @@ The discrete power estimator is therefore
 with
 \(\tau_w(j)=\nu\,[u_x(N-1,j)-u_x(N-2,j)]/\Delta y\) and trapezoidal weights
 \(w_0=w_{N-1}=1/2\), \(w_j=1\) otherwise, so the two lid end nodes where the wall and
-the side walls meet enter with half weight. This estimator uses the stress evaluated
-one half-cell below the wall, consistently with the half-way bounce-back that carries
-the boundary condition, rather than a stress exactly at \(y=1\). The residuals below
+the side walls meet enter with half weight. Both factors of the product are read on
+the lid node row \(i=N-1\), and the shear is the one-sided difference between that
+row and the row below it. Because the half-way bounce-back that carries the
+boundary condition places the hydrodynamic wall half a lattice spacing outside
+\(i=N-1\), this is the stress half a cell below the wall rather than a stress
+exactly at \(y=1\); the two coincide as \(\Delta y\to0\), and the discrete
+estimator of Main Sec.~2.2, Main Eq.~(5), uses the same convention. The residuals below
 \(3\%\) for the direct accumulation confirm
 that the velocity boundary condition injects energy consistently with the discrete
 momentum balance, to within the discretization error of the

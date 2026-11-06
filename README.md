@@ -154,11 +154,14 @@ python scripts/check_build_logs.py      # parses the four .log files; exit 0 = n
 - Time-dependent branches: the fluctuating strain field carries **92.9 %**, **53.7 %**
   and **1.8 %** of the cycle-mean cost of the lid-oscillatory, mixed and quasi-steady
   branches. The ordering is B2 > B1 ≈ B3, with B2 the most dissipative by the modest
-  factor **1.2** although its mean-field dissipation is fourteen times below its own
-  cycle mean, and B1/B3 indistinguishable to within **2 %**.
+  factor **1.2** — 20.7 % above B1 and 23.2 % above B3 at N=256 — although its
+  mean-field dissipation is fourteen times below its own cycle mean, while B1 and B3
+  are nearly equal (2.1 % apart at N=256, 0.5 % at N=512).
 - A second-Stokes boundary-layer estimate built from the imposed lid signal alone
-  accounts for **95 %** and **98 %** of the fluctuating dissipation of the two
-  time-reversing branches.
+  agrees with the measured fluctuating dissipation of the two time-reversing branches
+  to within **5 %** and **2 %**, with no adjustable constant. The estimate is a
+  half-space model, so it supports a wall-layer interpretation of the fluctuating
+  cost rather than a spatial decomposition of the total.
 - Grid-refinement sensitivity (N=256 → 512, same protocol): cycle means move by
   **+5.4 %**, **+7.3 %**, **+7.1 %**, the ranking is preserved and the B1-B3 gap
   narrows from 2.1 % to 0.5 %, while the power-balance residual halves — consistent
