@@ -234,8 +234,8 @@ relative weighting of the loss terms is therefore based on \(\mathcal{L}_{\mathr
 not on \(D\) directly.
 
 No initial-condition or temporal periodicity condition is imposed on the flow
-network. The identification therefore solves a space--time boundary-value problem
-in the training variables
+network. The identification therefore solves a space--time PDE-constrained
+optimization problem on the training slab
 \((x,y,\tau)\in[0,L_x]\times[0,1]\times[0,1]\), with the control expanded on the
 basis \(\cos(n\pi\tau)\), and the resulting space--time field
 \((u,v,p)(x,y,\tau)\) acts as an \emph{auxiliary field} in the joint minimisation of
@@ -247,7 +247,7 @@ the trajectory that the flow network converges to is not selected by the loss
 functions alone. Only the identified control coefficients \(a_{mn}\) are
 transferred to the MRT-LBM solver, where the periodic flow response used for every
 dissipation calculation is computed independently and verified a posteriori
-(Sec.~S4.5). Time derivatives in the Navier--Stokes residual are taken directly with
+(Secs.~S4.2 and S4.6). Time derivatives in the Navier--Stokes residual are taken directly with
 respect to \(\tau\), with no chain-rule factor: the residual is written in the
 training clock, and \(T_{\max}=1\) is its time unit.
 
@@ -274,11 +274,15 @@ imposed on it. It is used only during training to satisfy the Navier--Stokes
 equations; it is not
 transferred to the LBM solver. The actual flow field used for dissipation
 calculations is computed by the MRT-LBM solver driven by the periodic
-\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) exported from the PINN control network. The periodicity of
-this LBM-computed flow field is verified a posteriori in Sec.~S4.5 by comparing the
-phase averages of the first and second halves of the sampling window, with
-discrepancies below \(1.0\times10^{-3}\) in relative field norm for all three
-branches.
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) exported from the PINN control network. The
+periodicity of this LBM-computed flow field is verified a posteriori by comparing
+the phase averages of the first and second halves of the sampling window, in
+relative \(L_2\) norm of the streamwise velocity field:
+\(1.9\times10^{-3}\) for \(B_1\), \(2.6\times10^{-4}\) for \(B_3\) and
+\(1.5\times10^{-5}\) for \(B_2\) at \(N=256\) (Secs.~S4.2 and S4.6), and
+\(1.79\times10^{-3}\) or less for all three at \(N=512\) (Sec.~S4.5). The largest
+of these is below \(2\times10^{-3}\), so the response is reproduced to better than
+\(0.2\%\) in the two halves of every sampled window.
 \end{enumerate}
 
 \textbf{Weight rationale.} The weight \(\lambda_{\mathrm{BC}}=15\) strongly
@@ -977,10 +981,15 @@ survive in the quantities that carry a measure without a paired derivative: the
 kinetic energies scale as \(h^{2}\), so \(K\) is \(0.78\%\) smaller at \(N=256\) and
 \(0.39\%\) smaller at \(N=512\) under \(\Delta x=1/N\), and a pointwise derivative
 such as the steady-streaming forcing of Sec.~S4.7 scales as \(h^{-1}\), i.e.\
-\(0.39\%\) and \(0.20\%\) larger under the same replacement. Both are pure
-common-mode factors: they multiply the three
-branches alike, so no ratio, ranking or cycle-mean comparison in the paper depends
-on the choice, and the largest of them, \(0.78\%\), is nearly an order of magnitude
+\(0.39\%\) and \(0.20\%\) larger under the same replacement. A quotient of two
+quantities of \emph{different} differential order is sensitive in the same way: the
+forcing-to-viscous-term ratio of Sec.~S4.7 pairs one derivative with two, so it
+scales as \(h\) and shrinks by \(0.39\%\) and \(0.20\%\) under the replacement,
+which the check measures directly. All of these are pure common-mode factors: they
+multiply the three
+branches alike, so no branch-to-branch ratio, ranking or cycle-mean comparison in
+the paper depends on the choice, and the largest of them, \(0.78\%\), is nearly an
+order of magnitude
 below the smallest grid effect the paper discusses (\(5.4\)--\(7.3\%\)). Secs.~S4.7 and
 S4.8 therefore keep \(h=1/(N-1)\), which is the spacing of the arrays they actually
 process, and all frequency, viscosity and layer-thickness statements keep
@@ -1235,9 +1244,13 @@ parts \(\overline D-D(\overline{\mathbf u})\) of \(2.149\times10^{-4}\),
 Table~\ref{tab:stokes_scaling}. For the two branches whose cost is dominated by the
 fluctuations the agreement is within \(5\%\) and \(2\%\), so essentially the whole of
 their excess dissipation over their mean fields is predictable from the lid signal
-and the viscosity alone, without solving for the interior. For \(B_1\) the two
-numbers are \(1.8\) and \(2.1\times10^{-4}\), i.e.\ a \(19\%\) relative difference on
-an increment that is only \(1.8\%\) of its cycle mean, where the locally parallel
+and the viscosity alone, without solving for the interior. For \(B_1\) the estimate,
+\(1.814\times10^{-4}\), is \(15.6\%\) below the measured fluctuating dissipation,
+\(2.149\times10^{-4}\); equivalently, and this is the convention of the ratio column
+of Table~\ref{tab:stokes_scaling}, the measured value is \(18.5\%\) above the
+estimate, there reported as \(118\%\) of it. The main text quotes the same gap as a
+\(16\%\) shortfall. The discrepancy lands on an increment that is itself only
+\(1.8\%\) of the \(B_1\) cycle mean, where the locally parallel
 assumption is least defensible because the response is not a layer but a modified
 steady recirculation. The residual mismatch between estimate and measurement
 reflects the streamwise gradients of the lid profile, the return flow against the
@@ -1400,8 +1413,19 @@ the hydrodynamic spacing \(\Delta x=1/N\) of the solver, and unlike the integral
 quantities a pointwise derivative does feel the difference: the reported forcing
 magnitudes scale as \(h^{-1}\), so they are \(0.39\%\) smaller at \(N=256\) and
 \(0.20\%\) smaller at \(N=512\) than the same expressions evaluated with
-\(\Delta x=1/N\). That factor is identical for the three branches and for the
-viscous term it is compared with, so it cancels in every ratio quoted below. The
+\(\Delta x=1/N\). The two terms of the comparison do not, however, carry the same
+factor: the pointwise Reynolds-stress forcing scales as \(h^{-1}\), whereas the mean
+viscous term \(\nu\nabla^{2}\langle\mathbf{u}\rangle\) that it is compared with
+scales as \(h^{-2}\), so the absolute forcing-to-viscous-term ratio scales as \(h\).
+Replacing \(h=1/(N-1)\) by the hydrodynamic spacing \(\Delta x=1/N\) therefore
+multiplies that ratio by \((N-1)/N\), a reduction of \(0.39\%\) at \(N=256\) and
+\(0.20\%\) at \(N=512\); the same stencils evaluated under both spacings give
+exactly the spacing gap, to the last digit
+(\texttt{scripts/spacing\_convention\_check.py}, keys
+\texttt{forcing\_over\_viscous\_ratio\_\*}). The factor is still common to the three
+branches, so it affects neither their ordering nor the ratios quoted between them,
+and the ratios of Table~\ref{tab:streaming_forcing} are the \(h=1/(N-1)\) values.
+The
 three boundary cells on
 each side are excluded from
 every norm and maximum because the discrete derivative there reaches into the
@@ -1438,17 +1462,19 @@ that separate the branches. Computation:
 The identity \(\overline P_{\mathrm{lid}}=\overline D\) of the main text is exact for
 the continuous equations, so any residual measured between the two cycle means is a
 property of the discrete estimators, not of the physics. Three choices enter the
-estimate of \(P_{\mathrm{lid}}\): the velocity used at the wall node, the order of the
+estimate of \(P_{\mathrm{lid}}\): the velocity used at the lid node row, the order of the
 one-sided wall-normal derivative, and the number of phases used to average the
 product \(U_{\mathrm{lid}}\tau_w\).
 
 \emph{Wall velocity.} The transfer imposes \(U_{\mathrm{lid}}\) through the
-velocity boundary condition of Sec.~S4.1: at the wall row, the two populations that
+velocity boundary condition of Sec.~S4.1: at the outermost node row, the two populations that
 would stream in from outside the domain are replaced by their bounce-back values
 corrected by a momentum injection proportional to the local density and to the
-prescribed lid velocity, which enforces that velocity at the half-way wall node. The
-macroscopic streamwise velocity reconstructed at that node is therefore a computed
-quantity, and it differs from the imposed profile by the discrete slip of the scheme;
+prescribed lid velocity. This imposes the commanded moving-wall velocity at the
+hydrodynamic boundary, the half-way plane located a half spacing outside the lid node
+row, not at any lattice node: the macroscopic streamwise velocity reconstructed at the
+adjacent outermost fluid-node row \(i=N-1\) is a computed quantity, and it differs
+from the imposed profile by the discrete slip of the scheme;
 the largest slip over the whole record is \(0.060\), \(0.115\) and \(0.118\) cavity
 units for \(B_1\), \(B_2\) and \(B_3\) (Sec.~S4.6). Throughout this section the fields
 are stored as \(u_x(i,j)\), where the first index is wall-normal and the second

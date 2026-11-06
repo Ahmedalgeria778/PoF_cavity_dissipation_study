@@ -14,7 +14,11 @@
       "P_lid_mean_rel_change": -1.1102230246251565e-16,
       "K_mean_field_rel_change": -0.0077972412109375,
       "K_fluct_field_rel_change": -0.007797241210937389,
-      "streaming_forcing_rel_change": 0.003921568627450744
+      "streaming_forcing_rel_change": 0.003921568627450744,
+      "forcing_over_viscous_ratio_rms_h": 0.002662036860164548,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.002651638278679531,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.003906249999999778,
+      "forcing_over_viscous_ratio_max_rel_change": -0.003906249999999778
     },
     {
       "case": "B1",
@@ -29,7 +33,11 @@
       "P_lid_mean_rel_change": 0.0,
       "K_mean_field_rel_change": -0.003902435302734264,
       "K_fluct_field_rel_change": -0.003902435302734264,
-      "streaming_forcing_rel_change": 0.001956947162426559
+      "streaming_forcing_rel_change": 0.001956947162426559,
+      "forcing_over_viscous_ratio_rms_h": 0.003075144924225248,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.0030691387817951207,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.001953125,
+      "forcing_over_viscous_ratio_max_rel_change": -0.001953124999999778
     },
     {
       "case": "B2",
@@ -44,7 +52,11 @@
       "P_lid_mean_rel_change": -1.1102230246251565e-16,
       "K_mean_field_rel_change": -0.007797241210937611,
       "K_fluct_field_rel_change": -0.007797241210937611,
-      "streaming_forcing_rel_change": 0.003921568627450744
+      "streaming_forcing_rel_change": 0.003921568627450744,
+      "forcing_over_viscous_ratio_rms_h": 0.2592817257561419,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.25826890651490697,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.00390625,
+      "forcing_over_viscous_ratio_max_rel_change": -0.003906249999999778
     },
     {
       "case": "B2",
@@ -59,7 +71,11 @@
       "P_lid_mean_rel_change": 2.220446049250313e-16,
       "K_mean_field_rel_change": -0.003902435302734375,
       "K_fluct_field_rel_change": -0.003902435302734042,
-      "streaming_forcing_rel_change": 0.001956947162426559
+      "streaming_forcing_rel_change": 0.001956947162426559,
+      "forcing_over_viscous_ratio_rms_h": 0.25597470300272324,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.255474752410921,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.001953125000000222,
+      "forcing_over_viscous_ratio_max_rel_change": -0.001953125
     },
     {
       "case": "B3",
@@ -74,7 +90,11 @@
       "P_lid_mean_rel_change": -2.220446049250313e-16,
       "K_mean_field_rel_change": -0.007797241210937611,
       "K_fluct_field_rel_change": -0.007797241210937278,
-      "streaming_forcing_rel_change": 0.0039215686274509665
+      "streaming_forcing_rel_change": 0.0039215686274509665,
+      "forcing_over_viscous_ratio_rms_h": 0.06724550018201726,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.06698282244693125,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.003906250000000111,
+      "forcing_over_viscous_ratio_max_rel_change": -0.003906249999999667
     },
     {
       "case": "B3",
@@ -89,7 +109,11 @@
       "P_lid_mean_rel_change": -2.220446049250313e-16,
       "K_mean_field_rel_change": -0.003902435302734486,
       "K_fluct_field_rel_change": -0.003902435302734042,
-      "streaming_forcing_rel_change": 0.001956947162426559
+      "streaming_forcing_rel_change": 0.001956947162426559,
+      "forcing_over_viscous_ratio_rms_h": 0.07897396131043694,
+      "forcing_over_viscous_ratio_rms_1_over_N": 0.07881971529225251,
+      "forcing_over_viscous_ratio_rms_rel_change": -0.001953124999999667,
+      "forcing_over_viscous_ratio_max_rel_change": -0.001953124999999778
     }
   ]
 }

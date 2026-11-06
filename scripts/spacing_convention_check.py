@@ -10,7 +10,9 @@ A quantity built from (derivative)^2 times an area element, or from one derivati
 times a line element, is invariant under h -> alpha*h: the stencil gains 1/alpha,
 the measure gains alpha.  An area integral of a field that carries no derivative
 (energies, streamfunction) scales as alpha^2, and a pointwise derivative scales as
-1/alpha.
+1/alpha.  A RATIO of a one-derivative quantity to a two-derivative quantity scales
+as alpha, so the forcing-to-viscous-term ratio of Sec. S4.7 is NOT invariant: it is
+reduced by the factor (N-1)/N when h=1/(N-1) is replaced by 1/N.
 
 Usage:  py scripts/spacing_convention_check.py
 Writes results/d2_derived/spacing_convention_check.json
@@ -60,6 +62,46 @@ def forcing_scale(uxm, uym, h):
     return float(np.max(np.hypot(fx, fy)[1:-1, 1:-1]))
 
 
+EXCL = 3
+
+
+def d1(a, axis):
+    out = np.zeros_like(a)
+    sl_c = [slice(None)] * a.ndim
+    sl_p = [slice(None)] * a.ndim
+    sl_m = [slice(None)] * a.ndim
+    sl_c[axis] = slice(1, -1)
+    sl_p[axis] = slice(2, None)
+    sl_m[axis] = slice(None, -2)
+    out[tuple(sl_c)] = a[tuple(sl_p)] - a[tuple(sl_m)]
+    return out
+
+
+def interior(a):
+    return a[EXCL:-EXCL, EXCL:-EXCL]
+
+
+def streaming_ratios(pu, pv, um, vm, h):
+    """Forcing-to-viscous-term ratio of Sec.~S4.7, same stencils as d2_topology_numbers.
+
+    The forcing carries one divergence (~1/h), the mean viscous term two
+    derivatives (~1/h^2), so the ratio scales as h and does NOT cancel.
+    """
+    up, vp = pu - um[None], pv - vm[None]
+    tuu = np.mean(up**2, axis=0)
+    tvv = np.mean(vp**2, axis=0)
+    tuv = np.mean(up * vp, axis=0)
+    fx = -(d1(tuu, 1) + d1(tuv, 0)) / (2.0 * h)
+    fy = -(d1(tuv, 1) + d1(tvv, 0)) / (2.0 * h)
+    visc_x = NU * (d1(d1(um, 1), 1) + d1(d1(um, 0), 0)) / h**2
+    visc_y = NU * (d1(d1(vm, 1), 1) + d1(d1(vm, 0), 0)) / h**2
+    f_mag = np.hypot(interior(fx), interior(fy))
+    v_mag = np.hypot(interior(visc_x), interior(visc_y))
+    rms = float(np.sqrt(np.mean(f_mag**2)) / np.sqrt(np.mean(v_mag**2)))
+    mx = float(f_mag.max() / v_mag.max())
+    return rms, mx
+
+
 def main():
     rows = []
     for case in CASES:
@@ -78,6 +120,8 @@ def main():
             pu, py = z["phase_ux"], z["phase_uy"]
             rec_a = float(np.mean([dissipation(pu[i], py[i], h_a) for i in range(len(pu))]))
             rec_b = float(np.mean([dissipation(pu[i], py[i], h_b) for i in range(len(pu))]))
+            ratio_rms_a, ratio_max_a = streaming_ratios(pu, py, um, vm, h_a)
+            ratio_rms_b, ratio_max_b = streaming_ratios(pu, py, um, vm, h_b)
             rows.append(
                 {
                     "case": case,
@@ -93,6 +137,10 @@ def main():
                     "K_mean_field_rel_change": energy(um, vm, h_b) / energy(um, vm, h_a) - 1.0,
                     "K_fluct_field_rel_change": energy(rm, sm, h_b) / energy(rm, sm, h_a) - 1.0,
                     "streaming_forcing_rel_change": forcing_scale(rm, sm, h_b) / forcing_scale(rm, sm, h_a) - 1.0,
+                    "forcing_over_viscous_ratio_rms_h": ratio_rms_a,
+                    "forcing_over_viscous_ratio_rms_1_over_N": ratio_rms_b,
+                    "forcing_over_viscous_ratio_rms_rel_change": ratio_rms_b / ratio_rms_a - 1.0,
+                    "forcing_over_viscous_ratio_max_rel_change": ratio_max_b / ratio_max_a - 1.0,
                 }
             )
             z.close()
@@ -105,7 +153,9 @@ def main():
             f"D_mean {r['D_mean_field_rel_change']:+.2e}  D_fluct {r['D_fluct_field_rel_change']:+.2e}  "
             f"D_phase {r['D_phase_reconstruction_rel_change']:+.2e}  P_lid {r['P_lid_mean_rel_change']:+.2e}  "
             f"K_mean {r['K_mean_field_rel_change']:+.4%}  K_fluct {r['K_fluct_field_rel_change']:+.4%}  "
-            f"|F| {r['streaming_forcing_rel_change']:+.4%}"
+            f"|F| {r['streaming_forcing_rel_change']:+.4%}  "
+            f"F/visc {r['forcing_over_viscous_ratio_rms_rel_change']:+.4%} "
+            f"(rms ratio at h: {r['forcing_over_viscous_ratio_rms_h']:.5f})"
         )
     print(f"\nwrote {OUT}")
 

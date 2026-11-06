@@ -177,10 +177,14 @@ cycle-averaged dissipation always exceeds the dissipation of the mean flow, and
 the gap can be orders of magnitude when the fluctuations dominate
 \cite{pope2000,landau1987,doering2002energy,beneddine2016conditions}.
 
-Spatially structured and time-periodic actuations can also support more than one
-hydrodynamic response. A periodic boundary-value problem of this type admits
-several coexisting branches, and which one is reached depends on the formulation,
-the regularization and the initialization of the identification procedure. A
+Spatially structured and time-dependent wall actuations can be recovered in
+distinct modal families by the identification procedure, and the family that is
+selected depends on the formulation, the regularization and the initialization of
+the optimization. These families are distinct branches of the
+control-identification landscape; they are not evidence of several hydrodynamic
+states coexisting under one and the same prescribed lid motion. Each exported
+actuation is therefore treated here as a separate boundary forcing, and its
+periodic flow response is computed independently with the MRT-LBM solver. A
 preceding study by Beniaiche \cite{beniaiche2026} investigated the identification
 of conditional modal collapse in
 physics-informed active control of the lid-driven cavity, building on modal
@@ -341,8 +345,10 @@ $\tau_w^{\mathrm{FD}}(x_j)=Re^{-1}[u_x(N-1,j)-u_x(N-2,j)]/\Delta y$ the one-side
 wall-normal difference between that row and the interior row immediately beneath it,
 $\Delta y$ being the node spacing of the archived fields (Sec.~\ref{sec:lbm},
 Supplementary Sec.~S4.8).
-This distinction is necessary because the LBM boundary condition does not enforce
-the prescribed velocity exactly at the wall node; the recovered velocity estimator
+This distinction is necessary because the half-way boundary condition imposes the
+commanded velocity at the hydrodynamic wall, the plane a half spacing outside the lid
+node row, so the velocity of that row is a computed quantity rather than the
+prescribed one; the recovered velocity estimator
 gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$,
 $B_2$ and $B_3$, whereas using the prescribed velocity directly gives residuals of
 $+3.4\%$, $+4.6\%$ and $+4.7\%$ [on the phase-resolved fields, against
@@ -706,11 +712,15 @@ factor cancels identically in
 $\overline{D}$, $D(\bar{u})$, $D_{\mathrm{fluct}}$ and
 $\overline{P}_{\mathrm{lid}}$: recomputing the three branch captures with $h$
 replaced by $1/N$ changes them by less than $5\times10^{-16}$ in relative terms at
-both resolutions. It survives only in quantities that carry a measure without a
+both resolutions. It survives in quantities that carry a measure without a
 paired derivative, where it is a common factor: $0.78\%$ and $0.39\%$ on the kinetic
 energies, $0.39\%$ and $0.20\%$ on a pointwise derivative such as the
-steady-streaming forcing. Being multiplicative and branch-independent, it alters no
-ratio, no ranking and no figure reading, and it is an order of magnitude below the
+steady-streaming forcing, and, for the same reason, $0.39\%$ and $0.20\%$ on a
+quotient of two terms of different differential order, such as the ratio of that
+forcing to the mean viscous term (Supplementary Sec.~S4.7). Being multiplicative and
+branch-independent, the factor alters no
+branch-to-branch ratio, no ranking and no figure reading, and it is an order of
+magnitude below the
 grid-refinement variation of Sec.~\ref{sec:gci} (Supplementary Sec.~S4.5).
 
 Each actuation is advanced from rest with the lid switched on at $t=0$. The end of
@@ -1242,7 +1252,7 @@ $1.169\times10^{-2}$). Within the period, $D(t)$ varies by a factor $1.43$, $7.4
 and $2.42$ respectively, and the lid power of $B_2$ is negative for $17\%$ of the
 period: the flow returns energy through the lid while the Stokes layer spins down.
 The residual $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}-\Dbar$, computed with the
-wall velocity recovered at the boundary node rather than the prescribed profile
+wall velocity recovered at the outermost fluid row rather than the prescribed profile
 (Sec.~S4.8) --- i.e.\ across the lid node row, which the half-way boundary
 condition places half a lattice spacing below the hydrodynamic wall --- is
 $-2.8\%$, $-0.6\%$ and $-0.4\%$.
@@ -1257,13 +1267,17 @@ periods retained after the settling phase, taken from the instantaneous fields
 recorded every eighth lattice step; $\Dbar$ is never replaced by
 $D(\overline{\mathbf{u}})$. $\sigma(\Dbar)$ is the block standard error over four
 blocks of eight cycles, expanded by $t_{3,0.975}=3.182$; it is below $0.1\%$ for
-all three branches because the response is periodic to better than $10^{-3}$ (the
+all three branches because the response is periodic (the phase averages of the two
+half-windows differ, in relative $L_2$ norm of the streamwise field, by
+$1.9\times10^{-3}$ for $B_1$, $2.6\times10^{-4}$ for $B_3$ and $1.5\times10^{-5}$
+for $B_2$, Supplementary Sec.~S4.6; and the
 cycle-to-cycle standard deviation of $\Dbar$ is $7.0\times10^{-6}$ in relative
 terms for $B_1$, $2.4\times10^{-8}$ for $B_2$ and $1.2\times10^{-5}$ for $B_3$),
 so the estimator error of the last column, not the sampling error, is what limits
 the closure. The power $\overline{P}_{\mathrm{lid}}$ is the numerical estimator
 $\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$ computed with the
-wall velocity recovered at the boundary node [Eq.~\eqref{eq:plid_rec}], not the
+wall velocity recovered at the outermost fluid row, the lid node row
+$i=N-1$ [Eq.~\eqref{eq:plid_rec}], not the
 prescribed velocity; it evaluates the power crossing the \emph{lid node row},
 half a lattice spacing below the physical wall, rather than the wall itself, so it
 provides an indirect verification of the discrete energy budget. The resulting residual
@@ -1328,7 +1342,7 @@ of the time-mean field, which is not substituted for the cycle mean. (d) Lid pow
 $\Plid(t)$, positive into the fluid, with the same conventions; the annotations
 give the residual between the cycle means of the two signals,
 $-2.8$, $-0.6$ and $-0.4\%$, both computed with the wall velocity recovered at the
-boundary node. Sec.~S4.8 compares this estimator with the one built on the
+outermost fluid row, the lid node row. Sec.~S4.8 compares this estimator with the one built on the
 prescribed lid velocity, whose residuals are $+3.4$, $+4.6$ and $+4.7\%$, and
 bounds their difference. The
 kinetic-energy balance integrates to zero over one period of a periodic state, so
