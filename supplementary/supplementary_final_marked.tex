@@ -50,10 +50,6 @@ a mark.}}
 \medskip
 
 
-\begin{chgdel}
-\medskip
-\end{chgdel}
-
 \begin{chgadd}
 
 \tableofcontents
@@ -146,11 +142,14 @@ activation. Inputs: \((\widetilde{Re})\), dimension 1. Outputs:
 
 \begin{chgadd}
 \textbf{Input normalization.} The spatial coordinates \((x,y)\in[0,L_x]\times[0,1]\)
-are fed directly to the networks, and so is the raw training-time variable
-\(\tau\in[0,T_{\max}]=[0,1]\): the training clock is a dimensionless variable of
-the identification problem, not the physical forcing time. The exported signal is
-evaluated on a different clock, \(t_{\mathrm{phys}}\in[0,T]=[0,2]\)
-(Sec.~S2.1); the two are related below. The Reynolds number is
+are fed directly to the networks, and so is the training-time variable
+\(\tau\in[0,T_{\max}]=[0,1]\). This variable is \emph{not} a second time scale: it
+is the same nondimensional time as the one appearing in the Navier--Stokes
+equations of Main Sec.~2.1, and the training merely restricts it to the interval
+\([0,1]\). The exported signal is the same Fourier series re-evaluated on that
+clock over the complete forcing period, \(t_{\mathrm{phys}}\in[0,T]=[0,2]\)
+(Sec.~S2.1); \(\tau\) and \(t_{\mathrm{phys}}\) are the same variable observed over
+different windows, and their relation is stated below. The Reynolds number is
 normalized to
 \begin{equation}
 \widetilde{Re}=\frac{Re-550}{450}\in[-1,1],
@@ -160,7 +159,8 @@ numerical conditioning of the gradient computations.
 
 \textbf{Flow network.} Six hidden layers, each with 64 neurons, using hyperbolic
 tangent (\(\tanh\)) activation functions. Inputs: \((x,y,\tau,\widetilde{Re})\),
-where \(\tau\in[0,1]\) is the raw nondimensional training time,
+where \(\tau\in[0,1]\) is the nondimensional time of the governing equations sampled
+over the training window,
 dimension 4. Outputs: \((u,v,p)\), dimension 3. Total trainable parameters:
 \(4\times64 + 64 + 5\times(64\times64 + 64) + 64\times3 + 3 = 21\,315\).
 
@@ -226,7 +226,8 @@ per epoch.
 \textbf{Interior PDE collocation:} \(N_{\mathrm{phys}}=4\,000\) points sampled
 uniformly at random over the computational domain
 \(\Omega\times[0,T_{\max}]=[0,L_x]\times[0,1]\times[0,1]\). The time coordinate fed
-to the network is the raw training variable \(\tau\in[0,T_{\max}]=[0,1]\), drawn
+to the network is the nondimensional time variable \(\tau\in[0,T_{\max}]=[0,1]\) of
+the governing equations, restricted to the training window and drawn
 uniformly, and the temporal basis of the control is \(\cos(n\pi\tau)\) over that
 interval; the full forcing period \(T=2\) is reached only on export (Sec.~S2.1),
 so the training window covers one half-period of the fundamental harmonic. At each epoch, three
@@ -475,12 +476,21 @@ This constant normalization is retained in the reported training weights; the
 relative weighting of the loss terms is therefore based on \(\mathcal{L}_{\mathrm{diss}}\),
 not on \(D\) directly.
 
-No initial-condition term is included by design. The identification solves a
-space--time boundary-value problem in the training variables
+No initial-condition or temporal periodicity condition is imposed on the flow
+network. The identification therefore solves a space--time boundary-value problem
+in the training variables
 \((x,y,\tau)\in[0,L_x]\times[0,1]\times[0,1]\), with the control expanded on the
-basis \(\cos(n\pi\tau)\), so training targets a stationary response of that
-problem rather than the transient from a prescribed initial field (Main
-Sec.~2.1). Time derivatives in the Navier--Stokes residual are taken directly with
+basis \(\cos(n\pi\tau)\), and the resulting space--time field
+\((u,v,p)(x,y,\tau)\) acts as an \emph{auxiliary field} in the joint minimisation of
+the PDE, boundary and control losses over the training interval
+\(0\le\tau\le1\). It is not interpreted as a unique transient solution of the
+instationary problem, nor as the periodic hydrodynamic response to the exported
+actuation: with neither an initial field nor a periodicity constraint on \(\tau\),
+the trajectory that the flow network converges to is not selected by the loss
+functions alone. Only the identified control coefficients \(a_{mn}\) are
+transferred to the MRT-LBM solver, where the periodic flow response used for every
+dissipation calculation is computed independently and verified a posteriori
+(Sec.~S4.5). Time derivatives in the Navier--Stokes residual are taken directly with
 respect to \(\tau\), with no chain-rule factor: the residual is written in the
 training clock, and \(T_{\max}=1\) is its time unit.
 
@@ -1053,7 +1063,12 @@ velocity of row \(N-1\) differs from the commanded profile by the slip measured 
 Sec.~S4.8 (\(3.2\%\) to \(11.8\%\) of the cavity speed, resolution-dependent), and
 the power estimator of Sec.~S4.8 is therefore evaluated on that row rather than
 exactly at \(y=1\). Bottom and lateral walls
-use standard half-way bounce-back boundary conditions.
+use standard half-way bounce-back boundary conditions. The same half-way placement
+fixes the hydrodynamic spacing: the lattice holds \(N\) fluid nodes per side, each
+wall stands one half spacing beyond the row it faces, and the unit cavity therefore
+spans \(N\Delta x\) with \(\Delta x=1/N\). The consequences of this convention
+for the post-processing, which labels the same nodes with the spacing
+\(h=1/(N-1)\), are quantified in Sec.~S4.5.
 
 \subsection{Ghia et al.\ Benchmark Validation}
 
@@ -1400,21 +1415,27 @@ forcing period \(T=2\). The exported control is written on the normalized phase
 \(\theta=t_{\mathrm{phys}}/T\in[0,1]\); the temporal basis
 \(\cos(2n\pi\theta)\) is periodic with unit period in \(\theta\) by
 construction, so the periodicity of the actuation is enforced analytically.
-The identification itself runs on the raw training clock \(\tau\in[0,1]\)
-(Sec.~S1.2), where the same basis reads \(\cos(n\pi\tau)\) and the Navier--Stokes
+The identification itself runs on the same nondimensional clock restricted to
+\(\tau\in[0,1]\)
+(Sec.~S1.2), where the basis reads \(\cos(n\pi\tau)\) and the Navier--Stokes
 residual differentiates with respect to \(\tau\) with no chain-rule factor; export
 evaluates that series at \(\tau\to t_{\mathrm{phys}}\) over the complete period, so
 the fundamental of the exported control oscillates at
 \(\omega_1=2\pi/T=\pi\).
 
 The lattice is driven so that this physical period is the one the solver sees. The
-lattice spacing is \(\Delta x=1/N\) and the timestep follows from the reference
-velocity, \(\Delta t=\Delta x/U_{\mathrm{ref}}\) with \(U_{\mathrm{ref}}=0.05\), so
-one physical period spans
+hydrodynamic lattice spacing is \(\Delta x=1/N\), and the timestep follows from the
+reference velocity as \(\Delta t=U_{\mathrm{ref}}\Delta x=U_{\mathrm{ref}}/N\) with
+\(U_{\mathrm{ref}}=0.05\), so one physical period spans
 \(N_T=T/\Delta t=TN/U_{\mathrm{ref}}=40N\) lattice steps, i.e.\ \(N_T=10\,240\) at
-\(N=256\). The number of steps per period therefore grows with \(N\) in proportion
-to \(N\Delta t\)-preserving frequency, and the same \(\omega_1=\pi\) is imposed on
-every grid: the mapping is frequency-preserving rather than step-count-preserving.
+\(N=256\) and \(N_T=20\,480\) at \(N=512\). These are the mappings the solver itself
+applies: with the same spacing and timestep, the lattice viscosity
+\(\nu_{\mathrm{latt}}=U_{\mathrm{ref}}N/Re\) converts to
+\(\nu_{\mathrm{phys}}=\nu_{\mathrm{latt}}\Delta x^{2}/\Delta t=1/Re\) exactly, which
+is the value the physical problem is posed with (Sec.~S4.1). Because
+\(\Delta t\propto1/N\), the number of steps per period grows like \(N\) while the
+imposed frequency stays fixed: the mapping is frequency-preserving rather than
+step-count-preserving, and the same \(\omega_1=\pi\) holds on every grid.
 The exported lid series is sampled at \(256\) points over one period
 (\texttt{endpoint=False}) and each sample is held for
 \(N_T/256=40\) consecutive lattice steps, which is the temporal resolution of the
@@ -1424,6 +1445,48 @@ until their means change by less than \(2\times10^{-3}\); \(24\) forced periods 
 all three branches), and \(32\) consecutive periods are then sampled, every eighth
 lattice step, into the dissipation, kinetic-energy and lid-power series and into
 eight equally spaced phase bins of the velocity field.
+
+\subsubsection*{Which spacing enters where (\(\Delta x=1/N\) and \(h=1/(N-1)\))}
+
+Two spacings appear in the implementation and they are not interchangeable, so it is
+worth stating exactly which one each number carries. The solver works on \(N\) fluid
+node rows per side and its walls are the half-way boundary planes of Sec.~S4.1, half
+a lattice spacing outside the outermost rows. Since two adjacent rows are one
+spacing apart and each wall stands a half spacing beyond the row it faces, the cavity
+length is \(N\Delta x\), which for a unit cavity gives \(\Delta x=1/N\); the
+outermost nodes therefore sit \(\Delta x/2\) inside the walls. This is the spacing
+that fixes \(\Delta t=U_{\mathrm{ref}}/N\), \(N_T=40N\), the lattice
+viscosity \(\nu_{\mathrm{latt}}=U_{\mathrm{ref}}N/Re\) and the cell count of
+\(\delta_1\). The post-processing works on the archived fields, whose coordinate
+arrays are \(x_j=y_j=j/(N-1)\), \(j=0,\dots,N-1\): there the first and last node are
+placed on the walls, so the interval \([0,1]\) is covered by \(N-1\) intervals of
+width \(h=1/(N-1)\). The two spacings differ by
+\(N/(N-1)-1=0.39\%\) at \(N=256\) and \(0.20\%\) at \(N=512\), and the diagnostic
+layout also absorbs the half-cell wall offset into that same
+\(O(1/N)\) convention.
+
+That difference cancels in every quantity the main text reports as a budget number.
+A discrete dissipation pairs two finite-difference derivatives, which scale as
+\(h^{-2}\), with one area element, which scales as \(h^{2}\); a discrete lid power
+pairs one derivative with one line element. Recomputing the three branch captures
+with \(h\) replaced by \(1/N\) changes
+\(D(\langle\mathbf u\rangle)\), the fluctuating-field dissipation, the eight-bin
+phase reconstruction of \(\overline D\) and the recovered lid power by less than
+\(5\times10^{-16}\) in relative terms at both resolutions
+(\texttt{scripts/spacing\_convention\_check.py},
+\texttt{results/d2\_derived/spacing\_convention\_check.json}). The convention does
+survive in the quantities that carry a measure without a paired derivative: the
+kinetic energies scale as \(h^{2}\), so \(K\) is \(0.78\%\) smaller at \(N=256\) and
+\(0.39\%\) smaller at \(N=512\) under \(\Delta x=1/N\), and a pointwise derivative
+such as the steady-streaming forcing of Sec.~S4.7 scales as \(h^{-1}\), i.e.\
+\(0.39\%\) and \(0.20\%\) larger under the same replacement. Both are pure
+common-mode factors: they multiply the three
+branches alike, so no ratio, ranking or cycle-mean comparison in the paper depends
+on the choice, and the largest of them, \(0.78\%\), is nearly an order of magnitude
+below the smallest grid effect the paper discusses (\(5.4\)--\(7.3\%\)). Secs.~S4.7 and
+S4.8 therefore keep \(h=1/(N-1)\), which is the spacing of the arrays they actually
+process, and all frequency, viscosity and layer-thickness statements keep
+\(\Delta x=1/N\).
 
 The dissipation of such a flow is not a
 single number: what a
@@ -1990,10 +2053,17 @@ full. The fluctuations exert
 \(\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle\) on the mean
 flow, with \(\mathbf{u}'=\mathbf{u}(\cdot,t)-\langle\mathbf{u}\rangle\) evaluated
 from the eight phase bins of the capture and the phase average weighted by the bin
-counts. The stresses and the divergence are computed with central differences of
-step \(h=1/(N-1)\), where \(N\) denotes the number of lattice nodes per side and
-\(h\) is therefore the physical spacing between two consecutive nodes (the
-domain of length \(1\) is covered by \(N-1\) intervals). The three boundary cells on
+counts. The stresses and the divergence are computed with central differences on the
+node coordinates of the archived fields, whose step is \(h=1/(N-1)\): the arrays
+place their first and last node on the walls, so the domain of length \(1\) is
+covered by \(N-1\) intervals. This is the diagnostic spacing of Sec.~S4.5 rather than
+the hydrodynamic spacing \(\Delta x=1/N\) of the solver, and unlike the integral
+quantities a pointwise derivative does feel the difference: the reported forcing
+magnitudes scale as \(h^{-1}\), so they are \(0.39\%\) smaller at \(N=256\) and
+\(0.20\%\) smaller at \(N=512\) than the same expressions evaluated with
+\(\Delta x=1/N\). That factor is identical for the three branches and for the
+viscous term it is compared with, so it cancels in every ratio quoted below. The
+three boundary cells on
 each side are excluded from
 every norm and maximum because the discrete derivative there reaches into the
 bounce-back walls. Table~\ref{tab:streaming_forcing} reports the magnitudes.
@@ -2156,9 +2226,14 @@ the largest slip over the whole record is \(0.060\), \(0.115\) and \(0.118\) cav
 units for \(B_1\), \(B_2\) and \(B_3\) (Sec.~S4.6). Throughout this section the fields
 are stored as \(u_x(i,j)\), where the first index is wall-normal and the second
 streamwise, so there are \(N\) nodes per side, the wall row is \(i=N-1\), the interior
-is \(i\in\{1,\dots,N-2\}\), and the physical spacing is
-\(h=\Delta y=\Delta x=1/(N-1)\); this matches the \(N\times N\) array layout used by
-the code (e.g.\ \(N=256\) with the lid row at index 255). The wall shear is the
+is \(i\in\{1,\dots,N-2\}\), and the node spacing of those arrays is
+\(h=\Delta y=1/(N-1)\); this matches the \(N\times N\) array layout used by
+the code (e.g.\ \(N=256\) with the lid row at index 255). This \(h\) is the
+diagnostic spacing of Sec.~S4.5, not the hydrodynamic spacing \(\Delta x=1/N\) of the
+solver: the two differ by \(0.39\%\) at \(N=256\), and because the estimator pairs one
+wall-normal derivative with one line element the difference cancels identically in
+\(\overline P_{\mathrm{lid}}^{\mathrm{rec}}\) (it changes by \(<10^{-15}\) when the
+estimator is rebuilt with \(\Delta x=1/N\)). The wall shear is the
 first-order one-sided difference between the wall row and the fluid row below it, and
 the velocity in the product is the recovered wall-row velocity, so that the two
 factors are evaluated at the same locations as the boundary condition itself.
@@ -2192,18 +2267,22 @@ and lid records of \texttt{results/09\_d2\_capture/capture\_*\_D2\_N256.npz} by
 The discrete power estimator is therefore
 \begin{equation}
 \overline{P}_{\mathrm{lid}}^{\mathrm{rec}} = \frac{1}{T}\int_0^T
-\left[\sum_{j=0}^{N-1} w_j\,u_x(N-1,j)\,\tau_w(j)\,\Delta x\right]
+\left[\sum_{j=0}^{N-1} w_j\,u_x(N-1,j)\,\tau_w(j)\,h\right]
 \mathrm{d}t_{\mathrm{phys}},
 \end{equation}
 with
-\(\tau_w(j)=\nu\,[u_x(N-1,j)-u_x(N-2,j)]/\Delta y\) and trapezoidal weights
-\(w_0=w_{N-1}=1/2\), \(w_j=1\) otherwise, so the two lid end nodes where the wall and
+\(\tau_w(j)=\nu\,[u_x(N-1,j)-u_x(N-2,j)]/h\) and trapezoidal weights
+\(w_0=w_{N-1}=1/2\), \(w_j=1\) otherwise, where \(h=1/(N-1)\) is the node spacing of
+the archived arrays (Sec.~S4.5); the two lid end nodes where the wall and
 the side walls meet enter with half weight. Both factors of the product are read on
 the lid node row \(i=N-1\), and the shear is the one-sided difference between that
 row and the row below it. Because the half-way bounce-back that carries the
 boundary condition places the hydrodynamic wall half a lattice spacing outside
 \(i=N-1\), this is the stress half a cell below the wall rather than a stress
-exactly at \(y=1\); the two coincide as \(\Delta y\to0\), and the discrete
+exactly at \(y=1\); the two coincide as \(h\to0\), and since the line element \(h\)
+and the derivative \(1/h\) appear to the first power each, the value of the estimator
+is independent of whether \(h\) is read as \(1/(N-1)\) or as the solver's
+\(\Delta x=1/N\) (Sec.~S4.5). The discrete
 estimator of Main Sec.~2.2, Main Eq.~(5), uses the same convention. The residuals below
 \(3\%\) for the direct accumulation confirm
 that the velocity boundary condition injects energy consistently with the discrete
@@ -2448,7 +2527,8 @@ supplied as files alongside the repository and from the authors on reasonable
 request. Every derived quantity quoted in the main text and in this supplement is
 written to
 \texttt{results/d2\_derived/} (\texttt{d2\_summary.json},
-\texttt{d2\_extra.json}, \texttt{topology\_numbers.txt}),
+\texttt{d2\_extra.json}, \texttt{topology\_numbers.txt},
+\texttt{spacing\_convention\_check.json}),
 \texttt{results/streaming\_forcing\hspace{0pt}\_d2.json} and
 \texttt{results/stokes\_scaling\hspace{0pt}\_estimate\hspace{0pt}\_d2.json} by the scripts named in
 Secs.~S4.5--S4.8, and those records, which are what the tables and figures are
@@ -2462,7 +2542,8 @@ build report in \texttt{data/lid\_series\_n512/} (committed), the exact-in-time 
 (committed).
 Those are written by \texttt{build\_lid\_series\hspace{0pt}\_n512.py},
 \texttt{run\_branch\_capture\_d2.py}, \texttt{compare\_n256\_n512\hspace{0pt}\_d2.py},
-\texttt{compare\_forcing\hspace{0pt}\_staircase.py} and
+\texttt{compare\_forcing\hspace{0pt}\_staircase.py},
+\texttt{spacing\_convention\hspace{0pt}\_check.py} and
 \texttt{export\_resolution\hspace{0pt}\_sensitivity\hspace{0pt}\_table.py}, all in \texttt{scripts/}; the
 third of them runs the acceptance gate quoted in Sec.~S4.5 and the last writes
 Table~\ref{tab:res_sensitivity}.

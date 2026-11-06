@@ -56,8 +56,6 @@ a mark.}}
 
 
 \begin{chgdel}
-\medskip
-
 \begin{abstract}
 The spatial and temporal organization of wall actuation determines how mechanical
 input is distributed across the flow structures of a driven cavity, yet the
@@ -112,8 +110,10 @@ measured fluctuating dissipation of the two time-reversing branches to within
 approximately $5\%$ and $2\%$, respectively, without an adjustable constant. The
 estimate is a half-space approximation, so this agreement supports a wall-layer
 interpretation of the dominant fluctuating cost rather than a spatial decomposition
-of the total dissipation, and it explains why two actuations whose oscillatory
-energies differ by a factor of $2.3$ can cost the same over the cycle. The results
+of the total dissipation. The same balance explains why the quasi-steady and mixed
+branches, whose oscillatory actuation energies differ by a factor of $36$, cost the
+same over the cycle to within $2.1\%$: their totals are reached through opposite
+partitions between mean field and fluctuations. The results
 demonstrate that the energetic cost of wall actuation depends on both the spatial
 organization and the temporal fluctuations of the resulting flow, and that physical
 performance must be assessed using cycle-averaged dissipation rather than modal
@@ -566,8 +566,9 @@ $\tau_w^{\mathrm{FD}}$:
 with $U_{\mathrm{wall}}^{\mathrm{rec}}(x_j,t)=u_x(N-1,j)$ the streamwise velocity of
 the lid node row and
 $\tau_w^{\mathrm{FD}}(x_j)=Re^{-1}[u_x(N-1,j)-u_x(N-2,j)]/\Delta y$ the one-sided
-wall-normal difference between that row and the interior row immediately beneath it
-(Supplementary Sec.~S4.8).
+wall-normal difference between that row and the interior row immediately beneath it,
+$\Delta y$ being the node spacing of the archived fields (Sec.~\ref{sec:lbm},
+Supplementary Sec.~S4.8).
 This distinction is necessary because the LBM boundary condition does not enforce
 the prescribed velocity exactly at the wall node; the recovered velocity estimator
 gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$,
@@ -994,13 +995,15 @@ wherever those numbers are used.
 The control coefficients $a_{mn}(Re)$ and the flow field are obtained simultaneously
 by a parametric physics-informed neural network \cite{raissi2019pinn,cai2021pinnreview}
 with inputs $(x,y,\tau,\widetilde{Re})$, where
-$\tau\in[0,1]$ is the raw nondimensional training time,
+$\tau$ is the nondimensional time of Eq.~\eqref{eq:ns} sampled over the training
+window $[0,1]$,
 and a multi-objective loss combining the momentum and continuity residuals, the
 boundary conditions, a viscous-dissipation objective, the actuation-norm
 constraint $(\Eact-E^\ast)^2$, a spatial-variance regularizer and a
 Reynolds-separation term. The identification is performed once over
 $Re\in[100,1000]$; the branch representatives at $Re=500$, $E^\ast=0.25$ are then
-exported on one forcing period and transferred without retraining. The network
+exported on one forcing period, i.e.\ as the same Fourier series evaluated over
+$0\le t_{\mathrm{phys}}\le T=2$, and transferred without retraining. The network
 architecture, the sampling protocol, the loss weights, the training schedule and
 the branch-classification rules are reported in the Supplementary Material
 (Secs.~S1--S2) and in Ref.~\cite{beniaiche2026}; the network identifies candidate
@@ -1063,6 +1066,27 @@ duration, $T/256$, is resolution-independent and the staircase it imposes is
 common to both grids,
 so the imposed signal is periodic to machine accuracy over the
 sampling window (Supplementary Sec.~S4.4).
+
+Two spacings enter the calculation and are kept distinct. The hydrodynamic
+spacing is $\Delta x=1/N$: with the half-way wall condition it is the spacing that
+fixes $\Delta t$, $N_T$ and the lattice viscosity through
+$\nu_{\mathrm{phys}}=\nu_{\mathrm{latt}}\Delta x^{2}/\Delta t=1/Re$, and it is the
+spacing in terms of which $\delta_1$ is counted in cells above. The cycle-mean
+integrals are evaluated on the node coordinates of the archived fields,
+$x_j=y_j=j/(N-1)$, whose spacing is $h=1/(N-1)$ and which place the outermost nodes
+on the walls; the two spacings differ by $0.39\%$ at $N=256$ and $0.20\%$ at
+$N=512$. Because the dissipation pairs two finite-difference derivatives with one
+area element, and the lid power pairs one derivative with one line element, that
+factor cancels identically in
+$\overline{D}$, $D(\bar{u})$, $D_{\mathrm{fluct}}$ and
+$\overline{P}_{\mathrm{lid}}$: recomputing the three branch captures with $h$
+replaced by $1/N$ changes them by less than $5\times10^{-16}$ in relative terms at
+both resolutions. It survives only in quantities that carry a measure without a
+paired derivative, where it is a common factor: $0.78\%$ and $0.39\%$ on the kinetic
+energies, $0.39\%$ and $0.20\%$ on a pointwise derivative such as the
+steady-streaming forcing. Being multiplicative and branch-independent, it alters no
+ratio, no ranking and no figure reading, and it is an order of magnitude below the
+grid-refinement variation of Sec.~\ref{sec:gci} (Supplementary Sec.~S4.5).
 
 Each actuation is advanced from rest with the lid switched on at $t=0$. The end of
 the settling phase is fixed by a drift test on the cycle-averaged dissipation:
@@ -1503,7 +1527,7 @@ mean-field functional is not a surrogate for the cycle mean: for the actuations
 whose wall velocity reverses in time it is too small by a factor $2.2$ ($B_3$) to
 a factor $14$ ($B_2$), and the difference is exactly the dissipation of the
 fluctuations, which carries $53.7\%$ and $92.9\%$ of the respective totals. Two
-branches whose totals agree to within $2\%$ can rest on opposite compositions of
+branches whose totals differ by only about $2.1\%$ can rest on opposite compositions of
 that total. Second, the temporal fraction $f_t$ of the actuation does not predict
 the cycle-mean cost monotonically: $B_2$ ($f_t=0.998$) is the most dissipative of
 the three, while $B_1$ ($f_t=0.013$) and $B_3$ ($f_t=0.448$), whose oscillatory

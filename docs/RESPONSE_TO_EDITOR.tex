@@ -362,10 +362,13 @@ theme) and suitable for the table of contents and potential cover.
 the Deputy Editor's comments already captured the main concerns. Points 1--14
 below follow the revision plan derived from those comments; Points 15--16
 additionally document the temporal mapping of the exported actuation onto the
-lattice, which is the protocol item a reader of Sec.~4 needs in full; and Points
+lattice, which is the protocol item a reader of Sec.~4 needs in full; Points
 17--21 record the changes made after a further audit of the identification code
 and of the discrete wall-power estimator, which is the protocol item a reader of
-Secs.~2.2 and 4.1 needs in full.}
+Secs.~2.2 and 4.1 needs in full; and Points 22--25 record the last pass over the
+written time-step formula, the two lattice spacings the implementation actually
+uses, the status of the identification's space--time field, and the comparison
+quoted in the abstract.}
 
 \vspace{1em}
 
@@ -549,7 +552,7 @@ supplementary Sections~S4.3 and S4.5. The actuation is defined over the physical
 nondimensional period $T=2$, with Fourier components
 $\cos(2n\pi t/T)=\cos(n\pi t)$, so the fundamental actuation frequency is
 $\omega_1=2\pi/T=\pi$ in cavity units on every grid. The lattice advances by
-$\Delta t=\Delta x/U_{\mathrm{ref}}$ with $\Delta x=1/N$ and
+$\Delta t=U_{\mathrm{ref}}\Delta x=U_{\mathrm{ref}}/N$ with $\Delta x=1/N$ and
 $U_{\mathrm{ref}}=0.05$; one physical period therefore spans
 $N_T=TN/U_{\mathrm{ref}}=40N$ lattice steps, i.e.\ $N_T=10\,240$ at $N=256$ and
 $20\,480$ at $N=512$ (Eq.~14 of the manuscript). Each of the $256$ exported
@@ -628,29 +631,31 @@ figure is read as finer than it is.
 
 \vspace{1em}
 
-\noindent\textbf{Point 17: Two time variables in the identification, now
-distinguished.}
+\noindent\textbf{Point 17: The training window and the export window of the
+identification, now distinguished.}
 
-A fresh audit of the training script confirms that the identification runs on a
-raw nondimensional clock $\tau$ sampled uniformly over $[0,T_{\max}]$ with
+A fresh audit of the training script confirms that the identification samples the
+nondimensional time $\tau$ uniformly over $[0,T_{\max}]$ with
 $T_{\max}=1$, that the control is expanded there as
 $\sin(m\pi x)\cos(n\pi\tau)$, and that the momentum residual differentiates with
 respect to $\tau$ directly, with no $1/T$ chain factor. The manuscript and the
 supplement previously described that same variable as the normalized phase
-$\theta=t_{\mathrm{phys}}/T$ of the exported period, which conflated the two
-clocks. Sec.~4.1 and Supplementary Secs.~S1.1, S1.2 and S1.4 now state the
+$\theta=t_{\mathrm{phys}}/T$ of the exported period, which conflated the training
+window with the export window. Sec.~4.1 and Supplementary Secs.~S1.1, S1.2 and S1.4
+now state the
 distinction explicitly, in the order the computation performs it: the coefficient
 network returns the amplitudes $a_{mn}(Re)$, which carry no time variable; the
 flow network is trained on $\tau\in[0,1]$, which covers one half-period of the
 fundamental; and the exported wall actuation is the \emph{same} Fourier series
-re-evaluated on the physical clock over its complete period,
+re-evaluated on the same nondimensional time over its complete period,
 $\cos(2n\pi t_{\mathrm{phys}}/T)=\cos(n\pi t_{\mathrm{phys}})$ with
 $0\le t_{\mathrm{phys}}\le T=2$, so the fundamental of what the lattice actually
 sees is $\omega_1=2\pi/T=\pi$ (Sec.~4.2, Eq.~14, Supplementary Sec.~S2.1). The PINN
 flow field is not periodicised and not transferred to the solver --- no endpoint
 condition is imposed on it --- and the periodic hydrodynamic response is
 established independently by the MRT-LBM calculation and verified a posteriori to
-$10^{-3}$ in relative field norm (Supplementary Sec.~S1.4). We also state why the
+$10^{-3}$ in relative field norm (Supplementary Sec.~S1.4, and see Point 24 below
+for the status now given to that field). We also state why the
 constraint is not affected by the shorter training window:
 $\int_0^1\cos^2(n\pi\tau)\,d\tau=\int_0^1\cos^2(2n\pi\theta)\,d\theta=1/2$ with
 vanishing cross-terms on both windows, so the penalised quantity is the cycle
@@ -741,6 +746,138 @@ work not yet done in Sec.~6.3 and Sec.~8: Supplementary Sec.~S4.5 tabulates the
 harmonic budgets of the three controls already used, it does not contain a
 mono-harmonic campaign, and the sentence pointing to it no longer suggests
 otherwise.
+
+\vspace{1em}
+
+\noindent\textbf{Point 22: The written formula for the lattice time step.}
+
+Supplementary Sec.~S4.5 stated $\Delta t=\Delta x/U_{\mathrm{ref}}$ in the same
+paragraph that announces $N_T=TN/U_{\mathrm{ref}}=40N$, and Main Sec.~4.2 states
+$\Delta t=U_{\mathrm{ref}}/N$. The reviewer is right that the two are not
+equivalent, and right that the second is the mapping the code performs: in
+\texttt{protocol()} of \texttt{scripts/run\_branch\_capture\_d2.py} the timestep is
+\texttt{dt = U\_ref/N} and the number of steps per period is \texttt{T*N/U\_ref},
+and the function aborts the run if the product of the two differs from $T$ by more
+than $10^{-12}$. Sec.~S4.5 now reads
+$\Delta t=U_{\mathrm{ref}}\Delta x=U_{\mathrm{ref}}/N$, and it adds the viscosity
+identity that only this convention satisfies: with $\Delta x=1/N$ and
+$\Delta t=U_{\mathrm{ref}}/N$, the lattice viscosity
+$\nu_{\mathrm{latt}}=U_{\mathrm{ref}}N/Re=0.0256$ at $N=256$ converts to
+$\nu_{\mathrm{phys}}=\nu_{\mathrm{latt}}\Delta x^{2}/\Delta t=2\times10^{-3}=1/Re$
+exactly, which is the viscosity the physical problem is posed with. The three
+consequences the reviewer lists --- $N_T=10\,240$ and $20\,480$, the measured
+$\omega_1=\pi$, and $\nu_{\mathrm{latt}}$ --- are therefore all consequences of the
+single written mapping, and the paragraph in Sec.~S4.5 now says so. Point 15 of
+this letter, which reproduced the mistyped formula, was corrected in the same pass.
+No computed quantity changes: the campaign was driven by the code, and the error was
+in the text.
+
+\vspace{1em}
+
+\noindent\textbf{Point 23: The two spacings, resolved against the executed code.}
+
+As instructed, this was settled by reading the implementation rather than by
+harmonising the prose, and the finding is that the implementation uses both
+spacings, at two different levels. The solver's spacing is $\Delta x=1/N$: the
+lattice holds $N$ fluid node rows per side, the half-way boundary condition places
+each wall half a spacing beyond the row it faces (Sec.~S4.1), so a unit cavity
+spans $N\Delta x$ and this is the spacing behind $\Delta t$, $N_T$,
+$\nu_{\mathrm{latt}}$ and the cell count of $\delta_1$. The post-processing works on
+the archived fields, whose coordinate arrays are $x_j=y_j=j/(N-1)$: the derived
+quantities and the pointwise diagnostics therefore pair the first and last node with
+the walls and differentiate with $h=1/(N-1)$
+(\texttt{d2\_derived\_quantities.py}, \texttt{d2\_topology\_numbers.py},
+\texttt{run\_branch\_capture\_d2.py}). The two spacings differ by $0.39\%$ at
+$N=256$ and $0.20\%$ at $N=512$, and the diagnostic layout also absorbs the
+half-cell wall offset into that same $O(1/N)$ convention.
+
+What that difference does to the reported numbers was then measured instead of
+argued. The new \texttt{scripts/spacing\_convention\_check.py} rebuilds, from the
+same archived fields, the dissipation of the mean field, the dissipation of the
+fluctuating field, the eight-bin phase reconstruction of $\overline D$ and the
+recovered lid power, once with $h=1/(N-1)$ and once with $\Delta x=1/N$, at both
+resolutions and for all three branches. Every one of them changes by less than
+$5\times10^{-16}$ in relative terms, because a squared derivative ($h^{-2}$) is
+always paired with an area element ($h^{2}$) in the discrete dissipation, and the
+first-order wall shear ($h^{-1}$) is paired with a line element ($h$) in the lid
+power. The convention survives only where a measure is not paired with a
+derivative: the kinetic energies scale as $h^{2}$, so they are $0.78\%$
+($N=256$) and $0.39\%$ ($N=512$) smaller under $\Delta x=1/N$, and a pointwise
+derivative such as the steady-streaming forcing scales as $h^{-1}$, i.e.\ $0.39\%$
+and $0.20\%$ larger. Both are single multiplicative factors, identical for the three
+branches and for the reference lids, so they cannot alter a ratio, a ranking, the
+$2.1\%$/$0.5\%$ $B_1$--$B_3$ comparison, or any figure reading; the largest of them
+is more than an order of magnitude below the $5.4\%$--$7.3\%$ refinement variation
+that the sensitivity study reports.
+
+The text now says which spacing enters where instead of implying one convention
+throughout: Sec.~S4.5 gained a subsubsection ``Which spacing enters where
+($\Delta x=1/N$ and $h=1/(N-1)$)'' with the measurements above and the artifact
+\texttt{results/d2\_derived/spacing\hspace{0pt}\_convention\_check.json}, Main Sec.~4.2 carries
+the short version, Sec.~S4.7 now names its $h$ as the node spacing of the archived
+arrays rather than ``the physical spacing'' and notes that the forcing magnitudes and
+the viscous term carry the same factor so that their ratio is unaffected, and the
+discrete estimator of Sec.~S4.8 is written with $h$ --- including its derivative ---
+with the statement that rebuilding it with $\Delta x=1/N$ leaves
+$\overline{P}_{\mathrm{lid}}^{\mathrm{rec}}$ unchanged to machine precision. Sec.~2.2
+of the main text defines $\Delta y$ as the node spacing of those arrays, so Eq.~(5)
+and Sec.~S4.8 now use one symbol with one meaning. No reported value was
+changed by this point.
+
+\vspace{1em}
+
+\noindent\textbf{Point 24: Status of the PINN space--time field.}
+
+The claim is withdrawn. Sec.~S1.4 previously said that, since the identification
+solves a space--time boundary-value problem with no initial-condition term,
+``training targets a stationary response of that problem rather than the transient
+from a prescribed initial field''. The reviewer is correct that this does not
+follow: the training imposes neither an initial field nor a periodicity condition on
+the flow network, so for the instationary system the losses do not select a unique
+hydrodynamic trajectory, and the shorter training window $[0,1]$ does not repair
+that. S1.4 now describes the space--time field as what it is in the computation ---
+an auxiliary field in the joint minimisation of the PDE, boundary and control losses
+over $0\le\tau\le1$, explicitly not interpreted as a unique transient solution nor as
+the periodic hydrodynamic response to the exported actuation --- and states that the
+only objects transferred are the coefficients $a_{mn}$, the periodic response used by
+every dissipation number being computed independently by the MRT-LBM solver and
+verified a posteriori (half-window phase reproduction below $1.9\times10^{-3}$ in
+relative field norm, Sec.~S4.6). This matches what the paper actually does and does
+not overstate the identification.
+
+Sec.~S1.2 was reworded in the same direction, along the lines the reviewer proposed:
+$\tau$ is the same nondimensional time as the one appearing in the Navier--Stokes
+equations of Main Sec.~2.1, and the training merely restricts it to the interval
+$[0,1]$; export re-evaluates the same analytic Fourier series over the complete
+period, $t_{\mathrm{phys}}\in[0,2]$. The words ``raw training clock'' and ``a
+different clock'' were removed from S1.2 and S4.5, and the two remaining places that
+described $\tau$ as a ``raw nondimensional training time'' or ``raw training
+variable'' --- the architecture list of Sec.~S1.1 and the sampling protocol of
+Sec.~S1.3 --- now call it the nondimensional time of the governing equations
+restricted to the training window, so that the text no longer suggests
+two physical time scales, while the distinction that does matter --- training window
+versus export window, and the absence of a $1/T$ chain factor in the residual --- is
+kept stated in the order the code performs it.
+
+\vspace{1em}
+
+\noindent\textbf{Point 25: The abstract's actuation-energy comparison.}
+
+The abstract opposed two actuations ``whose oscillatory energies differ by a factor
+of $2.3$''; that is the $B_2$--$B_3$ pair, whose dissipation differs by
+$21\%$--$23\%$, so the sentence illustrated nothing that the paper claims. The
+comparison the paper rests on is $B_1$ against $B_3$: at the same
+$E^\ast=0.25$ their oscillatory actuation energies are $3.13\times10^{-3}$ and
+$0.1120$, a factor of $35.7$, while their cycle-mean dissipations are
+$1.1934\times10^{-2}$ and $1.1690\times10^{-2}$, a difference of $2.1\%$ at
+$N=256$ and $0.5\%$ at $N=512$. The abstract now states exactly that, including the
+mechanism --- the two totals are reached through opposite partitions between mean
+field and fluctuations --- and Sec.~6.2 was changed from ``two branches whose totals
+agree to within $2\%$'' to ``differ by only about $2.1\%$'', so abstract, body and
+tables now quote the same precision. Both numbers are recomputed from
+\texttt{results/d2\_derived/d2\_summary.json} and
+\texttt{results/d2\_derived/resolution\_sensitivity\_hold.json}, and the
+$\overline D$ ordering $B_2>B_1\simeq B_3$ is preserved at both resolutions.
 
 \newpage
 
