@@ -92,7 +92,8 @@ between wall-actuation structure, hydrodynamic response, and cycle-mean viscous
 dissipation in a two-dimensional lid-driven cavity. Stationary harmonic profiles
 and three physics-informed actuation branches are transferred to an independent
 multiple-relaxation-time lattice-Boltzmann solver and compared at a common
-quadratic actuation norm. For stationary controls at $Re=500$, the first spatial
+quadratic actuation norm. For stationary controls at $Re=500$ on the $N=512$
+lattice, the first spatial
 harmonic reduces dissipation by $17.7\%$ relative to a corner-regularized
 uniform-lid reference, whereas the second harmonic and the mean profile of the
 quasi-steady two-lobe branch increase it by $36.8\%$ and $44.3\%$, respectively.
@@ -101,8 +102,9 @@ redistribution of dissipation between corner shear layers and the cavity interio
 For time-dependent branches, the cycle-mean dissipation differs markedly from the
 dissipation of the time-mean flow: the fluctuating part of the strain field carries
 $92.9\%$, $53.7\%$ and $1.8\%$ of the cycle-mean cost of the lid-oscillatory, mixed
-and quasi-steady branches, respectively. The branch whose mean-field dissipation is
-fourteen times below its own cycle mean is consequently the most dissipative of the
+and quasi-steady branches, respectively. The branch for which the dissipation
+evaluated on the time-mean field is $14.2$ times smaller than the cycle-mean
+dissipation is consequently the most dissipative of the
 three, though by the modest factor of $1.2$, while the quasi-steady and mixed
 responses differ by $2.1\%$ at $N=256$ and by $0.5\%$ at $N=512$. A second-Stokes
 boundary-layer estimate built from the imposed lid signal alone agrees with the
@@ -592,7 +594,7 @@ of the power across the \emph{last fluid row of the lattice}, the node row
 $i=N-1$ that carries the moving lid in the array layout, with the wall-normal
 derivative taken as the one-sided difference between rows $N-1$ and $N-2$
 (Supplementary Sec.~S4.8). Because the boundary condition is a half-way
-bounce-back with momentum injection, the hydrodynamic wall lies half a lattice
+moving-wall rebounce with momentum injection, the hydrodynamic wall lies half a lattice
 spacing outside that row, so the row is a first-plane approximation of the wall
 rather than the wall itself: it tends to the wall power $\Plid$ of
 Eq.~\eqref{eq:plid} as $\Delta y\to0$, and it also explains why the recovered lid
@@ -802,7 +804,7 @@ For $\delta=0.05$, the raw profile carries $E_{\mathrm{raw}}/E_{\mathrm{uniform}
 =1-5\delta/4=0.9375$, a $6.25\%$ loss which is restored by the rescaling factor
 $c=\sqrt{16/15}\approx 1.033$; the final plateau value is approximately $0.5164$,
 corresponding to $U_{\max}=0.52$ in table~\ref{tab:modes}. This regularized
-profile removes the discontinuity and provides a converged reference. The first and second spatial harmonics,
+profile removes the discontinuity and provides a grid-convergent reference. The first and second spatial harmonics,
 $U_{\mathrm{lid}}=\sqrt{2E^\ast}\sin(\pi x)$ and
 $\sqrt{2E^\ast}\sin(2\pi x)$, are the two elementary spatially structured
 controls. Finally, the time-mean profile of the identified $B_1$ branch
@@ -872,7 +874,8 @@ $f_t=\sum_{m=1}^{N_x}\sum_{n=1}^{N_t-1}f_{mn}$. The three classes are defined by
 second-harmonic dominated); $B_2$ has $f_t>2f_2$ and $f_t>0.5$ (temporally
 dominated); $B_3$ satisfies neither condition (mixed). At $Re=500$ and
 $E^\ast=0.25$ the representatives used here have
-$(f_2,f_t)=(0.93,0.013)$ for $B_1$, $(0.00,1.00)$ for $B_2$ (seed 5) and
+$(f_2,f_t)=(0.92,0.013)$ for $B_1$ (the seedless reference Fourier export of the
+parent campaign; Supplementary Sec.~S4.6 gives its archive and checksum), $(0.00,1.00)$ for $B_2$ (seed 5) and
 $(0.52,0.45)$ for $B_3$ (seed 0), with a first-harmonic content
 $f_1=0.006$ for $B_3$ and below $0.02$ for the other two.
 
@@ -907,6 +910,7 @@ effect of the temporal one. Representative profiles and their space--time
 structure are shown in Fig.~\ref{fig:signatures}; Table~\ref{tab:modes}
 collects the characteristics of the eight primary actuation cases compared in the paper.
 
+\begin{chgadd}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig02_signatures.pdf}
@@ -920,12 +924,11 @@ by the common cycle-mean target: $B_2$ spans $0.004$--$2.36\,E^\ast$, whereas
 $B_1$ stays within $0.77$--$1.14\,E^\ast$ and $B_3$ within $0.65$--$1.34\,E^\ast$.
 The comparison is therefore made at equal \emph{cycle-mean} norm, not at equal
 instantaneous norm. (e) Time-mean lid profile with the temporal standard
-deviation as a band; the $B_2$ mean profile reaches only $0.039$, so a mean-field
+deviation as a band; the $B_2$ mean profile reaches only $0.038$, so a mean-field
 diagnostic sees almost no actuation.}
 \label{fig:signatures}
 \end{figure}
 
-\begin{chgadd}
 \begin{table}[t]
 \centering
 \caption{Actuation modes and hydrodynamic states compared in this study
@@ -938,10 +941,16 @@ $\overline{E}_{\mathrm{act}}=0.25$; the instantaneous norm of $B_1$, $B_2$ and $
 varies over the period. $f_2$ and $f_t$ are the stationary second-harmonic and
 total temporal energy fractions of the control coefficients. For the pure
 first-harmonic control, $f_1=1$ and $f_2=0$; for the pure second-harmonic control,
-$f_1=0$ and $f_2=1$. For $B_1$ mean profile the reported $f_2=0.93$ is inherited
-from the parent full series (the stationary second-harmonic fraction of the
-temporal mean of the parent coefficients); renormalizing the mean profile alone
-would give the same value because the mean profile has no temporal content.}
+$f_1=0$ and $f_2=1$. The two $B_1$ rows share the same series but not the same
+denominator, and this is why their $f_2$ values differ: for the full series $f_2$ is
+the stationary second-harmonic coefficient $\mathcal{E}_{20}$ divided by the
+\emph{total} control energy, which is $92.2\%$, the value tabulated for the
+identification campaign in Supplementary Secs.~S3.2 and S3.3; renormalising the
+series onto its own time mean, as the mean-profile row does, removes the temporal
+share and raises the same coefficient to $93.4\%$. The parent archive of $B_1$ is
+the seedless reference Fourier export of the parent campaign; Supplementary
+Sec.~S4.6 gives its file name, checksum and rescaling factor, since $B_1$ is
+identified by that export rather than by a random seed.}
 \label{tab:modes}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -950,11 +959,11 @@ would give the same value because the mean profile has no temporal content.}
 Actuation & Structure & $U_{\max}$ & $Re_{\max}$ & $f_2$ & $f_t$ & Role\\
 \midrule
 Uniform lid & constant, sharp corners & 0.50 & 250 & --- & 0 & reference\\
-Uniform lid, $\delta=0.05$ & constant, tapered & 0.52 & 258 & --- & 0 & converged ref.\\
+Uniform lid, $\delta=0.05$ & constant, tapered & 0.52 & 258 & --- & 0 & grid-convergent ref.\\
 $k=1$ & $\sin\pi x$ & 0.71 & 354 & 0.00 & 0 & control\\
 $k=2$ & $\sin 2\pi x$ & 0.71 & 354 & 1.00 & 0 & control\\
 $B_1$ mean profile & mean of $B_1$ & 0.78 & 390 & 0.93 & 0 & stationary\\
-$B_1$ full series & Fourier series & 0.77 (0.82) & 387 (408) & 0.93 & 0.013 & branch\\
+$B_1$ full series & Fourier series & 0.77 (0.82) & 387 (408) & 0.92 & 0.013 & branch\\
 $B_2$ seed 5 & temporal & 0.04 (1.23) & 19 (614) & 0.00 & 1.00 & unsteady\\
 $B_3$ seed 0 & mixed & 0.62 (1.16) & 310 (582) & 0.52 & 0.45 & intermediate\\
 \bottomrule
@@ -1067,9 +1076,12 @@ different discretization of the same equations, and a different iteration
 strategy. Collision is performed in moment space with a diagonal relaxation
 matrix whose non-viscous rates take the conventional D2Q9 values
 (Supplementary Sec.~S4.1) \cite{lallemand2000theory}, and the moving lid is
-imposed by a half-way bounce-back with momentum injection on the two wall-facing
-populations, a velocity boundary condition of the
-Zou--He family \cite{zou1997pressure}. The solver reproduces the benchmark
+imposed on the two wall-facing populations of the lid row by a half-way rebounce
+with first-order momentum injection, $f_q=f_{\bar q}^{*}+2w_q\rho_w(\mathbf{c}_q
+\cdot\mathbf{u}_w)/c_s^2$ \cite{ladd1994} (Supplementary Sec.~S4.1 gives the two
+updates and their place in the collision--streaming sequence); it
+is a moving-wall rebound rather than the non-equilibrium bounce-back velocity
+condition of Zou and He \cite{zou1997pressure}. The solver reproduces the benchmark
 centerline velocities of Ghia et al.~\cite{ghia1982high} with
 $L_2(u)=0.0051$ and $L_\infty(u)=0.0128$ at $Re=100$, and
 $L_2(u)=0.0141$ and $L_\infty(u)=0.0300$ at $Re=1000$ on the
@@ -1252,6 +1264,7 @@ $B_1$ mean profile & 0.78 & 390 & 0.01067 & 0.01189 & 0.01250 & 1.01 & 6.01 & 1.
 \end{tabular}
 \end{table}
 
+\begin{chgdel}
 The ratios built on the sharp uniform lid are not converged estimates of the shape
 effect, because the reference itself does not converge: its increments between
 successive grids decay by only $12\%$ per refinement ($p_{\mathrm{obs}}=0.18$,
@@ -1272,6 +1285,30 @@ reduction: $-35.3\%$ overstates the $-17.7\%$ obtained against a converged
 reference. The separation between $k=2$ and the $B_1$ mean profile
 ($1.368$ against $1.443$, about $5\%$) exceeds their GCIs but not by a wide
 margin, so they are reported as approximately equal rather than strictly ordered.
+\end{chgdel}
+
+\begin{chgadd}
+The ratios built on the sharp uniform lid are not converged estimates of the shape
+effect, because the reference itself does not converge: its increments between
+successive grids decay by only $12\%$ per refinement ($p_{\mathrm{obs}}=0.18$,
+GCI $131\%$), and the formal Richardson limit, $2.25\times10^{-2}$, is more than
+twice the finest-grid value and is not a credible continuous-limit dissipation.
+The three other controls converge, with $p_{\mathrm{obs}}=1.09$, $1.04$ and
+$1.01$ and fine-grid GCIs of $3.9\%$, $5.6\%$ and $6.0\%$. Normalizing by the
+corner-regularized lid instead gives ratios of $0.823$, $1.368$ and $1.443$ at
+$N=512$, i.e.\ $-17.7\%$, $+36.8\%$ and $+44.3\%$, with Richardson estimates
+$0.802$, $1.347$ and $1.427$ and ratio GCIs of $3.1\%$, $1.9\%$ and $1.4\%$. The
+sign of the ordering is the same under both references and at all three
+resolutions; only its magnitude changes, because the non-converged corner
+contribution inflates the denominator of the sharp-lid ratios. We therefore quote
+the regularized ratios as the better-defined estimate of the shape effect and the
+sharp-lid ratios as the values directly comparable with the classical uniform-lid
+baseline, and we do not use the sharp-lid ratio for $k=1$ as a quantitative
+reduction: $-35.3\%$ overstates the $-17.7\%$ obtained against a grid-convergent
+reference. The separation between $k=2$ and the $B_1$ mean profile
+($1.368$ against $1.443$, about $5\%$) exceeds their GCIs but not by a wide
+margin, so they are reported as approximately equal rather than strictly ordered.
+\end{chgadd}
 
 \begin{figure}[t]
 \centering
@@ -1561,7 +1598,7 @@ $B_3$ seed 0 & 0.448 & 0.2500 & $5.413\times10^{-3}$ & $1.169\times10^{-2}$ & 2.
 \end{tabular}
 \end{table}
 
-The corner-regularized uniform lid is used as the converged reference for the
+The corner-regularized uniform lid is used as the grid-convergent reference for the
 stationary grid study (Sec.~\ref{sec:stationary}) and is therefore not included
 in the seven-control comparison above, which retains the sharp uniform lid as the
 canonical cavity reference.
@@ -1707,16 +1744,30 @@ hide exactly the contrast that defines the two unsteady branches.
 \begin{chgadd}
 That contrast has a dynamical reading. For a time-periodic field the mean flow is
 not driven directly by the lid but by the divergence of the fluctuation Reynolds
-stress, $\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle$, and at
-Stokes order it satisfies $\nu\nabla^2\langle\mathbf{u}\rangle=\nabla\langle p\rangle-\mathbf{F}$:
-the classical steady-streaming problem \cite{riley2001streaming}. Evaluated on the
+stress, $\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle$, and the
+steady mean momentum equation reads
+$\nu\nabla^2\langle\mathbf{u}\rangle=\nabla\langle p\rangle-\mathbf{F}
++\mathbf{c}_{\mathrm{adv}}$ with
+$\mathbf{c}_{\mathrm{adv}}=(\langle\mathbf{u}\rangle\cdot\nabla)\langle\mathbf{u}\rangle$;
+its curl reads
+$\nu\nabla^2\langle\omega\rangle=-\nabla\times\mathbf{F}
++\nabla\times\mathbf{c}_{\mathrm{adv}}$, and in the Stokes-order reading, with the
+mean advection dropped, $\nu\nabla^2\langle\omega\rangle=-\nabla\times\mathbf{F}$.
+Equivalently, the evolutionary form is
+$\partial_t\langle\omega\rangle=\nu\nabla^2\langle\omega\rangle+S_\omega
+-\nabla\times\mathbf{c}_{\mathrm{adv}}$ with
+$S_\omega\equiv\nabla\times\mathbf{F}=\partial_xF_y-\partial_yF_x$, and the field
+mapped below is that source $S_\omega$: its extrema are values of
+$\nabla\times\mathbf{F}$, which at steady state balances the viscous and advective
+curls with the opposite sign. This is the
+classical steady-streaming problem \cite{riley2001streaming}. Evaluated on the
 three captures from eight phase bins, the streamwise normal stress at the lid plane
 is $0.203$ for $B_2$ and $7.0\times10^{-2}$ for $B_3$ against
 $2.2\times10^{-3}$ for $B_1$, and the resulting forcing has root-mean-square
 magnitude $5.3\times10^{-2}$ for $B_2$, i.e.\ $26\%$ of the root-mean-square of the
 viscous term $\nu\nabla^2\langle\mathbf{u}\rangle$ of its own mean field ($24\%$ at
 their respective maxima). For $B_3$ the same ratio is $6.7\%$ ($10\%$ at the
-maxima) and for $B_1$ it is $0.27\%$. The vorticity source $\nabla\times\mathbf{F}$
+maxima) and for $B_1$ it is $0.27\%$. The source $S_\omega$
 of $B_2$ peaks at $+23.7$ just below the lid, at $(0.36,0.99)$, and that of $B_3$ at
 $-22.1$ at $(0.64,0.99)$, while the $B_1$ source stays below $1.1$ everywhere;
 the two unsteady sources have opposite sign and sit on either side of the midline,
@@ -2168,8 +2219,9 @@ convergence of the reference dissipation ($p_{\mathrm{obs}}=0.18$,
 GCI $131\%$) and disappears once the corner is regularized
 ($p_{\mathrm{obs}}=0.96$, GCI $7.8\%$).
 \item \emph{The ranking of stationary profiles depends on the constraint.} At
-equal actuation norm, and relative to a converged corner-regularized reference,
-the first harmonic reduces the dissipation by $17.7\%$, while the second harmonic
+equal actuation norm, and relative to the grid-convergent regularized reference,
+whose fine-grid GCI is $7.8\%$, the first harmonic reduces the dissipation by
+$17.7\%$ on the $N=512$ lattice, while the second harmonic
 and the mean profile of the identified stationary branch increase it by $36.8\%$
 and $44.3\%$. At equal lid speed the same three profiles are all less dissipative
 than the uniform lid and the second harmonic is the best of them
@@ -2247,10 +2299,45 @@ evaluation is what decides between them.
 \section*{Data availability}
 %----------------------------------------------------------------------
 
+\begin{chgdel}
 The actuation series, the field captures and the post-processing scripts that
 support the figures and tables of this article are available at
 \url{https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study} and from the
 corresponding author on reasonable request.
+\end{chgdel}
+
+\begin{chgadd}
+The scripts that regenerate every figure and table of this article, the three
+exported actuation series with their checksum manifest, the solver run logs and all
+derived records quoted in the text are available at
+\url{https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study} and from the
+corresponding author on reasonable request; the committed script
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py} inventories every figure and
+table source that the two documents read, names the script that writes each of them
+and records the compiled page counts. The raw phase-resolved field captures
+that those scripts read are held separately from the git tree, which is why the
+repository alone is not a complete data deposit: the six archives of the temporal
+campaign, \texttt{capture\_B1}\hspace{0pt}\texttt{\_D2\_N256.npz},
+\texttt{capture\_B2}\hspace{0pt}\texttt{\_D2\_N256.npz},
+\texttt{capture\_B3}\hspace{0pt}\texttt{\_D2\_N256.npz},
+\texttt{capture\_B1}\hspace{0pt}\texttt{\_D2\_N512.npz},
+\texttt{capture\_B2}\hspace{0pt}\texttt{\_D2\_N512.npz} and
+\texttt{capture\_B3}\hspace{0pt}\texttt{\_D2\_N512.npz}
+(28.8, 28.6, 28.7, 111.5, 111.0 and 111.3\,MB; $419.90$\,MB in total), together with
+the exact-in-time control
+\texttt{capture\_B2}\hspace{0pt}\texttt{\_D2\_N256}\hspace{0pt}\texttt{\_exact.npz}
+(28.24\,MB), are supplied as the bundle
+\texttt{PoF\_d2}\hspace{0pt}\texttt{\_captures}\hspace{0pt}\texttt{\_v1.tar}. The
+committed manifest
+\texttt{results/09\_d2}\hspace{0pt}\texttt{\_capture/MANIFEST.md} lists every
+archive with its byte size and SHA-256 checksum, so that a copy obtained from the
+corresponding author can be verified before the scripts are re-run. The bundle is
+available from the corresponding author on reasonable request. The one figure not
+redrawn by those scripts is Fig.~4, whose three columns are rendered from the steady
+fields of the stationary $N=512$ campaign (uniform lid, \(k=1\), \(k=2\)); those
+field files are likewise held outside the git tree and are supplied on the same
+terms.
+\end{chgadd}
 
 \section*{Acknowledgments}
 The authors thank the Laboratory of Fluid Mechanics of the Ecole Militaire
@@ -2444,6 +2531,12 @@ Annu.\ Rev.\ Fluid Mech.\ \textbf{30}, 329--364 (1998).
 Q.~Zou and X.~He,
 ``On pressure and velocity boundary conditions for the lattice Boltzmann BGK
 model,'' Phys.\ Fluids \textbf{9}, 1591--1598 (1997).
+
+\bibitem{ladd1994}
+A.~J.~C.~Ladd,
+``Numerical simulations of particulate suspensions via a discretized Boltzmann
+equation. Part 1. Foundation and application to numerical simulation,''
+J.\ Fluid Mech.\ \textbf{277}, 114--139 (1994).
 
 \bibitem{lallemand2000theory}
 P.~Lallemand and X.-S.~Luo,

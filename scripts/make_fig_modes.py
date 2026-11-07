@@ -4,11 +4,13 @@
 Fig. 1  (a) controlled-cavity geometry with distributed wall actuation;
         (b) the five stationary lid profiles compared at a common actuation norm.
 Fig. 2  spatio-temporal signature of the three identified branches:
-        U_lid(x,t) over one forcing period, the instantaneous actuation norm,
-        and the modal composition (f1, f2, fm>=3, ft).
+        U_lid(x,t) over one forcing period (a-c), the instantaneous actuation
+        norm (d) and the time-mean profile with its temporal standard
+        deviation (e). The panel titles carry the modal fractions (f2, ft)
+        of Supp. Sec. S2.2, computed by scripts/lid_modal_fractions.py.
 
 Reads raw data from:
-  results/06_branch_figures/capture_B{1,2,3}.npz
+  results/09_d2_capture/capture_B{1,2,3}_D2_N256.npz   (key U_lid_native)
 
 Outputs to:
   figures/fig01_modes.pdf/.png
@@ -24,8 +26,21 @@ from matplotlib.patches import FancyArrowPatch, Rectangle
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, ".."))
-CAP = os.path.join(REPO, "results", "06_branch_figures")
+CAP = os.path.join(REPO, "results", "09_d2_capture")
 OUT = os.path.join(REPO, "figures")
+
+import sys
+
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import lid_modal_fractions as lidmodal  # noqa: E402
+
+
+def lid_series(case):
+    """Imposed lid series of the D2 campaign, (t, x), cavity units."""
+    d = np.load(os.path.join(CAP, f"capture_{case}_D2_N256.npz"),
+                allow_pickle=True)
+    return np.asarray(d["U_lid_native"], dtype=np.float64)
 
 plt.rcParams.update({
     "font.size": 9,
@@ -56,34 +71,20 @@ def scaled(raw, x, e=E_STAR):
 
 
 def b1_mean_profile():
-    d = np.load(os.path.join(CAP, "capture_B1.npz"), allow_pickle=True)
-    U = d["U_lid_series"]
+    U = lid_series("B1")
     x = np.linspace(0.0, 1.0, U.shape[1])
     u = U.mean(axis=0)
     return x, u * np.sqrt(E_STAR / np.trapezoid(u ** 2, x))
 
 
-def modal_fractions(U, nt_max=8, nm_max=10):
-    nt, nx = U.shape
-    x = np.linspace(0.0, 1.0, nx)
-    tau = np.arange(nt) / nt
-    emn = np.zeros((nm_max + 1, nt_max + 1))
-    for m in range(1, nm_max + 1):
-        sx = np.sin(m * np.pi * x)
-        for nn in range(0, nt_max + 1):
-            ct = np.cos(2.0 * np.pi * nn * tau)
-            a = 2.0 * np.trapezoid(
-                np.trapezoid(U * sx[None, :], x=x, axis=1) * ct, tau)
-            if nn == 0:
-                emn[m, nn] = 0.5 * a ** 2
-            else:
-                emn[m, nn] = 0.25 * a ** 2
-    tot = emn.sum()
-    f1 = emn[1, 0] / tot
-    f2 = emn[2, 0] / tot
-    f_hi = emn[3:, 0].sum() / tot
-    ft = emn[:, 1:].sum() / tot
-    return dict(f1=f1, f2=f2, fhi=f_hi, ft=ft, tot=tot, emn=emn)
+def modal_fractions(U):
+    """Modal fractions on the rule of Supp. Sec. S2.2, computed by the same
+    routine that writes results/d2_derived/lid_modal_fractions.json."""
+    x = np.linspace(0.0, 1.0, U.shape[1])
+    emn = lidmodal.modal_energies(U, x)
+    r = lidmodal.fractions(emn)
+    return dict(f1=r["f1"], f2=r["f2"], fhi=r["f_hi"], ft=r["f_t"],
+                tot=r["E_total"], emn=emn)
 
 
 # ----------------------------------------------------------------------
@@ -181,16 +182,18 @@ def make_fig01():
 def make_fig02():
     data = {}
     for b in ["B1", "B2", "B3"]:
-        d = np.load(os.path.join(CAP, f"capture_{b}.npz"), allow_pickle=True)
-        data[b] = dict(U=d["U_lid_series"], E=d["E_act_series"])
-        data[b].update(modal_fractions(d["U_lid_series"]))
+        U = lid_series(b)
+        d = np.load(os.path.join(CAP, f"capture_{b}_D2_N256.npz"),
+                    allow_pickle=True)
+        data[b] = dict(U=U, E=np.asarray(d["E_act_native"], dtype=np.float64))
+        data[b].update(modal_fractions(U))
         print(b, {k: round(v, 4) for k, v in data[b].items()
                   if k in ("f1", "f2", "fhi", "ft")})
 
     titles = {
-        "B1": r"$B_1$ (Fourier series, $f_t=0.074$)",
-        "B2": r"$B_2$ seed 5 ($f_t=0.998$)",
-        "B3": r"$B_3$ seed 0 ($f_2=0.520$, $f_t=0.448$)",
+        "B1": r"$B_1$ (Fourier series, $f_2=0.92$, $f_t=0.013$)",
+        "B2": r"$B_2$ seed 5 ($f_2=0.00$, $f_t=0.998$)",
+        "B3": r"$B_3$ seed 0 ($f_2=0.52$, $f_t=0.448$)",
     }
 
     fig = plt.figure(figsize=(7.1, 4.6))

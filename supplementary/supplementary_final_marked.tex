@@ -1055,21 +1055,66 @@ compressible corrections are unaffected by the Reynolds number; they provide
 numerical stability while maintaining second-order accuracy. The post-collision populations are streamed:
 \(f_i(\mathbf{x}+\mathbf{c}_i,t+1)=f_i^*(\mathbf{x},t)\).
 
-Lid boundary conditions are imposed on the node row \(i=N-1\) by half-way
-bounce-back with momentum injection into the two wall-facing populations
-(\(q=7,8\)), a velocity boundary condition of the Zou--He family
-\cite{zou1997pressure}. The momentum correction is constructed from the
-prescribed moving-wall velocity \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\)
-associated with the outermost fluid-node row, with the local density taken from
-the post-collision field. The algorithm applies that correction to the
-wall-facing populations of row \(N-1\), but the velocity it imposes belongs to
-the hydrodynamic wall, the half-way plane located a half lattice spacing outside
-that row, rather than to the macroscopic velocity reconstructed at the fluid
-node. The recovered streamwise velocity of row \(N-1\) therefore differs from
-the commanded profile by the slip measured in Sec.~S4.8 (\(3.2\%\) to \(11.8\%\)
-of the cavity speed, resolution-dependent), and the power estimator of Sec.~S4.8
-is evaluated on that row rather than exactly at \(y=1\). Bottom and lateral walls
-use standard half-way bounce-back boundary conditions. The same half-way placement
+Lid boundary conditions are imposed on the node row \(i=N-1\). The streaming step
+of that row leaves two populations unknown, the two wall-facing diagonals
+\(q=7\) (\(\mathbf{c}_7=(-1,-1)\)) and \(q=8\) (\(\mathbf{c}_8=(+1,-1)\)), whose
+streaming sources lie one node outside the domain. They are reconstructed by a
+half-way moving-wall rebounce with first-order momentum injection
+\cite{ladd1994},
+\begin{equation}
+f_q(\mathbf{x}_b,t+1)
+=f_{\bar q}^{*}(\mathbf{x}_b,t)+2\,w_q\,\rho_w\,
+\frac{\mathbf{c}_q\!\cdot\!\mathbf{u}_w}{c_s^{2}},
+\qquad q\in\{7,8\},
+\label{eq:lidbc}
+\end{equation}
+where \(\bar q\) is the opposite direction (\(\bar 7=5\), \(\bar 8=6\)),
+\(f^{*}_{\bar q}\) is the post-collision population of the \emph{same} node,
+\(w_7=w_8=1/36\), \(c_s^{2}=1/3\) and
+\(\mathbf{u}_w=(U_{\mathrm{lid}},0)\) with
+\(U_{\mathrm{lid}}=U_{\mathrm{ref}}\,\widehat{U}_{\mathrm{lid}}(x,t_{\mathrm{phys}})\)
+the commanded lid velocity in lattice units (\(\widehat{U}_{\mathrm{lid}}\) being
+the exported profile in cavity units, so that \(U_{\mathrm{lid}}\le
+1.23\times0.05\)). Because the four diagonal weights are equal,
+Eq.~\eqref{eq:lidbc} is exactly the pair of updates applied by the solver,
+\begin{equation}
+f_7(\mathbf{x}_b,t+1)=f_5^{*}(\mathbf{x}_b,t)-\frac{\rho_w U_{\mathrm{lid}}}{6},
+\qquad
+f_8(\mathbf{x}_b,t+1)=f_6^{*}(\mathbf{x}_b,t)+\frac{\rho_w U_{\mathrm{lid}}}{6},
+\label{eq:lidbc2}
+\end{equation}
+i.e.\ the bounce-back part reverses the post-collision opposite populations at the
+lid row, and the injection part lowers the west-going diagonal and raises the
+east-going one by the same amount. The density \(\rho_w\) is the macroscopic
+density of that boundary node at time \(t\); since the MRT collision conserves the
+zeroth moment it is simultaneously the pre- and post-collision density, and it is
+read from the field produced by the collision step, before any streaming.
+Equation~\eqref{eq:lidbc} is applied inside the streaming step itself, after the
+collision of the whole domain and before the populations are stored, so each
+boundary population is reconstructed once per time step from freshly collided
+values; the correction contributes \(\rho_w U_{\mathrm{lid}}/3\) to the streamwise
+momentum of the lid row. Bottom and lateral walls use standard half-way
+bounce-back boundary conditions (\(f_q=f_{\bar q}^{*}\) with no injection).
+
+The scheme is a rebounce with momentum injection, not the non-equilibrium
+bounce-back velocity condition of Zou and He \cite{zou1997pressure}: the Zou--He
+reconstruction determines the unknown populations from the equilibrium part plus
+the \emph{unbalanced} non-equilibrium part of the known opposites, whereas
+Eq.~\eqref{eq:lidbc} reverses the known post-collision populations and adds a
+prescribed momentum source, which is the moving-wall form introduced by Ladd
+\cite{ladd1994} (its second-order moving-wall refinements
+\cite{bouzidi2001} were not used). The momentum correction is therefore
+constructed from the prescribed moving-wall velocity
+\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) associated with the outermost fluid-node
+row, with the local density taken from the post-collision field. The algorithm
+applies that correction to the wall-facing populations of row \(N-1\), but the
+velocity it imposes belongs to the hydrodynamic wall, the half-way plane located a
+half lattice spacing outside that row, rather than to the macroscopic velocity
+reconstructed at the fluid node. Being first order in the wall speed, the scheme
+leaves a residual slip: the recovered streamwise velocity of row \(N-1\) differs
+from the commanded profile by the slip measured in Sec.~S4.8 (\(3.2\%\) to
+\(11.8\%\) of the cavity speed, resolution-dependent), and the power estimator of
+Sec.~S4.8 is evaluated on that row rather than exactly at \(y=1\). The same half-way placement
 fixes the hydrodynamic spacing: the lattice holds \(N\) fluid nodes per side, each
 wall stands one half spacing beyond the row it faces, and the unit cavity therefore
 spans \(N\Delta x\) with \(\Delta x=1/N\). The consequences of this convention
@@ -1137,8 +1182,9 @@ For the \(B_1\) branch control, two distinct profiles must be differentiated:
 \item The full \(B_1\) control \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}};500)\) used for the
 dedicated branch capture is rescaled to the target cycle-mean actuation energy
 \(E^\ast=0.25\). Its native, unscaled Fourier export has
-\(\overline{E}_r=0.2535\). It contains both stationary and time-dependent Fourier
-coefficients, with temporal energy fraction \(f_t=0.013\).
+\(\overline{E}_r=0.25339\) (recorded as \texttt{E\_raw} in the capture metadata and
+as \texttt{E\_period} in the archive itself). It contains both stationary and time-dependent Fourier
+coefficients, with temporal energy fraction \(f_t=0.0125\).
 
 \item The \emph{\(B_1\) mean profile} \(\overline{U}_{\mathrm{lid}}(x;500)\) is
 obtained by temporal averaging over the normalized phase \(\theta\in[0,1]\), which
@@ -1155,8 +1201,8 @@ a_{m0}(500)\sin(m\pi x),
 equivalently \(\overline{U}_{\mathrm{lid}}=T^{-1}\int_0^T U_{\mathrm{lid}}(x,t_{\mathrm{phys}};500)\,dt_{\mathrm{phys}}\)
 in physical time. By construction, this stationary profile has \(f_t=0\). Two transfers must be
 distinguished. The \emph{native} full Fourier series has actuation energy
-\(\bar E_r=0.2535\); its time-mean profile, extracted from the Fourier coefficients
-\(a_{m0}\), has energy \(E_{\mathrm{mean,native}}=(1-f_t)\bar E_r=(1-0.013)\times0.2535=0.2502\),
+\(\bar E_r=0.25339\); its time-mean profile, extracted from the Fourier coefficients
+\(a_{m0}\), has energy \(E_{\mathrm{mean,native}}=(1-f_t)\bar E_r=(1-0.0125)\times0.25339=0.2502\),
 which is within \(0.1\%\) of the realised energy \(0.2503\) of the stationary run of
 that profile (Table~\ref{tab:branch_isoenergetic}). When the full series is rescaled to the target
 \(E^\ast=0.25\) for the dedicated branch capture, its mean profile energy becomes
@@ -1592,8 +1638,16 @@ directly: the eight-bin mean is \(1.19344\times10^{-2}\) against
 \(-8\times10^{-6}\%\) and \(+0.0039\%\). The phase quadrature is therefore adequate
 for the dissipation of all three controls, which is what the harmonic budget of the
 next subsubsection requires: no more than \(4\times10^{-5}\) of the actuation energy
-of any branch sits above the fourth temporal harmonic, and eight equally spaced
-phases integrate harmonics one to four exactly. The lid power behaves differently,
+of any branch sits above the fourth temporal harmonic. What that budget guarantees
+is exactness for the \emph{imposed signal}, not for every diagnostic built from the
+response. Eight equally spaced phase bins integrate the harmonics one to four of a
+linear temporal signal exactly; a quadratic field quantity such as the dissipation
+contains products of harmonics, and those products reach higher frequencies, up to
+the self-product of the fourth harmonic at \(8\omega_1\), which with eight phases
+folds back onto the mean. The reported cycle-mean dissipation is therefore the
+direct accumulation over the time steps, and the eight-bin reconstruction is kept
+only as the cross-check quoted above, whose three discrepancies stay below
+\(0.004\%\). The lid power behaves differently,
 because it is a product of two quantities that both vary within a phase bin: the
 same eight-bin reconstruction is \(0.14\%\), \(5.5\%\) and \(3.9\%\) below the
 step-by-step accumulator for \(B_1\), \(B_2\) and \(B_3\). Main Table~4 therefore
@@ -1636,7 +1690,7 @@ carry the GCIs of Sec.~S4.4, the branch rows do not.
 The branch rows follow the transfer convention of Main Sec.~2.2: the exported lid
 series is multiplied by a single factor that brings its cycle-mean actuation energy
 to \(E^*=0.25\). That factor is \(0.9933\) for \(B_1\), whose native Fourier export
-has \(\bar E_r=0.2534\), and unity for \(B_2\) and \(B_3\), whose natives are already
+has \(\bar E_r=0.25339\) (the archive value being \(0.2533938\)), and unity for \(B_2\) and \(B_3\), whose natives are already
 at \(0.2500\). Because the factor is uniform in space and time, \(f_2\), \(f_t\) and
 \(C_3\), and hence the branch label, are unchanged. The alternative convention of
 normalising a lid series by the peak of its \emph{time-mean} profile fixes only the
@@ -1859,6 +1913,14 @@ Typical wall-clock times for the main computational components are:
 \end{itemize}
 
 \textbf{S10.4 Random Seed Control}
+
+Each realization is assigned a unique integer seed \(s\in\{0,1,\ldots,N_s-1\}\).
+At the beginning of each realization the seed is passed to the pseudorandom
+generators of the deep-learning framework, of the array library and of the
+standard random module, and, for multi-GPU runs, to the device generators as
+well. Each realization is therefore strictly reproducible from its seed number.
+
+\textbf{S10.5 Inventory of Numerical Experiments}
 \end{chgdel}
 
 \begin{chgadd}
@@ -2012,7 +2074,8 @@ representation; they are recovered directly from the boundary signal that drives
 lattice. The spectra are also short: beyond the fourth temporal harmonic the
 actuation energy is below \(10^{-5}\) in every case (\(9\times10^{-6}\) for \(B_1\),
 \(4\times10^{-34}\) for \(B_2\) and \(B_3\)), which is why the eight-bin quadrature
-of Sec.~S4.5 is exact for the dissipation.
+of Sec.~S4.5 reproduces the dissipation to below \(0.004\%\) even though it is exact
+for the imposed harmonics rather than for the quadratic diagnostics.
 Second, the estimate
 \(\overline D_{\mathrm{St}}=\sum_{n\ge1}E_n\sqrt{\nu\omega_n/2}\) with
 \(\nu=2\times10^{-3}\) and \(\omega_n=n\pi\) gives \(1.814\times10^{-4}\),
@@ -2064,6 +2127,22 @@ and \(1.0000\) for \(B_3\) seed 0 (native \(0.25000\)). Only the \(B_1\) factor
 differs from unity, by \(0.7\%\), and it rescales the effective Reynolds number of
 that run by the same \(0.7\%\); no other run is rescaled, and the realised rather
 than the prescribed actuation energy is what the figures compare.
+The three archives, with their SHA-256 digests, are hosted in
+\texttt{data/lid\_series/} (\texttt{fourier\_Re500.npz} for \(B_1\),
+\texttt{B2\_seed5\_E025\_re500\_e0.25.npz} and
+\texttt{B3\_seed0\_E025\_re500\_e0.25.npz}); the capture metadata of each run
+repeats the file name, the factor and the native energy, and the \(B_1\) run
+consumed exactly the file listed above. The modal fractions of the three exports,
+recomputed from the archives themselves by
+\texttt{scripts/lid\_modal\_fractions.py}, whose record is
+\texttt{results/d2\_derived/lid\_modal\_fractions.json}, are
+\((f_2,f_t)=(0.922,0.0125)\),
+\((0.000,0.998)\) and \((0.520,0.448)\); the \(B_1\) value of \(f_2\) is the
+stationary second-harmonic share of the \emph{total} control energy, which is the
+denominator used by the classification rule of Sec.~S2.3 and by the campaign tables
+of Secs.~S3.2 and S3.3. The \(0.93\) quoted for the \(B_1\) mean profile in Main
+Table~1 is the same coefficient divided by the stationary energy alone, since that
+profile carries no temporal content.
 
 Each run starts from rest and is advanced through the drift test of
 Main Sec.~4.2: the sampled dissipation is averaged over successive three-period
@@ -2184,7 +2263,18 @@ full. The fluctuations exert
 \(\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle\) on the mean
 flow, with \(\mathbf{u}'=\mathbf{u}(\cdot,t)-\langle\mathbf{u}\rangle\) evaluated
 from the eight phase bins of the capture and the phase average weighted by the bin
-counts. The stresses and the divergence are computed with central differences on the
+counts. The vorticity diagnostic of Table~\ref{tab:streaming_forcing} is the curl of
+that forcing,
+\(S_\omega\equiv\nabla\times\mathbf{F}=\partial_xF_y-\partial_yF_x\), which is the
+term entering the evolutionary mean-vorticity equation as
+\(\partial_t\langle\omega\rangle=\nu\nabla^2\langle\omega\rangle+S_\omega
+-\nabla\times[(\langle\mathbf{u}\rangle\cdot\nabla)\langle\mathbf{u}\rangle]\).
+Its sign is therefore that of the source, and the opposite of the curl of the
+right-hand side of the Stokes-order reduction
+\(\nu\nabla^2\langle\mathbf{u}\rangle=\nabla\langle p\rangle-\mathbf{F}\), whose curl
+is \(\nu\nabla^2\langle\omega\rangle=-\nabla\times\mathbf{F}\). The extrema quoted
+below are values of \(S_\omega\).
+The stresses and the divergence are computed with central differences on the
 node coordinates of the archived fields, whose step is \(h=1/(N-1)\): the arrays
 place their first and last node on the walls, so the domain of length \(1\) is
 covered by \(N-1\) intervals. This is the diagnostic spacing of Sec.~S4.5 rather than
@@ -2246,10 +2336,11 @@ one-sided wall-normal derivative, and the number of phases used to average the
 product \(U_{\mathrm{lid}}\tau_w\).
 
 \emph{Wall velocity.} The transfer imposes \(U_{\mathrm{lid}}\) through the
-velocity boundary condition of Sec.~S4.1: at the outermost node row, the two populations that
-would stream in from outside the domain are replaced by their bounce-back values
-corrected by a momentum injection proportional to the local density and to the
-prescribed lid velocity. This imposes the commanded moving-wall velocity at the
+velocity boundary condition of Sec.~S4.1, Eq.~\eqref{eq:lidbc}: at the outermost node row, the two populations that
+would stream in from outside the domain are replaced by the bounce-back of their
+post-collision opposites, corrected by a momentum injection of magnitude
+\(\rho_wU_{\mathrm{lid}}/6\) on each of them, with opposite signs
+(Eq.~\eqref{eq:lidbc2}). This imposes the commanded moving-wall velocity at the
 hydrodynamic boundary, the half-way plane located a half spacing outside the lid node
 row, not at any lattice node: the macroscopic streamwise velocity reconstructed at the
 adjacent outermost fluid-node row \(i=N-1\) is a computed quantity, and it differs
@@ -2346,11 +2437,14 @@ quoted as measured.
 for the dissipation of all three controls: the eight-bin reconstruction of
 \(\overline D\) differs from the direct accumulation over the sampled record by
 \(+0.0017\%\), \(-8\times10^{-6}\%\) and \(+0.0039\%\) for \(B_1\), \(B_2\) and
-\(B_3\) (Sec.~S4.5). This is a consequence of the temporal protocol: with
-\(10\,240\) lattice steps per period the sampled record is dense enough that the
-eight bins resolve every harmonic that carries appreciable energy, the harmonics
-above the fourth holding less than \(1\times10^{-5}\) of the actuation energy. The
-direct accumulation is used nevertheless, because it costs nothing to keep. For the
+\(B_3\) (Sec.~S4.5). The reason is the harmonic content of the actuation rather than
+the density of the record: the eight bins integrate the harmonics one to four of the
+imposed lid signal exactly, and the harmonics above the fourth hold less than
+\(1\times10^{-5}\) of the actuation energy in every branch. They are not an exact
+quadrature for a quadratic diagnostic, whose harmonic products reach higher
+frequencies, the fourth-harmonic self-product at \(8\omega_1\) folding onto the
+phase mean; that is why the direct accumulation, which is unaffected, is the
+reported number and the eight-phase value is kept only as the cross-check above. For the
 power estimate, which is a product of two quantities that both vary within a phase
 bin, the eight-bin average is measurably coarser: it returns a lid power
 \(0.14\%\), \(5.5\%\) and \(3.9\%\) below the direct accumulation for \(B_1\), \(B_2\)
@@ -2449,19 +2543,21 @@ Typical wall-clock times for the main computational components are:
 \end{itemize}
 
 \subsection{Random Seed Control}
-\end{chgadd}
 
 Each realization is assigned a unique integer seed \(s\in\{0,1,\ldots,N_s-1\}\).
 At the beginning of each realization the seed is passed to the pseudorandom
 generators of the deep-learning framework, of the array library and of the
 standard random module, and, for multi-GPU runs, to the device generators as
 well. Each realization is therefore strictly reproducible from its seed number.
+The three branch representatives are identified the same way, with one
+qualification: \(B_2\) is seed 5 and \(B_3\) is seed 0 of the ten-seed experiment
+of Sec.~S3.2, whereas \(B_1\) is the reference configuration of that campaign, whose
+exported lid series carries no random seed. It is therefore identified by its
+archive and checksum, \texttt{data/lid\_series/fourier\_Re500.npz} with
+SHA-256 \texttt{6eb410709e8ed102}$\ldots$\texttt{f5e3798f5824} (full digests in
+\texttt{data/lid\_series/manifest.csv}), and by the rescaling factor recorded
+with it (Sec.~S4.6).
 
-\begin{chgdel}
-\textbf{S10.5 Inventory of Numerical Experiments}
-\end{chgdel}
-
-\begin{chgadd}
 \subsection{Inventory of Numerical Experiments}
 \end{chgadd}
 
@@ -2555,13 +2651,22 @@ r.m.s.\ fields---are the archives
 their run logs (\texttt{results/09\_d2\_capture/}\hspace{0pt}%
 \texttt{capture\_d2\_\*.log}), the smoke test
 \texttt{results/07\_d2\_smoke/} and the single-frequency verification
-\texttt{results/08\_stokes\_analytic/} are committed, whereas the six capture
-archives total about $0.4$~GB, exceed the per-file limit of the git tree and are
-supplied as files alongside the repository and from the authors on reasonable
-request. Every derived quantity quoted in the main text and in this supplement is
+\texttt{results/08\_stokes\_analytic/} are committed. The seven field archives are
+not: three at \(N=256\) (28.78, 28.60 and 28.72~MB), three at \(N=512\) (111.48,
+111.02 and 111.30~MB) and the exact-in-time control (28.24~MB), \(448.15\)~MB in
+total, the \(419.90\)~MB of the six branch captures among them. The three
+\(N=512\) files exceed the 100~MB per-file limit of a git tree and committing the set
+would add that volume to a repository from which every quoted number is already
+reproducible, so they ship as the single bundle
+\texttt{PoF\_d2\_captures\_v1.tar}, supplied alongside the submission and available
+from the corresponding author on reasonable request. The committed index
+\texttt{results/09\_d2\_capture/MANIFEST.md} lists each archive by filename, byte size
+and SHA-256 checksum, so that a copy can be verified before the scripts of
+Secs.~S4.5--S4.8 are re-run on it. Every derived quantity quoted in the main text and in this supplement is
 written to
 \texttt{results/d2\_derived/} (\texttt{d2\_summary.json},
-\texttt{d2\_extra.json}, \texttt{topology\_numbers.txt},
+\texttt{d2\_extra.json}, \texttt{lid\_modal\_fractions.json},
+\texttt{topology\_numbers}\hspace{0pt}\texttt{.txt},
 \texttt{spacing\_convention\_check.json}),
 \texttt{results/streaming\_forcing\hspace{0pt}\_d2.json} and
 \texttt{results/stokes\_scaling\hspace{0pt}\_estimate\hspace{0pt}\_d2.json} by the scripts named in
@@ -2575,12 +2680,17 @@ build report in \texttt{data/lid\_series\_n512/} (committed), the exact-in-time 
 \texttt{staircase\_control\_B2\hspace{0pt}\_N256.json} of \texttt{results/d2\_derived/}
 (committed).
 Those are written by \texttt{build\_lid\_series\hspace{0pt}\_n512.py},
-\texttt{run\_branch\_capture\_d2.py}, \texttt{compare\_n256\_n512\hspace{0pt}\_d2.py},
+\texttt{run\_branch\_capture\_d2.py}, \texttt{lid\_modal\_fractions.py},
+\texttt{compare\_n256\_n512\hspace{0pt}\_d2.py},
 \texttt{compare\_forcing\hspace{0pt}\_staircase.py},
 \texttt{spacing\_convention\hspace{0pt}\_check.py} and
 \texttt{export\_resolution\hspace{0pt}\_sensitivity\hspace{0pt}\_table.py}, all in \texttt{scripts/}; the
 third of them runs the acceptance gate quoted in Sec.~S4.5 and the last writes
-Table~\ref{tab:res_sensitivity}.
+Table~\ref{tab:res_sensitivity}. The inventory itself is machine-checked:
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py} lists every figure and every
+table source that the two documents read, names the script that writes each of them
+and records the page count and checksum of the four compiled PDFs, in
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md}.
 The stationary and grid-convergence records are in
 \texttt{results/p1\_gci\_iso/}, the single-frequency lid test of Sec.~S4.2 in
 \texttt{results/08\_stokes\_analytic/}, and the appendix tables regenerated from
@@ -2616,6 +2726,17 @@ a multigrid method,'' J.\ Comput.\ Phys.\ \textbf{48}, 387--411 (1982).
 Q.~Zou and X.~He,
 ``On pressure and velocity boundary conditions for the lattice Boltzmann BGK
 model,'' Phys.\ Fluids \textbf{9}, 1591--1598 (1997).
+
+\bibitem{ladd1994}
+A.~J.~C.~Ladd,
+``Numerical simulations of particulate suspensions via a discretized Boltzmann
+equation. Part 1. Foundation and application to numerical simulation,''
+J.\ Fluid Mech.\ \textbf{277}, 114--139 (1994).
+
+\bibitem{bouzidi2001}
+Z.~Bouzidi, M.~Firdaouss, and P.~Lallemand,
+``Velocity boundary conditions for the lattice Boltzmann BGK equation,''
+Phys.\ Fluids \textbf{13}, 3450--3459 (2001).
 
 \bibitem{lallemand2000theory}
 P.~Lallemand and X.-S.~Luo,

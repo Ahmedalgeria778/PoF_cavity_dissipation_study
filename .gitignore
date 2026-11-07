@@ -49,8 +49,10 @@ desktop.ini
 *~
 
 # Large data files. The raw phase-resolved field archives of the temporal campaign
-# (results/09_d2_capture/capture_*.npz, ~0.4 GB, individual files above GitHub's
-# 100 MB per-file limit) are excluded and provided on request. Everything the text
+# (results/09_d2_capture/capture_*.npz, 448 MB for the seven files, the N=512 ones
+# above GitHub's 100 MB per-file limit) are excluded from the git tree and shipped as
+# bundle/PoF_d2_captures_v1.tar; results/09_d2_capture/MANIFEST.md, which is
+# committed, indexes them with their sizes and SHA-256 checksums. Everything the text
 # needs as input or as provenance is committed.
 *.npz
 *.h5
@@ -62,6 +64,8 @@ desktop.ini
 !results/07_d2_smoke/smoke_d2.npz
 !results/08_stokes_analytic/*.npz
 !results/p1_gci_iso/*.csv
+!results/01_ReE_star_map/branch_runs.csv
+!results/02_lambda_var/*.csv
 !supplementary/data_appendix/*.csv
 !results/d2_derived/topology_numbers.txt
 !results/09_d2_capture/capture_d2_*.log
@@ -76,6 +80,7 @@ results/06_branch_figures/
 results/06_branch_figures_n512/
 results/d2_derived/_*
 build/
+bundle/
 manuscript/_stale_*
 supplementary/_stale_*
 draft_pof_new_paragraphs.md

@@ -32,7 +32,7 @@ PoF_cavity_dissipation_study/
 ├── results/                     # Derived records (JSON/TXT), verification runs, run logs
 │   ├── 07_d2_smoke/             # omega_1 = pi smoke test of the temporal protocol
 │   ├── 08_stokes_analytic/      # single-frequency oscillatory-Stokes verification
-│   ├── 09_d2_capture/           # temporal captures (field archives are provided separately)
+│   ├── 09_d2_capture/           # temporal capture logs + MANIFEST.md (the field archives themselves ship separately)
 │   ├── d2_derived/              # every cycle mean, budget, sensitivity record quoted in the text
 │   └── p1_gci_iso/              # stationary grid-convergence records
 ├── scripts/                     # Solver, post-processing and figure scripts
@@ -77,6 +77,8 @@ python scripts/d2_extra_quantities.py
 python scripts/d2_topology_numbers.py
 python scripts/stokes_scaling_estimate_d2.py
 python scripts/export_d2_supp_tables.py
+python scripts/lid_modal_fractions.py                     # modal fractions of the three imposed series
+python scripts/export_legacy_supp_tables.py              # the five appendix tables of the stationary campaign
 python scripts/compare_n256_n512_d2.py                   # exits 0 only if all six captures pass
 python scripts/export_resolution_sensitivity_table.py
 
@@ -90,7 +92,9 @@ python scripts/test_checkpoint_resume.py
 
 ### Generate Figures
 
-All figure scripts read from `results/` and write to `figures/`.
+All figure scripts read from `results/` and write to `figures/`, and the build
+refreshes the copies in `manuscript/figures/` and `supplementary/figures/` from them;
+Main Fig. 4 is the single exception, listed in `docs/PACKAGE_CERTIFICATION.md`.
 
 ```bash
 # Figures 1 and 2: geometry, stationary modes, and branch signatures
@@ -110,6 +114,9 @@ python scripts/make_fig_branch_energy_d2.py
 
 # Highlight image for the table of contents
 python scripts/make_highlight_image.py
+
+# Figure 4 (the mechanism panels) is the one figure not redrawn here: it is rendered
+# from the steady field files of the stationary N=512 campaign, held outside the tree
 ```
 
 Only the pipeline above reproduces this paper. Scripts that predate the temporal
@@ -125,11 +132,22 @@ The committed records are the ones every table and figure is generated from:
 
 - `data/lid_series/` + `manifest.csv` — the three imposed waveforms (256 samples per period, `endpoint=False`), with SHA-256, shape, applied scaling and realised actuation energy
 - `results/09_d2_capture/capture_d2_*.log` — run logs of the six temporal captures
-- `results/d2_derived/` — `d2_summary.json`, `d2_extra.json`, `topology_numbers.txt`, `capture_window_justification_N256.json`, `staircase_control_B2_N256.json`, `resolution_sensitivity_hold.json`
+- `results/09_d2_capture/MANIFEST.md` — filenames, byte sizes and SHA-256 of the seven field archives shipped outside the git tree
+- `results/d2_derived/` — `d2_summary.json`, `d2_extra.json`, `lid_modal_fractions.json`, `topology_numbers.txt`, `capture_window_justification_N256.json`, `staircase_control_B2_N256.json`, `resolution_sensitivity_hold.json`
 - `results/streaming_forcing_d2.json`, `results/stokes_scaling_estimate_d2.json`, `results/lid_spatial_decomposition.json`
 - `results/07_d2_smoke/`, `results/08_stokes_analytic/` — protocol verifications
-- `results/p1_gci_iso/*.csv` — stationary grid-convergence records
+- `results/p1_gci_iso/*.csv` — stationary grid-convergence records, the input of the three `p1_table_*.tex` appendix tables
+- `results/01_ReE_star_map/branch_runs.csv` — one row per identification run (185 runs), with \(f_2\) and \(f_t\); the input of `p3_table_threshold.tex`
+- `results/02_lambda_var/*.csv` — the \(\lambda_{\mathrm{var}}=0\) ablation runs with their modal shares; the input of `p2_table_bfirst_ablation.tex`
 - `supplementary/data_appendix/*.csv` and `Paper2_all_campaigns_results.tex` — cell-aggregated record of the 185 identification runs
+
+Every appendix table and every figure except Main Fig. 4 is therefore written by a
+committed script reading committed records; Fig. 4 is rendered from the steady field
+files of the stationary \(N=512\) campaign, which are raw dumps held outside the git
+tree on the same terms as the temporal captures. `python scripts/certify_package.py`
+regenerates [`docs/PACKAGE_CERTIFICATION.md`](docs/PACKAGE_CERTIFICATION.md), which
+lists each resource the two documents pull in, the script that writes it, and the page
+count and checksum of the compiled PDFs.
 
 ### Compile Manuscript and Supplementary
 
@@ -138,12 +156,25 @@ directories, so each document must be compiled from its own directory, with the
 build output collected in `build/`:
 
 ```bash
-cd manuscript     && pdflatex -output-directory ../build manuscript_final.tex     && cd ..
-cd manuscript     && pdflatex -output-directory ../build manuscript_final.tex     && cd ..
-cd supplementary  && pdflatex -output-directory ../build supplementary_final.tex  && cd ..
-cd supplementary  && pdflatex -output-directory ../build supplementary_final.tex  && cd ..
+for i in 1 2 3; do cd manuscript    && pdflatex -output-directory ../build manuscript_final.tex    && cd ..; done
+for i in 1 2 3; do cd supplementary && pdflatex -output-directory ../build supplementary_final.tex && cd ..; done
 python scripts/check_build_logs.py      # parses the four .log files; exit 0 = nothing to fix
 ```
+
+The two marked-up copies diff against the previous submission round and need one extra
+pass each (their table of contents shifts between runs):
+
+```bash
+py scripts/mark_manuscript.py build/_mark_base/old_manuscript.tex     manuscript/manuscript_final.tex     manuscript/manuscript_final_marked.tex
+py scripts/mark_manuscript.py build/_mark_base/old_supplementary.tex  supplementary/supplementary_final.tex supplementary/supplementary_final_marked.tex
+cd manuscript     && for i in 1 2 3; do pdflatex -output-directory ../build manuscript_final_marked.tex; done                  && cd ..
+cd supplementary  && for i in 1 2 3; do pdflatex -output-directory ../build supplementary_final_marked.tex; done               && cd ..
+python scripts/certify_package.py       # -> docs/PACKAGE_CERTIFICATION.md
+```
+
+Always compile with `-output-directory ../build`: an `.aux` left in the source
+directory is read in preference to the one just written, which silently resurrects the
+labels and citations of the previous round.
 
 ## Key Results
 
@@ -172,10 +203,16 @@ python scripts/check_build_logs.py      # parses the four .log files; exit 0 = n
 The repository contains the manuscript, the supplementary material, all figures, all
 analysis scripts, the imposed waveforms with their checksum manifest, the run logs and
 every derived record (JSON/TXT/CSV) that the tables and figures are generated from.
-The raw phase-resolved field archives of the six temporal captures
-(`results/09_d2_capture/capture_*_D2_N{256,512}.npz`, ≈ 0.4 GB, individual files above
-GitHub's 100 MB per-file limit) are supplied as files alongside the repository and are
-available from the corresponding author upon reasonable request.
+The raw phase-resolved field archives are the only data held outside the git tree: the
+six branch captures (`results/09_d2_capture/capture_*_D2_N{256,512}.npz`, 419.90 MB)
+plus the exact-in-time control (`capture_B2_D2_N256_exact.npz`, 28.24 MB), 448.15 MB
+in total, of which the three `N=512` files exceed GitHub's 100 MB per-file limit for a
+git tree. They ship as the single bundle `PoF_d2_captures_v1.tar`, indexed by the
+committed [`results/09_d2_capture/MANIFEST.md`](results/09_d2_capture/MANIFEST.md),
+which lists each filename, byte size and SHA-256 so that a copy obtained from the
+corresponding author can be verified before the scripts are re-run. The bundle is
+supplied alongside the submission and is available from the corresponding author upon
+reasonable request.
 
 ## Citation
 

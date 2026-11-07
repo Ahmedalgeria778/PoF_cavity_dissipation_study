@@ -32,8 +32,8 @@ OUT = os.path.join(REPO, "figures")
 CASES = ["B1", "B2", "B3"]
 PHASES = [0, 2, 4, 6]
 TITLES = {"B1": r"$B_1$", "B2": r"$B_2$", "B3": r"$B_3$"}
-SUBS = {"B1": r"$f_t=0.013$", "B2": r"$f_t=0.998$",
-        "B3": r"$f_2=0.94,\ f_t=0.448$"}
+SUBS = {"B1": r"$f_2=0.92,\ f_t=0.013$", "B2": r"$f_2=0.00,\ f_t=0.998$",
+        "B3": r"$f_2=0.52,\ f_t=0.448$"}
 COLOURS = {"B1": "tab:blue", "B2": "tab:red", "B3": "tab:green"}
 NPHASE = 8
 DENSITY = 1.30

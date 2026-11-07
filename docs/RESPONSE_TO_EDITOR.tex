@@ -1119,12 +1119,14 @@ package as submitted is self-contained:
   the four compiled PDFs.
 \end{itemize}
 After the four changes above, all four documents were recompiled with \texttt{pdflatex}
-(two passes, three for the marked supplement). The logs are clean: no \texttt{LaTeX
-  Error}, no undefined reference or citation, no duplicate label and no missing graphic
-in any of them, and every externalized table resolves. The result is a 26-page
-manuscript with 0 overfull boxes, a 29-page supplement with one overfull box of
-$14.9$\,pt, and marked-up versions of 35 and 39 pages. \texttt{scripts/check\_build\_logs.py}
-performs that audit on the four logs and exits 0.
+(three passes of each source, as the repository \texttt{README} prescribes). The logs
+are clean: no \texttt{LaTeX Error}, no undefined reference or citation, no duplicate
+label and no missing graphic in any of them, and every externalized table resolves. The
+result is a 27-page manuscript with 0 overfull boxes, a 30-page supplement with one
+overfull box of $6.7$\,pt, and marked-up versions of 36 and 40 pages.
+\texttt{scripts/check\_build\_logs.py} performs that audit on the four logs and exits 0.
+Point~46 reports the same audit as re-measured after the eleventh round, once every
+change requested there had been applied.
 
 \vspace{1em}
 
@@ -1186,9 +1188,233 @@ With those files in place, the four documents compile without a single missing-r
 error, which is the operational proof that the manifest is complete: a \texttt{\textbackslash input}
 or a \texttt{\textbackslash includegraphics} that did not resolve would abort the run and leave an
 unreferenced table or a blank float. The layout is therefore the one in the four uploaded
-PDFs: 26 pages for the manuscript, 29 for the supplement, 35 and 39 for the marked-up
-versions, with the single $14.9$\,pt overfull box of the supplement noted above and none
-else.
+PDFs: 27 pages for the manuscript, 30 for the supplement, 36 and 40 for the marked-up
+versions, with the single $6.7$\,pt overfull box of the supplement noted above and none else. That claim is no longer left to the compiler alone: since the eleventh round
+the eleven table sources are all written by committed scripts reading committed records, and
+\texttt{scripts/certify\_package.py} checks each of the twenty-one resources, together with
+the generator behind it, in the machine-readable manifest
+\texttt{docs/PACKAGE\_CERTIFICATION.md}. See Point~46.
+
+\vspace{1em}
+
+\noindent\textbf{Point 40: The moving-wall lattice-Boltzmann boundary condition, written
+out (eleventh review, item 1.1).}
+
+The reviewer is right that the description was not yet sufficient to reproduce the step,
+and that the family it was attributed to needed to be named exactly. Sec.~S4.1 now
+states the reconstruction instead of describing it. The streaming step of the node row
+\(i=N-1\) leaves exactly two populations unknown, and the two wall-facing diagonals are
+given with their lattice velocities, \(q=7\) with \(\mathbf{c}_7=(-1,-1)\) and \(q=8\)
+with \(\mathbf{c}_8=(+1,-1)\). Their update is the first displayed equation of that
+subsection,
+\(f_q(\mathbf{x}_b,t+1)=f_{\bar q}^{*}(\mathbf{x}_b,t)+2w_q\rho_w(\mathbf{c}_q\!\cdot\!
+\mathbf{u}_w)/c_s^{2}\), and because the four diagonal weights are equal the next
+displayed equation writes the pair the solver actually applies:
+\(f_7=f_5^{*}-\rho_wU_{\mathrm{lid}}/6\) and \(f_8=f_6^{*}+\rho_wU_{\mathrm{lid}}/6\). The
+directions, the post-collision opposites, the sign and the coefficient in \(\rho\) and
+\(U_{\mathrm{lid}}\) are therefore all explicit, together with \(w_7=w_8=1/36\),
+\(c_s^{2}=1/3\), and the fact that \(\rho_w\) is the boundary-node density read from the
+post-collision field --- the MRT collision conserves the zeroth moment, so pre- and
+post-collision densities coincide. The moment in the sequence is specified too: the
+correction is applied inside the streaming step, after the collision of the whole domain
+and before the populations are stored, once per time step, and it contributes
+\(\rho_wU_{\mathrm{lid}}/3\) to the streamwise momentum of the lid row. The bottom and
+lateral walls are stated to use plain half-way bounce-back with no injection.
+
+On the naming, the distinction the reviewer asks for is made explicitly and against the
+code as executed, which was checked line by line in the compiled kernel. The scheme is a
+half-way moving-wall rebounce with first-order momentum injection, the moving-wall form
+introduced by Ladd (1994); it is \emph{not} the non-equilibrium bounce-back velocity
+condition of Zou and He (1997), because the Zou--He reconstruction determines the unknown
+populations from the equilibrium part plus the unbalanced non-equilibrium part of the
+known opposites, whereas here the known post-collision populations are reversed and a
+prescribed momentum source is added. The second-order moving-wall refinements of Bouzidi,
+Firdaouss and Lallemand (2001) are declared as not used, and the consequence of first
+order is quantified
+rather than hidden: the recovered velocity of row \(N-1\) differs from the commanded
+profile by the \(3.2\%\) to \(11.8\%\) slip measured in Sec.~S4.8, on which row the power
+estimator is evaluated. The hydrodynamic wall remains the half-way plane half a lattice
+spacing outside that row, as the previous round established. The main text cites the same
+pair of equations at the point where the boundary condition is introduced.
+
+\vspace{1em}
+
+\noindent\textbf{Point 41: Eight phase bins are a cross-check, not an exact quadrature for
+a quadratic diagnostic (eleventh review, item 1.2).}
+
+The reviewer's formulation has been adopted, in substance and almost in its words, in
+Sec.~S4.5. The sentence that claimed exactness for ``harmonics one to four'' now says
+that eight equally spaced phase bins integrate the harmonics one to four of a
+\emph{linear temporal signal} exactly, that a quadratic field quantity such as the
+dissipation contains products of harmonics which reach higher frequencies --- up to the
+self-product of the fourth harmonic at \(8\omega_1\), which with eight phases folds back
+onto the mean --- that the reported cycle-mean dissipation is therefore the direct
+accumulation over the time steps, and that the eight-bin reconstruction is kept only as
+the cross-check, whose three discrepancies stay below \(0.004\%\). Those three
+discrepancies are measured values: \(+0.0017\%\), \(-8\times10^{-6}\%\) and
+\(+0.0039\%\) for \(B_1\), \(B_2\) and \(B_3\). Two related statements were tightened in
+the same pass so that the two subsubsections cannot be read as contradicting each other:
+the harmonic budget of the exported commands (\(4\times10^{-5}\) of the actuation energy
+above the fourth temporal harmonic) is now explicitly a statement about the imposed
+signal and not about the diagnostics; and the lid power is documented as the case where
+the gap is not negligible, because it is a product of two quantities that both vary
+within a bin --- the same reconstruction is \(0.14\%\), \(5.5\%\) and \(3.9\%\) below the
+step-by-step accumulator, which is why Main Table~4 quotes the accumulated value.
+
+\vspace{1em}
+
+\noindent\textbf{Point 42: Which \(B_1\) is in the captures, and the two numbers that
+looked inconsistent (eleventh review, item 1.3).}
+
+The reviewer correctly observed that the seeds of \(B_2\) and \(B_3\) are identified but
+not that of \(B_1\), and that \(f_2\) and the native energy of \(B_1\) were quoted
+inconsistently. On the identity: \(B_1\) genuinely has no random seed, because it is the
+reference configuration of the parent campaign and its lid command is the seedless
+Fourier export. Sec.~S4.6 (Random Seed Control) now says so in these terms and
+identifies it by its archive and checksum instead, \texttt{data/lid\_series/}\hspace{0pt}%
+\texttt{fourier\_Re500.npz} with SHA-256 \texttt{6eb410709e8ed102}$\ldots$\texttt{%
+f5e3798f5824}, full digests being in \texttt{data/lid\_series/}\hspace{0pt}\texttt{%
+manifest.csv}, together with the rescaling factor recorded with it,
+\(0.9932807455522885\), which brings the native norm to the target \(0.250000\). \(B_2\)
+is seed 5 and \(B_3\) seed 0 of the ten-seed experiment of Sec.~S3.2, and the footnote of
+Main Table~1 points from the \(B_1\) rows to that archive. The captures and the tables
+are therefore descriptions of one and the same profile, not of two realizations.
+
+On \(f_2\): the two values are not two estimates of one quantity, they are two
+denominators, and the text now says so where the table is read. The stationary
+second-harmonic coefficient of the exported series is \(92.2\%\) of the \emph{total}
+control energy --- \(92.3\%\) at the \((N_x,N_t)=(6,5)\) truncation, which is the
+truncation-level sensitivity, not a different run --- and \(93.4\%\) once the series is
+renormalised onto its own time mean, which is what the mean-profile row of Main Table~1
+does since it discards the temporal share. The old \(0.93\) was therefore not a rounding
+of \(92.2\); the rounded table entry and the supplement value are now the same quantity
+with the same denominator, and the footnote spells out both denominators.
+
+On the native energy: the archive value is \(0.2533938\). The method text quotes
+\(\overline{E}_r=0.25339\), the rounded tables quote \(0.2534\), and the variants that
+are genuinely different configurations --- the ablations and the truncation rows --- keep
+their own \(0.2533\). The stray \(0.2535\) occurrences the reviewer listed are gone; a
+grep of the two sources returns no instance of that value. No result changed: the realised
+norm of the transfer is \(0.250000\) for all three branches, as before.
+
+\vspace{1em}
+
+\noindent\textbf{Point 43: What is actually in the repository (eleventh review, item 1.4).}
+
+The Data availability statement now separates the two access modalities that the reviewer
+found conflated, and names the separately supplied files. What the git repository holds:
+the scripts that regenerate every figure and table, the three exported actuation series
+with their checksum manifest, the solver run logs and all derived records quoted in the
+text, including the committed CSV tables from which the appendix tables are built. What
+it does not hold, because the raw fields exceed what the deposit carries: the six
+phase-resolved captures of the temporal campaign, named individually in the statement
+with their byte sizes --- \texttt{capture\_B1\_D2\_N256.npz} (28.8\,MB), \texttt{%
+capture\_B2\_D2\_N256.npz} (28.6), \texttt{capture\_B3\_D2\_N256.npz} (28.7),
+\texttt{capture\_B1\_D2\_N512.npz} (111.5), \texttt{capture\_B2\_D2\_N512.npz} (111.0) and
+\texttt{capture\_B3\_D2\_N512.npz} (111.3), \(419.90\,\mathrm{MB}\) in total --- together
+with the exact-in-time control \texttt{capture\_B2\_D2\_N256\_exact.npz} (28.24\,MB),
+supplied as the bundle \texttt{PoF\_d2\_captures\_v1.tar} from the corresponding author on
+reasonable request. The committed manifest \texttt{results/09\_d2\_capture/}\hspace{0pt}%
+\texttt{MANIFEST.md} lists every archive with its byte size and SHA-256 checksum, so a
+copy obtained that way can be verified before the scripts are re-run, and the supplement
+gives the same inventory in Sec.~S5.6.
+
+\vspace{1em}
+
+\noindent\textbf{Point 44: The sign of the streaming vorticity source (eleventh review,
+item 1.5).}
+
+The ambiguity is real and it is now removed by writing the equation the diagnostic comes
+from, rather than by asserting a convention. Sec.~S4.7 defines
+\(S_\omega\equiv\nabla\times\mathbf{F}=\partial_xF_y-\partial_yF_x\) with
+\(\mathbf{F}=-\nabla\cdot\langle\mathbf{u}'\otimes\mathbf{u}'\rangle\), states that this
+is the term entering the evolutionary mean-vorticity equation,
+\(\partial_t\langle\omega\rangle=\nu\nabla^{2}\langle\omega\rangle+S_\omega-\nabla\times
+[(\langle\mathbf{u}\rangle\cdot\nabla)\langle\mathbf{u}\rangle]\), and then says in terms
+that its sign is that of the source and the opposite of the curl of the right-hand side of
+the Stokes-order reduction \(\nu\nabla^{2}\langle\mathbf{u}\rangle=\nabla\langle p\rangle-
+\mathbf{F}\), whose curl is \(\nu\nabla^{2}\langle\omega\rangle=-\nabla\times\mathbf{F}\).
+The sentence ends by stating explicitly that the quoted extrema are values of
+\(S_\omega\): \(+1.1\) at \((0.08,0.99)\), \(+23.7\) at \((0.36,0.99)\) and \(-22.1\) at
+\((0.64,0.99)\). The caption of Table~S17 and the corresponding sentence of the main text
+carry the same convention, so the contra-rotating pair is read as a source of mean
+vorticity of either sign, not with the sign reversed by the reduction. The budget is still
+declared open --- the mean pressure gradient and the mean advection were not recovered ---
+which is why this remains an interpretation of the forcing geometry and not a closure.
+
+\vspace{1em}
+
+\noindent\textbf{Point 45: Three editorial formulations (eleventh review, Sec.~2).}
+
+All three are applied. The abstract now attaches the stationary percentages to the
+resolution they are measured at --- ``For stationary controls at \(Re=500\) on the
+\(N=512\) lattice, the first spatial harmonic reduces dissipation by \(17.7\%\) \ldots
+whereas the second harmonic and the mean profile of the quasi-steady two-lobe branch
+increase it by \(36.8\%\) and \(44.3\%\)'' --- while the sentences that document the local
+fields keep the \(N=256\) qualification they already had. The branch sentence the
+reviewer quoted was rewritten in the proposed form: the abstract says ``the branch for
+which dissipation evaluated on the time-mean field is \(14.2\) times smaller than the
+cycle-mean dissipation'', and \(14.2\) is the measured ratio, \(1.016\times10^{-3}\)
+against \(1.441\times10^{-2}\) for \(B_2\) seed 5, the same value as in Main Table~1 and
+Sec.~5. In the conclusions, ``converged'' has been replaced by the reviewer's own
+phrasing: the uniform lid is qualified as the grid-convergent regularized reference
+\emph{with} its uncertainty attached, \(p_{\mathrm{obs}}=0.96\) and a fine-grid GCI of
+\(7.8\%\), and the Sec.~4.2 paragraph that introduces the reference states the same two
+numbers so that the word never appears without them.
+
+\vspace{1em}
+
+\noindent\textbf{Point 46: The compilation and layout reserve, closed by a machine-checked
+certificate (eleventh review, Sec.~4).}
+
+The reviewer notes that the figures and the externalized \texttt{data\_appendix/*.tex}
+tables were not among the files examined, so that the compilation and the final layout
+could not be verified. Those resources are all in the repository, and this round the
+claim was made verifiable rather than restated: \texttt{scripts/}\hspace{0pt}\texttt{%
+certify\_package.py} walks the two sources, resolves every \texttt{\textbackslash
+includegraphics} and every \texttt{\textbackslash input}, and writes
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md}, which lists for each of the
+ten figures and each of the eleven table sources its resolved path, byte size, checksum
+and the script in \texttt{scripts/} that writes it, and then the page count, the overfull
+-box inventory and the checksum of each of the four compiled PDFs, together with the
+environment (Python 3.14.5, numpy 2.5.3, matplotlib 3.11.2, MiKTeX-pdfTeX 4.23). The run
+reports ten figures, eleven table sources and no missing resource.
+
+One claim the reviewer did not ask for but that the certification depends on was also
+repaired: five appendix tables were inherited from the antecedent campaign and had no
+generator in the repository, so the statement that every table is written by a committed
+script was not literally true. \texttt{scripts/}\hspace{0pt}\texttt{%
+export\_legacy\_supp\_tables.py} now regenerates all five from the committed records ---
+including two record files that were added to the deposit for that purpose, the
+185-run classification table of the branch map and the \(\lambda_{\mathrm{var}}\) modal
+ablation audit --- and reproduces the transmitted files exactly, cell by cell, so the
+inherited numbers are now recomputed rather than transcribed. The single resource that
+cannot be regenerated is declared as such rather than glossed: Main Fig.~4 is rendered
+from the steady fields of the stationary \(N=512\) campaign, which are raw dumps held
+outside the git tree on the same terms as the captures, and its dissipation values do have
+a committed record. The exception is stated in the Data availability statement, in
+Sec.~S5.6, in the README and in the certificate.
+
+The compiled result, after every change requested in this round, is the four PDFs in the
+repository: the manuscript at 27 pages with no overfull box, the supplement at 30 pages
+with a single overfull box of $6.7$\,pt --- less than a quarter of a millimetre, inside
+the run of file names in the Data availability paragraph of Sec.~S5.6, where a list of
+\texttt{\textbackslash texttt} paths leaves no line-break opportunity --- and the
+marked-up versions at 36 and 40 pages. The audit found one real layout fault and it was
+fixed rather than reported: Table~S17, the Reynolds-stress forcing of the mean flow, was
+$11.7$\,pt too wide because its three right-hand header cells spelled the viscous term of
+the mean field in full. The generator of that table,
+\texttt{scripts/}\hspace{0pt}\texttt{export\_d2\_supp\_tables.py}, now defines the
+shorthand \(\mathcal{V}\equiv\nabla^{2}\langle\mathbf{u}\rangle\) once in the caption and
+writes \(\|\nu\mathcal{V}\|\) in the headers, while the caption keeps the full notation in
+the Stokes-order balance it quotes; the numbers in the table are unchanged. The four logs
+are audited by \texttt{scripts/}\hspace{0pt}\texttt{check\_build\_logs.py},
+which parses them for \texttt{LaTeX Error}, undefined references and citations, duplicate
+labels, missing graphics and unresolved cross-references and reports zero problems. The
+one reproducibility trap found while doing this is documented in the README: the
+documents must be compiled with \texttt{-output-directory}, because an \texttt{.aux} left
+in the source directory is read in preference to the one just written and silently
+resurrects the labels and citations of the previous round.
 
 \newpage
 
