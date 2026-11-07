@@ -604,7 +604,7 @@ directions \(\mathbf{c}_i\) (\(i=0,\ldots,8\)) defined as
 \(\mathbf{c}_0=(0,0)\), \(\mathbf{c}_{1-4}=(\pm1,0),(0,\pm1)\),
 and \(\mathbf{c}_{5-8}=(\pm1,\pm1)\) (lattice units). The lattice speed of sound
 is \(c_s=1/\sqrt{3}\approx0.5774\) in lattice units. Velocities are stored in the
-lattice frame and divided by a reference velocity
+lattice frame and divided by the lattice reference velocity
 \(U_{\mathrm{ref}}=0.05\) (lattice units) before being compared with the
 cavity-unit fields of the main text, so that a lid speed of unity in cavity units
 is \(0.05\) in lattice units. The corresponding reference Mach number is
@@ -929,7 +929,7 @@ the fundamental of the exported control oscillates at
 
 The lattice is driven so that this physical period is the one the solver sees. The
 hydrodynamic lattice spacing is \(\Delta x=1/N\), and the timestep follows from the
-reference velocity as \(\Delta t=U_{\mathrm{ref}}\Delta x=U_{\mathrm{ref}}/N\) with
+lattice reference velocity as \(\Delta t=U_{\mathrm{ref}}\Delta x=U_{\mathrm{ref}}/N\) with
 \(U_{\mathrm{ref}}=0.05\), so one physical period spans
 \(N_T=T/\Delta t=TN/U_{\mathrm{ref}}=40N\) lattice steps, i.e.\ \(N_T=10\,240\) at
 \(N=256\) and \(N_T=20\,480\) at \(N=512\). These are the mappings the solver itself

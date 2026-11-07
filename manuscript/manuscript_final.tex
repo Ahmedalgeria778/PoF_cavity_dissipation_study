@@ -102,14 +102,17 @@ energy budget; mean-flow diagnostics; mode selection
 \(N\) & number of lattice nodes per cavity side (LBM resolution)\\
 \(P_{\mathrm{lid}}\) & mechanical power injected through the lid, \(\int_0^1 U_{\mathrm{lid}}\tau_w\,dx\)\\
 \(R_K\) & fraction of the cycle-mean kinetic energy carried by temporal fluctuations, \(\overline K_{\mathrm{fluct}}/\overline K\) with \(\overline K=\overline K_{\mathrm{mean}}+\overline K_{\mathrm{fluct}}\)\\
-\(Re\) & Reynolds number based on the reference velocity, \(Re=U_0L/\nu\); in the LBM mapping, \(U_0\) is represented by \(U_{\mathrm{ref}}=0.05\) in lattice units\\
+\(Re\) & Reynolds number based on the physical scaling
+velocity, \(Re=U_0L/\nu\); in the LBM mapping,
+\(U_0\) is represented by \(U_{\mathrm{ref}}=0.05\)
+in lattice units\\
 \(\mathbf{S}\) & strain-rate tensor, \((\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T})/2\)\\
 \(t,T\) & time and forcing period\\
 \(\mathbf{u}=(u,v)\) & velocity vector and its streamwise/wall-normal components\\
 \(\mathbf{u}'\) & fluctuating velocity vector, \(\mathbf{u}-\langle\mathbf{u}\rangle\)\\
 \(u'_{\mathrm{rms}}\) & root-mean-square temporal fluctuation at a fixed point\\
 \(U_{\mathrm{lid}}\) & lid velocity profile (the actuation)\\
-\(U_0\) & scaling velocity of the nondimensional problem, \(Re=U_0 L/\nu\); the uniform lid at \(E^*=0.25\) has amplitude \(U_{\mathrm{uniform}}=0.5\,U_0\)\\
+\(U_0\) & physical scaling velocity of the nondimensional problem, \(Re=U_0 L/\nu\); the uniform lid at \(E^*=0.25\) has amplitude \(U_{\mathrm{uniform}}=0.5\,U_0\)\\
 \(U_{\mathrm{ref}}\) & lattice reference velocity of the MRT-LBM solver, \(0.05\) in lattice units; it plays the role of \(U_0\) in the lattice nondimensionalisation and sets \(\Delta t=U_{\mathrm{ref}}/N\)\\
 \(x,y\) & streamwise and wall-normal coordinates\\
 \midrule
@@ -282,7 +285,7 @@ strain and fluctuating gradients. Section~\ref{sec:conclusions} concludes.
 
 We consider a two-dimensional incompressible flow in the square cavity
 $0\le x\le 1$, $0\le y\le 1$, made dimensionless with the cavity height $L$ and a
-reference velocity $U_0$ (Fig.~\ref{fig:modes}a). The lower and lateral walls are no-slip and stationary;
+physical scaling velocity $U_0$ (Fig.~\ref{fig:modes}a). The lower and lateral walls are no-slip and stationary;
 the upper wall moves tangentially with a velocity profile
 $U_{\mathrm{lid}}(x,t)$ that is the control variable. The velocity field
 $\mathbf{u}=(u,v)$ and the pressure $p$ satisfy
