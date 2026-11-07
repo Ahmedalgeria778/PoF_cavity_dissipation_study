@@ -211,7 +211,7 @@ RMSE & root-mean-square error\\
 \(N\) & number of lattice nodes per cavity side (LBM resolution)\\
 \(P_{\mathrm{lid}}\) & mechanical power injected through the lid, \(\int_0^1 U_{\mathrm{lid}}\tau_w\,dx\)\\
 \(R_K\) & fraction of the cycle-mean kinetic energy carried by temporal fluctuations, \(\overline K_{\mathrm{fluct}}/\overline K\) with \(\overline K=\overline K_{\mathrm{mean}}+\overline K_{\mathrm{fluct}}\)\\
-\(Re\) & Reynolds number, \(U_{\mathrm{ref}}L/\nu\)\\
+\(Re\) & Reynolds number based on the reference velocity, \(Re=U_0L/\nu\); in the LBM mapping, \(U_0\) is represented by \(U_{\mathrm{ref}}=0.05\) in lattice units\\
 \(\mathbf{S}\) & strain-rate tensor, \((\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T})/2\)\\
 \(t,T\) & time and forcing period\\
 \(\mathbf{u}=(u,v)\) & velocity vector and its streamwise/wall-normal components\\
@@ -344,8 +344,10 @@ $\Eact=\int_0^1U_{\mathrm{lid}}^2\,dx$ measures what a given control effort
 achieves. The two rankings need not agree, and only the second is a statement
 about the energetic response at fixed actuation norm. A further distinction, specific to time-dependent actuation, is
 that the dissipation of the time-mean field is not the time mean of the
-instantaneous dissipation: because $D$ is quadratic in the velocity gradients,
-cycle-averaged dissipation always exceeds the dissipation of the mean flow, and
+instantaneous dissipation: because $D$ is quadratic in the velocity gradients, the
+cycle-averaged dissipation is no smaller than the dissipation of the time-mean
+field, with a strict inequality whenever the fluctuating strain-rate field is
+nonzero, and
 the gap can be orders of magnitude when the fluctuations dominate
 \cite{pope2000,landau1987,doering2002energy,beneddine2016conditions}.
 
@@ -619,12 +621,37 @@ for all profiles and the norm differed by up to a factor of four.
 
 \begin{chgdel}
 \textbf{Viscous dissipation and its cycle mean}
+
+For an incompressible Newtonian fluid the instantaneous viscous dissipation rate is
+\begin{equation}
+D(t)=\frac{2}{Re}\int_\Omega \Sij:\Sij\,d\Omega,
+\qquad
+\Sij=\tfrac12\left(\nabla\mathbf{u}+\nabla\mathbf{u}^{T}\right),
+\end{equation}
+and the quantity relevant to a periodic actuation is its cycle average
+\begin{equation}
+\Dbar=\frac{1}{T}\int_0^T D(t)\,dt .
+\end{equation}
+Splitting the velocity into a time mean and a fluctuation,
+$\mathbf{u}=\overline{\mathbf{u}}+\mathbf{u}'$ with
+$\Sij=\overline{\Sij}+\Sij'$, the cycle mean decomposes exactly as
+\begin{equation}
+\Dbar
+= \underbrace{\frac{2}{Re}\int_\Omega \overline{\Sij}:\overline{\Sij}\,d\Omega}
+_{D(\overline{\mathbf{u}})}
++ \underbrace{\frac{2}{Re}\left\langle\int_\Omega \Sij':\Sij'\,d\Omega\right\rangle}_{\text{fluctuating part}},
+\end{equation}
+because the cross term vanishes upon averaging. The two terms coincide only in the
+steady limit; otherwise $\Dbar>D(\overline{\mathbf{u}})$, with a gap that measures
+how much of the dissipation is carried by the unsteady part of the response.
+Evaluating $D$ on a time-averaged field is thus not an approximation of
+$\Dbar$ with a small error: it is a different functional, and for a strongly
+unsteady flow it can invert the ranking of two actuations.
 \end{chgdel}
 
 \begin{chgadd}
 \subsection{Viscous dissipation and its cycle mean}
 \label{sec:dissipation}
-\end{chgadd}
 
 For an incompressible Newtonian fluid the instantaneous viscous dissipation rate is
 \begin{equation}
@@ -648,12 +675,16 @@ _{D(\overline{\mathbf{u}})}
 + \underbrace{\frac{2}{Re}\left\langle\int_\Omega \Sij':\Sij'\,d\Omega\right\rangle}_{\text{fluctuating part}},
 \label{eq:jensen}
 \end{equation}
-because the cross term vanishes upon averaging. The two terms coincide only in the
-steady limit; otherwise $\Dbar>D(\overline{\mathbf{u}})$, with a gap that measures
+because the cross term vanishes upon averaging. The second term is a
+cycle-averaged squared norm, so it is non-negative and vanishes only when the
+fluctuating strain-rate field is zero; the two terms therefore obey
+$\Dbar\ge D(\overline{\mathbf{u}})$, with a strict inequality whenever the
+response fluctuates, and the gap measures
 how much of the dissipation is carried by the unsteady part of the response.
 Evaluating $D$ on a time-averaged field is thus not an approximation of
 $\Dbar$ with a small error: it is a different functional, and for a strongly
 unsteady flow it can invert the ranking of two actuations.
+\end{chgadd}
 
 \subsection{Mechanical energy budget}
 

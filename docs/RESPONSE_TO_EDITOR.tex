@@ -278,7 +278,7 @@ should clearly show all changes made from the previous submission.''}
 \item \textbf{Clean version}: \texttt{manuscript\_final\brk.tex} and
   \texttt{manuscript\_final\brk.pdf} (26 pages).
 \item \textbf{Marked-up version}: \texttt{manuscript\_final\brk\_marked\brk.tex} and
-  \texttt{manuscript\_final\brk\_marked\brk.pdf} (34 pages). The marked-up version uses
+  \texttt{manuscript\_final\brk\_marked\brk.pdf} (35 pages). The marked-up version uses
   a paragraph-level diff: old text that has been removed or replaced is shown in
   \textcolor{red}{red}, new or rewritten text is shown in
   \textcolor{blue}{blue}. Obsolete figures and tables from the previous version
@@ -288,9 +288,9 @@ should clearly show all changes made from the previous submission.''}
 The same approach has been applied to the supplementary material:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{supplementary\_final\brk.tex} and
-  \texttt{supplementary\_final\brk.pdf} (27 pages).
+  \texttt{supplementary\_final\brk.pdf} (29 pages).
 \item \textbf{Marked-up version}: \texttt{supplementary\_final\brk\_marked\brk.tex} and
-  \texttt{supplementary\_final\brk\_marked\brk.pdf} (37 pages).
+  \texttt{supplementary\_final\brk\_marked\brk.pdf} (39 pages).
 \end{itemize}
 
 \vspace{1em}
@@ -311,8 +311,8 @@ since individual figure files are not being uploaded.''}
   \texttt{supplementary\_final\brk\_marked\brk.tex};\\
   this letter, \texttt{RESPONSE\_TO\_EDITOR\brk.tex}.
 \item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (26 pages),
-  \texttt{supplementary\_final\brk.pdf} (27 pages), the two marked-up PDFs
-  (34 and 37 pages), and
+  \texttt{supplementary\_final\brk.pdf} (29 pages), the two marked-up PDFs
+  (35 and 39 pages), and
   \texttt{RESPONSE\_TO\_EDITOR\brk.pdf}.
 \item \textbf{Figures}: the 8 figures of the manuscript and the 2 of the
   supplementary material are embedded in the two PDFs and visible in the text.
@@ -1020,6 +1020,111 @@ the two clean ones and the two marked ones. Both documents were recompiled after
 changes above and the build logs are clean: no undefined references, no undefined
 citations, no
 duplicate labels, and every externalized table resolves.
+
+\vspace{1em}
+
+\noindent\textbf{Point 33: One definition of the Reynolds number (ninth review, item A).}
+
+The reviewer is right that the nomenclature and Eq.~(1) disagreed on the symbol. The
+$Re$ row now reads, verbatim as proposed, ``Reynolds number based on the reference
+velocity, $Re=U_0L/\nu$; in the LBM mapping, $U_0$ is represented by
+$U_{\mathrm{ref}}=0.05$ in lattice units''. The two rows next to it already carried the
+same dictionary ($U_0$ is the scaling velocity of the nondimensional problem,
+$U_{\mathrm{ref}}$ the lattice velocity that plays its role and sets
+$\Delta t=U_{\mathrm{ref}}/N$), and a sweep of both documents found no other place
+where $Re$ was written with $U_{\mathrm{ref}}$: the supplement defines only the
+normalized training quantity $\widetilde{Re}=(Re-550)/450$. One symbol, $U_0$, is now
+used for the nondimensionalization, and $U_{\mathrm{ref}}$ is reserved for the lattice
+frame, which is what the code uses.
+
+\vspace{1em}
+
+\noindent\textbf{Point 34: The velocity the lid boundary condition imposes (S4.1).}
+
+The phrase ``at that node'' is gone, and with it the contradiction with the half-way
+description given a few lines later. Sec.~S4.1 now separates the two loci explicitly:
+``The momentum correction is constructed from the prescribed moving-wall velocity
+$U_{\mathrm{lid}}(x,t_{\mathrm{phys}})$ associated with the outermost fluid-node row,
+with the local density taken from the post-collision field. The algorithm applies that
+correction to the wall-facing populations of row $N-1$, but the velocity it imposes
+belongs to the hydrodynamic wall, the half-way plane located a half lattice spacing
+outside that row, rather than to the macroscopic velocity reconstructed at the fluid
+node.'' The sentence that followed, on the measured slip ($3.2\%$--$11.8\%$ of the
+cavity speed) and on the power estimator being evaluated on row $N-1$, was kept and now
+follows as the consequence of that distinction rather than as a second statement of it.
+This is the wording the code implements: the correction is applied to the wall-facing
+populations of the lid row, and the half-way scheme is what makes the enforced velocity
+belong to the plane between that row and the wall. The same vocabulary is now used
+everywhere --- the former ``wall row'' in Sec.~S4.6 reads ``lid node row'', as do the
+indexing paragraphs of Sec.~S4.8.
+
+\vspace{1em}
+
+\noindent\textbf{Point 35: The wall-power estimator is a row estimator, not a wall
+evaluation (S4.8).}
+
+The concluding sentence of Sec.~S4.8 claimed that ``the two factors are evaluated at the
+same locations as the boundary condition itself'', which the reviewer correctly calls
+inexact: the boundary condition acts on the half-way plane, while the estimator is a
+discrete product on a node row. It has been replaced, with the reviewer's formulation:
+``The wall shear is the first-order backward difference between the lid node row and the
+fluid row below it, and the velocity in the product is the recovered outermost-row
+velocity: the two factors are assigned to that same discrete row, so their product
+defines a consistent \emph{outermost-fluid-row} estimator rather than an evaluation of
+both quantities exactly at the hydrodynamic wall, which lies a half spacing outside
+it.'' Main Table~4 already labels $\overline P_{\mathrm{lid}}^{\mathrm{rec}}$ as
+recovered on the outermost fluid row, so the table, Sec.~4.2 and Sec.~S4.8 now make the
+same statement: the estimator is consistent with itself, and its difference from the
+physical wall power is the slip quantified in that section.
+
+\vspace{1em}
+
+\noindent\textbf{Point 36: The Jensen inequality stated with its condition of
+strictness (optional item D, applied).}
+
+We took the suggestion. The introduction no longer says the cycle mean ``always
+exceeds'' the dissipation of the mean field; it now reads ``because $D$ is quadratic in
+the velocity gradients, the cycle-averaged dissipation is no smaller than the
+dissipation of the time-mean field, with a strict inequality whenever the fluctuating
+strain-rate field is nonzero''. The same conditioning replaced the looser ``otherwise
+$\overline D>D(\overline{\mathbf{u}})$'' that followed Eq.~(8), where the reason is
+visible: the fluctuating term of that decomposition is a cycle-averaged squared norm, so
+it is non-negative and vanishes only if the fluctuating strain rate vanishes. Sec.~S4.5
+was harmonised with the two, and its previous ``with equality only in the steady limit''
+--- which is sufficient but not the exact condition --- now gives the condition on the
+fluctuating strain-rate field. All numerical statements of the gap in both documents are
+unchanged: they are measurements of a strictly positive fluctuating term, which amounts
+to a factor of $1.02$, $14$ and $2.2$ between $\overline D$ and $D(\overline{\mathbf{u}})$
+for $B_1$, $B_2$ and $B_3$ respectively.
+
+\vspace{1em}
+
+\noindent\textbf{Point 37: The complete package, compiled.}
+
+The reviewer again notes that the sources call eleven external tables and ten figures
+that were not part of the files examined. They are all in the repository, and the
+package as submitted is self-contained:
+\begin{itemize}
+\item \texttt{supplementary/data\_appendix/}: the eleven table sources that the
+  supplement calls with \texttt{\textbackslash input}, each generated by a script in
+  \texttt{scripts/} from an archive under
+  \texttt{results/};
+\item \texttt{manuscript/figures/} and \texttt{supplementary/figures/}: the eight
+  manuscript figures and the two supplement figures; every \texttt{includegraphics}
+  path resolves from the directory its document is compiled in;
+\item \texttt{scripts/}\hspace{0pt}\texttt{spacing\_convention\_check.py} and its JSON
+  under \texttt{results/d2\_derived/}, which hold the ratio keys measured for
+  Point~26;
+\item the six branch captures, the derived-quantity JSONs, the lid command archives and
+  the four compiled PDFs.
+\end{itemize}
+After the four changes above, all four documents were recompiled with \texttt{pdflatex}
+(two passes, three for the marked supplement). The logs are clean: no \texttt{LaTeX
+  Error}, no undefined reference or citation, no duplicate label and no missing graphic
+in any of them, and every externalized table resolves. The result is a 26-page
+manuscript with 0 overfull boxes, a 29-page supplement with one overfull box of
+$14.9$\,pt, and marked-up versions of 35 and 39 pages. \texttt{scripts/check\_build\_logs.py}
+performs that audit on the four logs and exits 0.
 
 \newpage
 

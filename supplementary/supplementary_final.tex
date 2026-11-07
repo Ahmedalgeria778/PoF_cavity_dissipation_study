@@ -641,15 +641,17 @@ numerical stability while maintaining second-order accuracy. The post-collision 
 Lid boundary conditions are imposed on the node row \(i=N-1\) by half-way
 bounce-back with momentum injection into the two wall-facing populations
 (\(q=7,8\)), a velocity boundary condition of the Zou--He family
-\cite{zou1997pressure}. The injected momentum is the commanded lid speed
-\(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) at that node, with the local density
-taken from the post-collision field. Because this scheme places the hydrodynamic
-wall half a lattice spacing outside the lid node row, it enforces the moving-wall
-condition at the wall, not the velocity at the node: the recovered streamwise
-velocity of row \(N-1\) differs from the commanded profile by the slip measured in
-Sec.~S4.8 (\(3.2\%\) to \(11.8\%\) of the cavity speed, resolution-dependent), and
-the power estimator of Sec.~S4.8 is therefore evaluated on that row rather than
-exactly at \(y=1\). Bottom and lateral walls
+\cite{zou1997pressure}. The momentum correction is constructed from the
+prescribed moving-wall velocity \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\)
+associated with the outermost fluid-node row, with the local density taken from
+the post-collision field. The algorithm applies that correction to the
+wall-facing populations of row \(N-1\), but the velocity it imposes belongs to
+the hydrodynamic wall, the half-way plane located a half lattice spacing outside
+that row, rather than to the macroscopic velocity reconstructed at the fluid
+node. The recovered streamwise velocity of row \(N-1\) therefore differs from
+the commanded profile by the slip measured in Sec.~S4.8 (\(3.2\%\) to \(11.8\%\)
+of the cavity speed, resolution-dependent), and the power estimator of Sec.~S4.8
+is evaluated on that row rather than exactly at \(y=1\). Bottom and lateral walls
 use standard half-way bounce-back boundary conditions. The same half-way placement
 fixes the hydrodynamic spacing: the lattice holds \(N\) fluid nodes per side, each
 wall stands one half spacing beyond the row it faces, and the unit cavity therefore
@@ -1002,8 +1004,9 @@ periodic actuation is charged for is the cycle average
 Sec.~S4.4 report \(\varepsilon(\langle u\rangle)\), the dissipation of the
 \emph{time-mean} field. The two are not interchangeable. Because \(\varepsilon\) is
 a convex quadratic functional of the velocity gradient, Jensen's inequality gives
-\(\bar\varepsilon\ge\varepsilon(\langle u\rangle)\), with equality only in the
-steady limit; the gap is the dissipation carried by the fluctuations.
+\(\bar\varepsilon\ge\varepsilon(\langle u\rangle)\), with a strict inequality
+whenever the fluctuating strain-rate field is nonzero; the gap is the dissipation
+carried by the fluctuations.
 
 \input{data_appendix/p4_table_cycle_mean_supp.tex}
 
@@ -1299,7 +1302,7 @@ relative drift of the sampled dissipation between the two halves of that window 
 \(+1.4\times10^{-3}\%\) (\(B_3\)); the corresponding drift of the sampled kinetic
 energy is \(1.1\times10^{-3}\%\), \(1.8\times10^{-6}\%\) and
 \(5.6\times10^{-3}\%\). The largest slip between the imposed and the recovered lid
-velocity in the wall row, over the whole record, is \(0.060\), \(0.115\) and
+velocity at the lid node row, over the whole record, is \(0.060\), \(0.115\) and
 \(0.118\) cavity units for \(B_1\), \(B_2\) and \(B_3\); it is the same boundary
 condition discussed in Sec.~S4.8. Sampling covers thirty-two periods, i.e.\ four
 blocks of eight cycles, which are the blocks behind the uncertainties of Main
@@ -1478,7 +1481,7 @@ from the imposed profile by the discrete slip of the scheme;
 the largest slip over the whole record is \(0.060\), \(0.115\) and \(0.118\) cavity
 units for \(B_1\), \(B_2\) and \(B_3\) (Sec.~S4.6). Throughout this section the fields
 are stored as \(u_x(i,j)\), where the first index is wall-normal and the second
-streamwise, so there are \(N\) nodes per side, the wall row is \(i=N-1\), the interior
+streamwise, so there are \(N\) nodes per side, the lid node row is \(i=N-1\), the interior
 is \(i\in\{1,\dots,N-2\}\), and the node spacing of those arrays is
 \(h=\Delta y=1/(N-1)\); this matches the \(N\times N\) array layout used by
 the code (e.g.\ \(N=256\) with the lid row at index 255). This \(h\) is the
@@ -1487,9 +1490,11 @@ solver: the two differ by \(0.39\%\) at \(N=256\), and because the estimator pai
 wall-normal derivative with one line element the difference cancels identically in
 \(\overline P_{\mathrm{lid}}^{\mathrm{rec}}\) (it changes by \(<10^{-15}\) when the
 estimator is rebuilt with \(\Delta x=1/N\)). The wall shear is the
-first-order one-sided difference between the wall row and the fluid row below it, and
-the velocity in the product is the recovered wall-row velocity, so that the two
-factors are evaluated at the same locations as the boundary condition itself.
+first-order backward difference between the lid node row and the fluid row below it,
+and the velocity in the product is the recovered outermost-row velocity: the two
+factors are assigned to that same discrete row, so their product defines a consistent
+\emph{outermost-fluid-row} estimator rather than an evaluation of both quantities
+exactly at the hydrodynamic wall, which lies a half spacing outside it.
 
 Two estimators of that velocity exist, the recovered one and the prescribed profile,
 and they bracket the balance. At fixed eight-phase quadrature and fixed first-order
