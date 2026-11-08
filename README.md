@@ -212,7 +212,9 @@ labels and citations of the previous round.
   mean-field dissipation is fourteen times below its own cycle mean, while B1 and B3
   are nearly equal (2.1 % apart at N=256, 0.5 % at N=512).
 - A second-Stokes boundary-layer estimate built from the imposed lid signal alone
-  agrees with the measured fluctuating dissipation of the two time-reversing branches
+  agrees with the measured fluctuating dissipation of the lid-oscillatory and mixed
+  branches (B2, whose lid reverses over the whole span, and B3, whose reversing band
+  is the central 36 % of it)
   to within **5 %** and **2 %**, with no adjustable constant. The estimate is a
   half-space model, so it supports a wall-layer interpretation of the fluctuating
   cost rather than a spatial decomposition of the total.
