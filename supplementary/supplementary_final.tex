@@ -685,8 +685,9 @@ reconstruction determines the unknown populations from the equilibrium part plus
 the \emph{unbalanced} non-equilibrium part of the known opposites, whereas
 Eq.~\eqref{eq:lidbc} reverses the known post-collision populations and adds a
 prescribed momentum source, which is the moving-wall form introduced by Ladd
-\cite{ladd1994} (its second-order moving-wall refinements
-\cite{bouzidi2001} were not used). The momentum correction is therefore
+\cite{ladd1994} (the second-order boundary treatment of Bouzidi \emph{et al.}
+\cite{bouzidi2001}, which interpolates moving walls placed at
+arbitrary distance or arbitrary orientation, was not used). The momentum correction is therefore
 constructed from the prescribed moving-wall velocity
 \(U_{\mathrm{lid}}(x,t_{\mathrm{phys}})\) associated with the outermost fluid-node
 row, with the local density taken from the post-collision field. The algorithm
@@ -703,8 +704,13 @@ resolution-dependent). This difference is a consequence of sampling the velocity
 the fluid-node location and should not be interpreted as a physical slip at the
 half-way wall. The correction being linear in \(U_{\mathrm{lid}}\) is a statement
 about the momentum source, not about the spatial order of accuracy of the boundary
-condition, which with the half-way placement is second order for a flat wall
-aligned with the lattice \cite{bouzidi2001}; the offset decreases under grid
+condition. That order is a separate property: on a flat wall aligned with the lattice
+links, the link-wise (half-way) bounce-back places the hydrodynamic boundary exactly at
+mid-link and is second-order accurate there
+\cite{ginzburg2003multireflection,krueger2017book}, which is the geometry used here;
+the interpolation of Bouzidi \emph{et al.} \cite{bouzidi2001} extends that accuracy to
+walls off the mid-link or inclined with respect to it, and was not needed. The
+offset decreases under grid
 refinement as the sampling location approaches the hydrodynamic wall, and that
 dependence is tested at \(N=512\) in Sec.~S4.5. The power estimator of
 Sec.~S4.8 is evaluated on that row rather than exactly at \(y=1\). The same half-way placement
@@ -1620,8 +1626,9 @@ and they bracket the balance. At fixed eight-phase quadrature and fixed first-or
 derivative, the cycle-mean residual \(\overline P_{\mathrm{lid}}/\overline D-1\) is
 \(-2.92\%\), \(-6.03\%\) and \(-4.29\%\) with the recovered velocity against
 \(+3.36\%\), \(+4.57\%\) and \(+4.70\%\) with the prescribed profile, for \(B_1\),
-\(B_2\) and \(B_3\). The two differ by \(6\%\)--\(11\%\), which is the size of the
-near-wall nodal velocity offset, and the difference has the sign expected from it: the
+\(B_2\) and \(B_3\). The two differ by \(6\%\)--\(11\%\), a gap of the size of the
+near-wall nodal velocity offset that contributes to it, and the difference has the
+sign expected from that offset: the
 prescribed profile over-states the velocity actually sampled at the outermost fluid
 node, where the offset is largest. The
 recovered-velocity estimator is the one accumulated by the solver and is used
@@ -1961,6 +1968,7 @@ A.~Beniaiche,
 ``Physics-informed identification and independent numerical verification of
 conditional modal collapse in active control of lid-driven cavity flow,''
 Phys.\ Fluids \textbf{38}, 103612 (2026).
+\href{https://doi.org/10.1063/5.0351347}{doi:10.1063/5.0351347}
 
 \bibitem{ghia1982high}
 U.~Ghia, K.~N.~Ghia, and C.~T.~Shin,
@@ -1975,18 +1983,28 @@ model,'' Phys.\ Fluids \textbf{9}, 1591--1598 (1997).
 \bibitem{ladd1994}
 A.~J.~C.~Ladd,
 ``Numerical simulations of particulate suspensions via a discretized Boltzmann
-equation. Part 1. Foundation and application to numerical simulation,''
-J.\ Fluid Mech.\ \textbf{277}, 114--139 (1994).
+equation. Part 1. Theoretical foundation and numerical implementation,''
+J.\ Fluid Mech.\ \textbf{271}, 285--309 (1994).
 
 \bibitem{bouzidi2001}
-Z.~Bouzidi, M.~Firdaouss, and P.~Lallemand,
-``Velocity boundary conditions for the lattice Boltzmann BGK equation,''
-Phys.\ Fluids \textbf{13}, 3450--3459 (2001).
+M.~Bouzidi, M.~Firdaouss, and P.~Lallemand,
+``Momentum transfer of a Boltzmann-lattice fluid with boundaries,''
+Phys.\ Fluids \textbf{13}, 3452--3459 (2001).
+
+\bibitem{ginzburg2003multireflection}
+I.~Ginzburg and D.~d'Humi\`eres,
+``Multireflection boundary conditions for lattice Boltzmann models,''
+Phys.\ Rev.\ E \textbf{68}, 066614 (2003).
+
+\bibitem{krueger2017book}
+T.~Kr\"uger, H.~Kusumaatmaja, A.~Kuzmin, O.~Shardt, G.~Silva, and E.~M.~Viggen,
+\emph{The Lattice Boltzmann Method: Principles and Practice}, Graduate Texts in
+Physics (Springer International Publishing, Cham, 2017).
 
 \bibitem{lallemand2000theory}
-P.~Lallemand and X.-S.~Luo,
+P.~Lallemand and L.-S.~Luo,
 ``Theory of the lattice Boltzmann method: Dispersion, dissipation, isotropy,
-Galilean invariance, and stability,'' Phys.\ Rev.\ E \textbf{61}, 6546--6559
+Galilean invariance, and stability,'' Phys.\ Rev.\ E \textbf{61}, 6546--6562
 (2000).
 
 \bibitem{mendu2013oscillating}

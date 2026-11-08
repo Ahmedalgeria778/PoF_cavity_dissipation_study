@@ -162,10 +162,27 @@ directories, so each document must be compiled from its own directory, with the
 build output collected in `build/`:
 
 ```bash
+sh scripts/build_all.sh   # 3 passes per document, then all three gates
+```
+
+which is equivalent to, and safer than, doing it by hand:
+
+```bash
 for i in 1 2 3; do cd manuscript    && pdflatex -output-directory ../build manuscript_final.tex    && cd ..; done
 for i in 1 2 3; do cd supplementary && pdflatex -output-directory ../build supplementary_final.tex && cd ..; done
 python scripts/check_build_logs.py      # parses the four .log files; exit 0 = nothing to fix
 ```
+
+The bibliography has two gates of its own. `python scripts/check_bibliography.py`
+verifies that every citation key resolves in the document that uses it, that no
+`\bibitem` is left uncited, and that the entries shared by the manuscript and the
+supplement agree verbatim (a divergent copy is how a wrong volume or page range survives
+one round of editing). `python scripts/audit_references_crossref.py` goes to the
+publisher: for each entry it takes the quoted title and year, queries Crossref and prints
+the recorded volume, pages and year next to the local text, flagging every disagreement;
+`--show-keys k1,k2` lists all candidates for a flagged entry when the search hit is not
+the right record. Monographs carry no quoted title and are reported as unmatched by
+design.
 
 The two marked-up copies diff against the previous submission round and need one extra
 pass each (their table of contents shifts between runs):

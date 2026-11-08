@@ -359,9 +359,12 @@ prescribed one; the recovered velocity estimator
 gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$,
 $B_2$ and $B_3$, whereas using the prescribed velocity directly gives residuals of
 $+3.4\%$, $+4.6\%$ and $+4.7\%$ [on the phase-resolved fields, against
-$-2.9\%$, $-6.0\%$ and $-4.3\%$ for the recovered one] that measure
-the near-wall nodal velocity offset rather than
-the energy balance (Sec.~\ref{sec:budget}). We note that $\Plid^{\mathrm{rec}}$ is a diagnostic
+$-2.9\%$, $-6.0\%$ and $-4.3\%$ for the recovered one]. The gap between those two
+sets is a discrepancy of the discrete power budget to which the near-wall nodal
+velocity offset --- the difference between the velocity of the lid node row and the
+commanded profile --- contributes; it is not a
+direct measurement of that offset, nor of the continuous energy balance
+(Sec.~\ref{sec:budget}). We note that $\Plid^{\mathrm{rec}}$ is a diagnostic
 of the power across the \emph{last fluid row of the lattice}, the node row
 $i=N-1$ that carries the moving lid in the array layout, with the wall-normal
 derivative taken as the one-sided difference between rows $N-1$ and $N-2$
@@ -1846,13 +1849,13 @@ model,'' Phys.\ Fluids \textbf{9}, 1591--1598 (1997).
 \bibitem{ladd1994}
 A.~J.~C.~Ladd,
 ``Numerical simulations of particulate suspensions via a discretized Boltzmann
-equation. Part 1. Foundation and application to numerical simulation,''
-J.\ Fluid Mech.\ \textbf{277}, 114--139 (1994).
+equation. Part 1. Theoretical foundation and numerical implementation,''
+J.\ Fluid Mech.\ \textbf{271}, 285--309 (1994).
 
 \bibitem{lallemand2000theory}
-P.~Lallemand and X.-S.~Luo,
+P.~Lallemand and L.-S.~Luo,
 ``Theory of the lattice Boltzmann method: Dispersion, dissipation, isotropy,
-Galilean invariance, and stability,'' Phys.\ Rev.\ E \textbf{61}, 6546--6559
+Galilean invariance, and stability,'' Phys.\ Rev.\ E \textbf{61}, 6546--6562
 (2000).
 
 \bibitem{roache1994perspective}
