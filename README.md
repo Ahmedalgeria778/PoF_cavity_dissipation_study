@@ -133,6 +133,7 @@ The committed records are the ones every table and figure is generated from:
 - `data/lid_series/` + `manifest.csv` — the three imposed waveforms (256 samples per period, `endpoint=False`), with SHA-256, shape, applied scaling and realised actuation energy
 - `results/09_d2_capture/capture_d2_*.log` — run logs of the six temporal captures
 - `results/09_d2_capture/MANIFEST.md` — filenames, byte sizes and SHA-256 of the seven field archives shipped outside the git tree
+- `results/10_fig4_stationary_fields/FIELDS_MANIFEST.md` — filenames, byte sizes and SHA-256 of the three steady \(N=512\) field archives Main Fig. 4 is rendered from, which are also held outside the git tree, with the strain-rate magnitudes of Sec. 5.3 recomputed from them
 - `results/d2_derived/` — `d2_summary.json`, `d2_extra.json`, `lid_modal_fractions.json`, `topology_numbers.txt`, `capture_window_justification_N256.json`, `staircase_control_B2_N256.json`, `resolution_sensitivity_hold.json`
 - `results/streaming_forcing_d2.json`, `results/stokes_scaling_estimate_d2.json`, `results/lid_spatial_decomposition.json`
 - `results/07_d2_smoke/`, `results/08_stokes_analytic/` — protocol verifications
@@ -141,10 +142,15 @@ The committed records are the ones every table and figure is generated from:
 - `results/02_lambda_var/*.csv` — the \(\lambda_{\mathrm{var}}=0\) ablation runs with their modal shares; the input of `p2_table_bfirst_ablation.tex`
 - `supplementary/data_appendix/*.csv` and `Paper2_all_campaigns_results.tex` — cell-aggregated record of the 185 identification runs
 
-Every appendix table and every figure except Main Fig. 4 is therefore written by a
-committed script reading committed records; Fig. 4 is rendered from the steady field
-files of the stationary \(N=512\) campaign, which are raw dumps held outside the git
-tree on the same terms as the temporal captures. `python scripts/certify_package.py`
+Every appendix table and every figure, Main Fig. 4 included, is therefore written by
+a committed script; what the scripts read is split between committed derived records
+and raw fields held outside the git tree. `scripts/make_fig_mechanism.py` renders
+Fig. 4 from the three steady velocity files of the stationary \(N=512\) campaign
+(uniform lid, \(k=1\), \(k=2\)); `scripts/manifest_fig4_fields.py` inventories them by
+filename, byte size and SHA-256 in
+[`results/10_fig4_stationary_fields/FIELDS_MANIFEST.md`](results/10_fig4_stationary_fields/FIELDS_MANIFEST.md),
+recomputes the peak and interior-mean strain-rate magnitudes of Sec. 5.3 from them and
+fails if they no longer match. `python scripts/certify_package.py`
 regenerates [`docs/PACKAGE_CERTIFICATION.md`](docs/PACKAGE_CERTIFICATION.md), which
 lists each resource the two documents pull in, the script that writes it, and the page
 count and checksum of the compiled PDFs.

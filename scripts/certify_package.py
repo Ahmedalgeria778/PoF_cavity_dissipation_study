@@ -208,23 +208,35 @@ def main():
         for tag, rel in ungenerated:
             lines.append("- %s: `%s`" % (tag, rel))
         lines.append("")
-        lines.append("`fig15_mechanism_iso.pdf` (Main Fig. 4) is rendered from the steady "
-                     "velocity fields of the stationary N=512 campaign (uniform lid, "
-                     "k=1, k=2). Those fields are raw dumps of about 16 MB per control, "
-                     "so they are held outside the git tree with the other raw fields and "
-                     "are supplied from the corresponding author on request; the "
-                     "Data availability statement of the manuscript says so. The "
-                     "dissipation values that the same section quotes for those three "
-                     "controls do have committed records, "
-                     "`results/p1_gci_iso/p1_gci_raw.csv` (read by "
-                     "`scripts/make_fig_gci.py`) and "
-                     "`results/p1_gci_iso/p1_gci_summary.csv` (read by "
-                     "`scripts/export_legacy_supp_tables.py`). The strain-rate maximum "
-                     "and the interior strain means of panel (c) are read off those "
-                     "field files and are not recomputed by any committed script.")
     else:
         lines.append("None: every figure and every table source listed above is written "
                      "by a committed script.")
+    lines.append("")
+    lines.append("## Raw inputs held outside the git tree")
+    lines.append("")
+    lines.append("The scripts are all committed; the large field archives they read are "
+                 "not, and each set has a committed index that names it by filename, byte "
+                 "size and SHA-256 checksum, so a copy obtained from the corresponding "
+                 "author can be verified before the scripts are re-run:")
+    lines.append("")
+    lines.append("- `results/09_d2_capture/` holds the seven temporal captures behind "
+                 "Secs. S4.5-S4.8 of the supplement, indexed by "
+                 "`results/09_d2_capture/MANIFEST.md` and shipped as "
+                 "`PoF_d2_captures_v1.tar`.")
+    lines.append("- the three steady N=512 velocity fields (uniform lid, k=1, k=2) that "
+                 "`scripts/make_fig_mechanism.py` renders into Main Fig. 4, indexed with "
+                 "their byte sizes and SHA-256 digests by "
+                 "`results/10_fig4_stationary_fields/FIELDS_MANIFEST.md` and shipped as "
+                 "`PoF_fig4_fields_v1.tar`. That manifest is written by "
+                 "`scripts/manifest_fig4_fields.py`, which also recomputes from those "
+                 "fields the peak and interior-mean strain-rate magnitudes quoted in "
+                 "Main Sec. 5.3 and fails if they no longer match.")
+    lines.append("")
+    lines.append("The dissipation values quoted for those three controls have committed "
+                 "records independently of the fields: "
+                 "`results/p1_gci_iso/p1_gci_raw.csv` (read by `scripts/make_fig_gci.py`) "
+                 "and `results/p1_gci_iso/p1_gci_summary.csv` (read by "
+                 "`scripts/export_legacy_supp_tables.py`).")
     lines.append("")
     if missing:
         lines.append("## Missing resources")

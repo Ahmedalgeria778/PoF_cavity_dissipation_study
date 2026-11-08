@@ -588,7 +588,7 @@ gives cycle-mean residuals of $-2.8\%$, $-0.6\%$ and $-0.4\%$ for branches $B_1$
 $B_2$ and $B_3$, whereas using the prescribed velocity directly gives residuals of
 $+3.4\%$, $+4.6\%$ and $+4.7\%$ [on the phase-resolved fields, against
 $-2.9\%$, $-6.0\%$ and $-4.3\%$ for the recovered one] that measure
-boundary-condition slip rather than
+the near-wall nodal velocity offset rather than
 the energy balance (Sec.~\ref{sec:budget}). We note that $\Plid^{\mathrm{rec}}$ is a diagnostic
 of the power across the \emph{last fluid row of the lattice}, the node row
 $i=N-1$ that carries the moving lid in the array layout, with the wall-normal
@@ -597,8 +597,14 @@ derivative taken as the one-sided difference between rows $N-1$ and $N-2$
 moving-wall rebounce with momentum injection, the hydrodynamic wall lies half a lattice
 spacing outside that row, so the row is a first-plane approximation of the wall
 rather than the wall itself: it tends to the wall power $\Plid$ of
-Eq.~\eqref{eq:plid} as $\Delta y\to0$, and it also explains why the recovered lid
-speed differs from the commanded one by the $3$--$12\%$ slip quoted above. The
+Eq.~\eqref{eq:plid} as $\Delta y\to0$, and it also explains why the velocity
+recovered at that row differs from the one commanded at the wall plane by the
+near-wall nodal velocity offset measured in Supplementary Sec.~S4.8, whose largest
+value over the branch records spans $3.2\%$ to $11.8\%$ of the cavity speed as the
+grid goes from \(N=512\) to \(N=256\). That difference is a
+consequence of where the velocity is sampled, half a spacing inside the
+hydrodynamic wall, and is not a physical slip; it is expected to decrease under grid
+refinement, which Sec.~\ref{sec:budget} verifies. The
 residuals reported above therefore verify the discrete energy budget indirectly
 rather than close it exactly at the boundary, and are
 consistent with the exact identity $\overline{\Plid}=\Dbar$ of the continuous
@@ -1077,9 +1083,11 @@ strategy. Collision is performed in moment space with a diagonal relaxation
 matrix whose non-viscous rates take the conventional D2Q9 values
 (Supplementary Sec.~S4.1) \cite{lallemand2000theory}, and the moving lid is
 imposed on the two wall-facing populations of the lid row by a half-way rebounce
-with first-order momentum injection, $f_q=f_{\bar q}^{*}+2w_q\rho_w(\mathbf{c}_q
+whose momentum injection is linear in the wall speed, $f_q=f_{\bar q}^{*}+2w_q\rho_w(\mathbf{c}_q
 \cdot\mathbf{u}_w)/c_s^2$ \cite{ladd1994} (Supplementary Sec.~S4.1 gives the two
-updates and their place in the collision--streaming sequence); it
+updates, their place in the collision--streaming sequence, and why the resulting
+difference between the lid-node and wall-plane velocities is a sampling offset rather
+than a slip); it
 is a moving-wall rebound rather than the non-equilibrium bounce-back velocity
 condition of Zou and He \cite{zou1997pressure}. The solver reproduces the benchmark
 centerline velocities of Ghia et al.~\cite{ghia1982high} with
@@ -1578,7 +1586,11 @@ periods of the periodic response and is the performance index relevant to a
 periodic flow. The two coincide only in the steady limit. $A_\varepsilon$ is the
 half-spread of the phase-resolved $D(t)$ over the cycle, i.e.\ the variability
 concealed by a single cycle-mean number. The $B_1$ mean profile row is stationary
-by construction; the $B_1$ full row is the identified series. The three branch
+by construction and is used as computed, with $E_{\mathrm{act}}=0.2503$; the $B_1$
+full row is the identified series renormalised to $\overline{E}_{\mathrm{act}}=0.25$,
+whose own time mean therefore carries $0.2468$, so those two rows are a comparison at
+nearby but not identical mean forcing norms rather than a strictly iso-energetic one
+(Sec.~S4.3). The three branch
 rows are single realizations.}
 \label{tab:cycle}
 \small
@@ -1940,8 +1952,8 @@ thin Stokes layer of the two unsteady branches and is not used.
 Third, refining the lattice from $N=256$ to $N=512$ on the same temporal protocol
 divides the three residuals by $2.1$, $1.9$ and $2.4$ --- the factor of two that a
 first-order stencil predicts under $\Delta x\to\Delta x/2$ --- and moves them to
-$-1.4\%$, $-0.3\%$ and $-0.2\%$, while the largest slip of the velocity boundary
-condition drops by $38$--$47\%$ (Secs.~S4.5 and S4.8). The residual is thus
+$-1.4\%$, $-0.3\%$ and $-0.2\%$, while the largest near-wall nodal velocity
+offset drops by $38$--$47\%$ as the sampling node approaches the wall (Secs.~S4.5 and S4.8). The residual is thus
 \emph{measured} to be a truncation error of the estimator, not merely argued to be
 one.
 We therefore retain the first-order
@@ -2307,9 +2319,9 @@ corresponding author on reasonable request.
 \end{chgdel}
 
 \begin{chgadd}
-The scripts that regenerate every figure and table of this article, the three
-exported actuation series with their checksum manifest, the solver run logs and all
-derived records quoted in the text are available at
+The scripts that regenerate all tables and all figures except Fig.~4, together
+with the three exported actuation series, their checksum manifest, the solver run
+logs and the derived records quoted in the text, are available at
 \url{https://github.com/Ahmedalgeria778/PoF_cavity_dissipation_study} and from the
 corresponding author on reasonable request; the committed script
 \texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py} inventories every figure and
@@ -2332,11 +2344,20 @@ committed manifest
 \texttt{results/09\_d2}\hspace{0pt}\texttt{\_capture/MANIFEST.md} lists every
 archive with its byte size and SHA-256 checksum, so that a copy obtained from the
 corresponding author can be verified before the scripts are re-run. The bundle is
-available from the corresponding author on reasonable request. The one figure not
-redrawn by those scripts is Fig.~4, whose three columns are rendered from the steady
-fields of the stationary $N=512$ campaign (uniform lid, \(k=1\), \(k=2\)); those
-field files are likewise held outside the git tree and are supplied on the same
-terms.
+available from the corresponding author on reasonable request. Fig.~4 is drawn by
+the committed script \texttt{scripts/}\hspace{0pt}\texttt{make\_fig\_mechanism.py},
+but its three panels are rendered from the steady velocity fields of the stationary
+$N=512$ campaign (uniform lid, \(k=1\), \(k=2\)), raw dumps of $16.0$, $16.0$ and
+$13.0$\,MB; those three archives are held outside the git tree and are supplied on
+the same terms. The committed manifest
+\texttt{results/10\_fig4}\hspace{0pt}\texttt{\_stationary\_fields/}\hspace{0pt}\texttt{FIELDS}\hspace{0pt}\texttt{\_MANIFEST.md}
+names them (\texttt{fields\_UNem\_0p5\_Re500\_N512.npz},
+\texttt{fields\_S1em\_0p707107\_Re500\_N512.npz} and
+\texttt{fields\_B1em\_0p707107\_Re500\_N512.npz}) with their byte sizes and SHA-256
+checksums, supplies them as the bundle
+\texttt{PoF\_fig4}\hspace{0pt}\texttt{\_fields\_v1.tar} and verifies that they
+reproduce the peak and interior-mean strain-rate magnitudes quoted in
+Sec.~\ref{sec:mechanism}.
 \end{chgadd}
 
 \section*{Acknowledgments}

@@ -1,0 +1,472 @@
+{
+  "border_cells_excluded": 3,
+  "bundle": {
+    "bytes": 44943360,
+    "members": [
+      "fields_UNem_0p5_Re500_N512.npz",
+      "fields_S1em_0p707107_Re500_N512.npz",
+      "fields_B1em_0p707107_Re500_N512.npz"
+    ],
+    "name": "PoF_fig4_fields_v1.tar",
+    "sha256": "7f2fe53617d437f82d500746833c1bfd38dea600c73572df4244efb6a03c6144"
+  },
+  "fields_directory": "fields",
+  "n": 512,
+  "re": 500,
+  "records": [
+    {
+      "N": 512,
+      "Re": 500,
+      "arrays": {
+        "N": [
+          [],
+          "int64"
+        ],
+        "Re": [
+          [],
+          "int64"
+        ],
+        "U_lid": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "U_lid_imposed": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "control": [
+          [],
+          "<U19"
+        ],
+        "phi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xx": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_yy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "psi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "tau_w": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "ux": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "uy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "vort": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ]
+      },
+      "bytes": 15946918,
+      "checks": [
+        [
+          "field eps vs committed csv",
+          0.011098081646529511,
+          0.011020852875583919,
+          0.007007513104243301,
+          true
+        ],
+        [
+          "stored phi vs velocity rebuild",
+          0.011098081646529511,
+          0.011098081646529511,
+          0.0,
+          true
+        ],
+        [
+          "peak |S| vs quoted",
+          169.37827568675218,
+          169.0,
+          0.002238317673089796,
+          true
+        ],
+        [
+          "interior mean |S| vs quoted",
+          1.0387673921396712,
+          1.039,
+          0.00022387667019130308,
+          true
+        ]
+      ],
+      "control": "UNem_0p5_Re500_N512",
+      "eps_csv": 0.011020852875583919,
+      "eps_field": 0.011098081646529511,
+      "eps_from_velocity": 0.011098081646529511,
+      "file": "fields_UNem_0p5_Re500_N512.npz",
+      "interior_cells": 256036,
+      "key": "uniform",
+      "keys": [
+        "N",
+        "Re",
+        "U_lid",
+        "U_lid_imposed",
+        "control",
+        "phi",
+        "phi_xx",
+        "phi_xy",
+        "phi_yy",
+        "psi",
+        "tau_w",
+        "ux",
+        "uy",
+        "vort"
+      ],
+      "label": "uniform lid",
+      "s_interior_mean": 1.0387673921396712,
+      "s_max": 169.37827568675218,
+      "sha256": "dadf9b12c8e33e4a5e7b7d2c8dd9a0a31b86963ee3e15da3a289c343d6c72c01",
+      "source_directory": "fields"
+    },
+    {
+      "N": 512,
+      "Re": 500,
+      "arrays": {
+        "N": [
+          [],
+          "int32"
+        ],
+        "Re": [
+          [],
+          "int32"
+        ],
+        "U_lid": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "U_lid_imposed": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "control": [
+          [],
+          "<U24"
+        ],
+        "phi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xx": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_yy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "psi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "tau_w": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "ux": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "uy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "vort": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ]
+      },
+      "bytes": 15952846,
+      "checks": [
+        [
+          "field eps vs committed csv",
+          0.007172501427445584,
+          0.007126368874869891,
+          0.006473500514178054,
+          true
+        ],
+        [
+          "stored phi vs velocity rebuild",
+          0.007172501427445584,
+          0.007172501427445584,
+          0.0,
+          true
+        ],
+        [
+          "peak |S| vs quoted",
+          14.982912988464923,
+          15.0,
+          0.0011391341023384571,
+          true
+        ],
+        [
+          "interior mean |S| vs quoted",
+          1.0879548944582835,
+          1.088,
+          4.145729937188314e-05,
+          true
+        ]
+      ],
+      "control": "S1em_0p707107_Re500_N512",
+      "eps_csv": 0.007126368874869891,
+      "eps_field": 0.007172501427445584,
+      "eps_from_velocity": 0.007172501427445584,
+      "file": "fields_S1em_0p707107_Re500_N512.npz",
+      "interior_cells": 256036,
+      "key": "k1",
+      "keys": [
+        "N",
+        "Re",
+        "U_lid",
+        "U_lid_imposed",
+        "control",
+        "phi",
+        "phi_xx",
+        "phi_xy",
+        "phi_yy",
+        "psi",
+        "tau_w",
+        "ux",
+        "uy",
+        "vort"
+      ],
+      "label": "k=1",
+      "s_interior_mean": 1.0879548944582835,
+      "s_max": 14.982912988464923,
+      "sha256": "819e14c24707da0ac8bcbb48594dc2a9ae95573508edc6dcbdb9e955702eed5b",
+      "source_directory": "fields"
+    },
+    {
+      "N": 512,
+      "Re": 500,
+      "arrays": {
+        "N": [
+          [],
+          "int64"
+        ],
+        "Re": [
+          [],
+          "int64"
+        ],
+        "U_lid": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "U_lid_imposed": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "control": [
+          [],
+          "<U24"
+        ],
+        "phi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xx": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_xy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "phi_yy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "psi": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "tau_w": [
+          [
+            512
+          ],
+          "float64"
+        ],
+        "ux": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "uy": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ],
+        "vort": [
+          [
+            512,
+            512
+          ],
+          "float64"
+        ]
+      },
+      "bytes": 13040223,
+      "checks": [
+        [
+          "field eps vs committed csv",
+          0.011898673152555229,
+          0.011853129663886615,
+          0.0038423175954427347,
+          true
+        ],
+        [
+          "stored phi vs velocity rebuild",
+          0.011898673152555229,
+          0.011898673152555229,
+          0.0,
+          true
+        ],
+        [
+          "peak |S| vs quoted",
+          23.412758391463523,
+          23.4,
+          0.000545230404424224,
+          true
+        ],
+        [
+          "interior mean |S| vs quoted",
+          1.4496987040757934,
+          1.45,
+          0.00020779029255624248,
+          true
+        ]
+      ],
+      "control": "B1em_0p707107_Re500_N512",
+      "eps_csv": 0.011853129663886615,
+      "eps_field": 0.011898673152555229,
+      "eps_from_velocity": 0.011898673152555229,
+      "file": "fields_B1em_0p707107_Re500_N512.npz",
+      "interior_cells": 256036,
+      "key": "k2",
+      "keys": [
+        "N",
+        "Re",
+        "U_lid",
+        "U_lid_imposed",
+        "control",
+        "phi",
+        "phi_xx",
+        "phi_xy",
+        "phi_yy",
+        "psi",
+        "tau_w",
+        "ux",
+        "uy",
+        "vort"
+      ],
+      "label": "k=2",
+      "s_interior_mean": 1.4496987040757934,
+      "s_max": 23.412758391463523,
+      "sha256": "7c739104344b2f59f941f1b307c9d7fced36c84916ed6bbcf3eca3f85e843af0",
+      "source_directory": "fields"
+    }
+  ],
+  "total_bytes": 44939987
+}

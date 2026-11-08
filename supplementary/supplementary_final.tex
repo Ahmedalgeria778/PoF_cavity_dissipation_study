@@ -642,7 +642,7 @@ Lid boundary conditions are imposed on the node row \(i=N-1\). The streaming ste
 of that row leaves two populations unknown, the two wall-facing diagonals
 \(q=7\) (\(\mathbf{c}_7=(-1,-1)\)) and \(q=8\) (\(\mathbf{c}_8=(+1,-1)\)), whose
 streaming sources lie one node outside the domain. They are reconstructed by a
-half-way moving-wall rebounce with first-order momentum injection
+half-way moving-wall rebounce whose momentum injection is linear in the wall speed
 \cite{ladd1994},
 \begin{equation}
 f_q(\mathbf{x}_b,t+1)
@@ -693,10 +693,20 @@ row, with the local density taken from the post-collision field. The algorithm
 applies that correction to the wall-facing populations of row \(N-1\), but the
 velocity it imposes belongs to the hydrodynamic wall, the half-way plane located a
 half lattice spacing outside that row, rather than to the macroscopic velocity
-reconstructed at the fluid node. Being first order in the wall speed, the scheme
-leaves a residual slip: the recovered streamwise velocity of row \(N-1\) differs
-from the commanded profile by the slip measured in Sec.~S4.8 (\(3.2\%\) to
-\(11.8\%\) of the cavity speed, resolution-dependent), and the power estimator of
+reconstructed at the fluid node. The moving-wall correction is linear in the
+prescribed wall velocity. Since the recovered velocity is evaluated at the adjacent
+outermost fluid node, located half a lattice spacing inside the hydrodynamic wall, it
+differs from the commanded profile by a finite near-wall nodal velocity offset: the
+streamwise velocity of row \(N-1\) differs from the commanded value by the offsets
+measured in Sec.~S4.8 (\(3.2\%\) to \(11.8\%\) of the cavity speed,
+resolution-dependent). This difference is a consequence of sampling the velocity at
+the fluid-node location and should not be interpreted as a physical slip at the
+half-way wall. The correction being linear in \(U_{\mathrm{lid}}\) is a statement
+about the momentum source, not about the spatial order of accuracy of the boundary
+condition, which with the half-way placement is second order for a flat wall
+aligned with the lattice \cite{bouzidi2001}; the offset decreases under grid
+refinement as the sampling location approaches the hydrodynamic wall, and that
+dependence is tested at \(N=512\) in Sec.~S4.5. The power estimator of
 Sec.~S4.8 is evaluated on that row rather than exactly at \(y=1\). The same half-way placement
 fixes the hydrodynamic spacing: the lattice holds \(N\) fluid nodes per side, each
 wall stands one half spacing beyond the row it faces, and the unit cavity therefore
@@ -737,7 +747,7 @@ frequency-response check of the solver and of the mapping. The streamwise veloci
 recorded at the antinode of the lid profile then contains the forcing frequency and
 no other significant line: the single-sided amplitude at \(\omega_1\) is \(0.927\)
 at the lid node, i.e.\ the imposed unit amplitude recovered to within the \(7.3\%\)
-slip of the velocity boundary condition discussed in Sec.~S4.8, and the wall-normal
+near-wall nodal velocity offset of Sec.~S4.8, and the wall-normal
 profile of that amplitude decays exponentially over the cells below the lid, with a
 fitted decay length of \(5.4\) cells and \(R^2=0.999\) over the eleven cells
 nearest the wall. The half-space Stokes thickness at \(\omega_1\) is
@@ -805,7 +815,8 @@ The stationary approximation implicit in this protocol is quantified by the
 dedicated capture of the full control (Sec.~S4.6). The \(B_1\) branch carries a
 temporal energy fraction of \(1.25\%\) (\(f_t=0.013\)), so the time-mean profile is
 not exactly the control that the PINN produces. When the full time-dependent
-Fourier series is transferred instead, at the same target energy \(E^\ast=0.25\),
+Fourier series is transferred instead, at the same nominal target energy
+\(E^\ast=0.25\) of the whole series,
 \(Re=500\) and \(N=256\), its cycle-mean dissipation is
 \(1.1934\times10^{-2}\), i.e.\ \(0.34\%\) above the \(1.1894\times10^{-2}\) of the
 stationary run of its own time-mean profile, and the temporal fluctuations carry
@@ -814,7 +825,19 @@ quantities, and the comparison is deliberately made between the two
 \emph{cycle means}: the stationary control and the time-dependent one are then
 within \(0.4\%\) of each other, while the dissipation of the time-mean \emph{field}
 of the unsteady run, \(D(\overline{\mathbf u})=1.1719\times10^{-2}\), is \(1.8\%\)
-below its own cycle mean (Jensen gap; Sec.~S4.5). The eight-bin phase quadrature of
+below its own cycle mean (Jensen gap; Sec.~S4.5). The proximity of the two cycle
+means is a comparison at \emph{nearby but not identical} mean forcing norms rather
+than a strictly iso-energetic one: the mean profile of the rescaled full series
+carries \(0.2468\), because the \(E^\ast=0.25\) constraint applies to the whole
+series, whereas the stationary profile of the dedicated steady run is normalised on
+its own stationary part and carries \(0.2503\), i.e.\ \(1.4\%\) more actuation
+energy. The run with the smaller mean norm shows the slightly larger cycle-mean
+dissipation, which is the direction a small residual fluctuating contribution would
+give, but with a \(1.4\%\) mismatch of the mean forcing the \(0.34\%\) difference is
+quoted as a consistency check of the stationary approximation and not as a
+measurement of the fluctuation cost at exactly matched actuation. The Jensen
+decomposition, which is evaluated on the single \(B_1\) response, is unaffected by
+this distinction. The eight-bin phase quadrature of
 the same record reproduces the cycle mean to \(0.0017\%\), so the agreement with the
 stationary profile is not a quadrature artifact. The temporal content of \(B_1\) is
 therefore dynamically small: it costs well under one per cent of dissipation and
@@ -1112,8 +1135,11 @@ stationary controls, for which a single time-independent dissipation value is we
 defined and for which the grid-convergence analysis of Sec.~S4.4 applies. The
 temporal controls are reported here, separately, with their cycle mean and the
 amplitude of the oscillation around it. Table~\ref{tab:branch_isoenergetic}
-juxtaposes the two sets at the same target energy so that they can be read against
-one another, not so that their grid uncertainties are equal: the stationary rows
+juxtaposes the two sets at the same nominal target energy, so that they can be read
+against one another; it is not a strictly iso-energetic pairing, since the
+\(B_1\) mean-profile row is normalised on its own stationary part and carries
+\(0.2503\) while the branch rows are norm-matched as series (Sec.~S4.3), and it is
+not a pairing of equal grid uncertainties either: the stationary rows
 carry the GCIs of Sec.~S4.4, the branch rows do not.
 
 The branch rows follow the transfer convention of Main Sec.~2.2: the exported lid
@@ -1145,7 +1171,9 @@ On the cycle average the three branches cost \(1.441\times10^{-2}\) (\(B_2\)),
 \(52\%\), \(26\%\) and \(23\%\) above the uniform lid at the same
 \(E^*=0.25\) and \(N=256\) (\(9.48\times10^{-3}\), Table~\ref{tab:s5_isoenergetic}),
 and the \(B_1\) series lands within \(0.4\%\) of its own stationary mean profile
-(\(1.189\times10^{-2}\)). On the mean field the ordering is not merely different but
+(\(1.189\times10^{-2}\)), a proximity at nearby but not identical mean forcing norms
+(\(0.2468\) against \(0.2503\); Sec.~S4.3) rather than a strictly iso-energetic one.
+On the mean field the ordering is not merely different but
 almost inverted: \(D(\overline{\mathbf u})=1.02\times10^{-3}\) for \(B_2\), against
 \(1.17\times10^{-2}\) for \(B_1\) and \(5.41\times10^{-3}\) for \(B_3\), and the
 cycle-mean kinetic energy of the \(B_2\) response is \(2.42\times10^{-3}\) for a mean
@@ -1243,11 +1271,15 @@ other hand, is \(+20.7\%\) and \(+23.2\%\) over \(B_1\) and \(B_3\) at \(N=256\)
 move. Second, the closure. The balance residuals of
 Main Sec.~6.5, \(-2.79\%\), \(-0.60\%\) and \(-0.44\%\) at \(N=256\), become
 \(-1.36\%\), \(-0.32\%\) and \(-0.18\%\) at \(N=512\): each is divided by \(2.1\),
-\(1.9\) and \(2.4\), and the largest discrete slip of the velocity boundary
-condition falls from \(6.0\%\), \(11.5\%\) and \(11.8\%\) of the cavity speed to
-\(3.2\%\), \(7.2\%\) and \(6.9\%\). A one-sided first-order wall-shear stencil and a
-half-way velocity boundary condition both truncate at \(O(\Delta x)\), so halving
-\(\Delta x\) is expected to halve them, which is what is observed. This is direct
+\(1.9\) and \(2.4\), and the largest near-wall nodal velocity offset falls from
+\(6.0\%\), \(11.5\%\) and \(11.8\%\) of the cavity speed to
+\(3.2\%\), \(7.2\%\) and \(6.9\%\). The two quantities have different origins but the
+same dependence on the spacing. The residual is the truncation error of the
+one-sided first-order wall-shear stencil, so halving \(\Delta x\) is expected to
+halve it. The offset is not a property of the boundary condition: it is the product
+of the half-spacing that separates the sampling node from the hydrodynamic wall and
+the near-wall wall-normal gradient, whose scale is set by the Stokes layer, so
+halving \(\Delta x\) halves it too, which is what is observed. This is direct
 evidence that the residual reported in Main Table~4 is an estimator error and not a
 physical imbalance; the estimator order is discussed in Sec.~S4.8.
 
@@ -1372,10 +1404,11 @@ relative drift of the sampled dissipation between the two halves of that window 
 \(+1.1\times10^{-3}\%\) (\(B_1\)), \(-2.8\times10^{-6}\%\) (\(B_2\)) and
 \(+1.4\times10^{-3}\%\) (\(B_3\)); the corresponding drift of the sampled kinetic
 energy is \(1.1\times10^{-3}\%\), \(1.8\times10^{-6}\%\) and
-\(5.6\times10^{-3}\%\). The largest slip between the imposed and the recovered lid
-velocity at the lid node row, over the whole record, is \(0.060\), \(0.115\) and
-\(0.118\) cavity units for \(B_1\), \(B_2\) and \(B_3\); it is the same boundary
-condition discussed in Sec.~S4.8. Sampling covers thirty-two periods, i.e.\ four
+\(5.6\times10^{-3}\%\). The largest near-wall nodal velocity offset between the
+lid velocity imposed at the hydrodynamic wall and the velocity recovered at the
+outermost fluid-node row, over the whole record, is \(0.060\), \(0.115\) and
+\(0.118\) cavity units for \(B_1\), \(B_2\) and \(B_3\); it is the offset of
+Sec.~S4.1, quantified in Sec.~S4.8. Sampling covers thirty-two periods, i.e.\ four
 blocks of eight cycles, which are the blocks behind the uncertainties of Main
 Table~4: the cycle-to-cycle relative standard deviation of the dissipation is
 \(7.0\times10^{-6}\), \(2.4\times10^{-8}\) and \(1.2\times10^{-5}\), the standard
@@ -1560,8 +1593,11 @@ post-collision opposites, corrected by a momentum injection of magnitude
 hydrodynamic boundary, the half-way plane located a half spacing outside the lid node
 row, not at any lattice node: the macroscopic streamwise velocity reconstructed at the
 adjacent outermost fluid-node row \(i=N-1\) is a computed quantity, and it differs
-from the imposed profile by the discrete slip of the scheme;
-the largest slip over the whole record is \(0.060\), \(0.115\) and \(0.118\) cavity
+from the imposed profile by a near-wall nodal velocity offset: because the two
+planes are half a spacing apart across a wall-normal gradient, the offset is a
+consequence of the sampling location and is not a physical slip at the half-way
+wall.
+The largest offset over the whole record is \(0.060\), \(0.115\) and \(0.118\) cavity
 units for \(B_1\), \(B_2\) and \(B_3\) (Sec.~S4.6). Throughout this section the fields
 are stored as \(u_x(i,j)\), where the first index is wall-normal and the second
 streamwise, so there are \(N\) nodes per side, the lid node row is \(i=N-1\), the interior
@@ -1585,8 +1621,9 @@ derivative, the cycle-mean residual \(\overline P_{\mathrm{lid}}/\overline D-1\)
 \(-2.92\%\), \(-6.03\%\) and \(-4.29\%\) with the recovered velocity against
 \(+3.36\%\), \(+4.57\%\) and \(+4.70\%\) with the prescribed profile, for \(B_1\),
 \(B_2\) and \(B_3\). The two differ by \(6\%\)--\(11\%\), which is the size of the
-slip of the velocity condition, and the difference has the sign expected from it: the
-prescribed value over-states the boundary velocity where the scheme slips. The
+near-wall nodal velocity offset, and the difference has the sign expected from it: the
+prescribed profile over-states the velocity actually sampled at the outermost fluid
+node, where the offset is largest. The
 recovered-velocity estimator is the one accumulated by the solver and is used
 throughout the main text, including Main Table~4; the spread between the two is
 carried as the estimator uncertainty. With the direct accumulation over the sampled
@@ -1595,9 +1632,11 @@ record the recovered-velocity residuals become \(-2.79\%\), \(-0.60\%\) and
 \(N=512\) replication of Sec.~S4.5 tests that claim directly. With the identical
 estimator, the identical forcing and the identical sampling window, the residuals
 become \(-1.36\%\), \(-0.32\%\) and \(-0.18\%\), i.e.\ divided by \(2.1\), \(1.9\)
-and \(2.4\), while the largest slip of the velocity boundary condition falls from
+and \(2.4\), while the largest near-wall nodal velocity offset falls from
 \(6.0\%\), \(11.5\%\) and \(11.8\%\) of the cavity speed to \(3.2\%\), \(7.2\%\) and
-\(6.9\%\). Both quantities drop at the rate their own truncation predicts, which is
+\(6.9\%\). Each drops at the rate expected of it --- the residual at the truncation
+rate of the estimator, the offset because the sampling node approaches the
+hydrodynamic wall as \(\Delta x/2\) --- which is
 the evidence that the residual annotated in Main Table~4 is estimator error and not
 a physical imbalance. These values, together with the residual of the two recorded signals
 annotated in Main Fig.~8, are reproduced from the archived phase fields, mean fields
@@ -1851,21 +1890,31 @@ their run logs (\texttt{results/09\_d2\_capture/}\hspace{0pt}%
 not: three at \(N=256\) (28.78, 28.60 and 28.72~MB), three at \(N=512\) (111.48,
 111.02 and 111.30~MB) and the exact-in-time control (28.24~MB), \(448.15\)~MB in
 total, the \(419.90\)~MB of the six branch captures among them. The three
-\(N=512\) files exceed the 100~MB per-file limit of a git tree and committing the set
-would add that volume to a repository from which every quoted number is already
-reproducible, so they ship as the single bundle
-\texttt{PoF\_d2\_captures\_v1.tar}, supplied alongside the submission and available
-from the corresponding author on reasonable request. The committed index
+\(N=512\) files exceed the 100~MB per-file limit of a git tree, and committing the
+set would add that volume to the repository. The numerical results are reproducible
+from the committed scripts and derived records together with the companion capture
+bundle, which is supplied alongside the submission and available from the
+corresponding author on reasonable request; the seven archives above ship as the
+single bundle \texttt{PoF\_d2\_captures\_v1.tar}. The committed index
 \texttt{results/09\_d2\_capture/MANIFEST.md} lists each archive by filename, byte size
 and SHA-256 checksum, so that a copy can be verified before the scripts of
-Secs.~S4.5--S4.8 are re-run on it. Every derived quantity quoted in the main text and in this supplement is
+Secs.~S4.5--S4.8 are re-run on it. The three steady \(N=512\) velocity fields that
+\texttt{scripts/}\hspace{0pt}\texttt{make\_fig\_mechanism.py} renders into Main Fig.~4
+---\texttt{fields\_UNem\_0p5\_Re500\_N512.npz},
+\texttt{fields\_S1em\_0p707107\_Re500\_N512.npz} and
+\texttt{fields\_B1em\_0p707107\_Re500\_N512.npz}, \(16.0\), \(16.0\) and
+\(13.0\)~MB---are held outside the git tree on the same terms and ship as the bundle
+\texttt{PoF\_fig4\_fields\_v1.tar}; the committed index
+\texttt{results/10\_fig4\_stationary\_fields/}\hspace{0pt}\texttt{FIELDS\_MANIFEST.md}
+lists them by filename, byte size and SHA-256 checksum and recomputes from them the
+peak and interior-mean strain-rate magnitudes of Main Sec.~5.3. Every derived quantity quoted in the main text and in this supplement is
 written to
 \texttt{results/d2\_derived/} (\texttt{d2\_summary.json},
 \texttt{d2\_extra.json}, \texttt{lid\_modal\_fractions.json},
 \texttt{topology\_numbers}\hspace{0pt}\texttt{.txt},
-\texttt{spacing\_convention\_check.json}),
-\texttt{results/streaming\_forcing\hspace{0pt}\_d2.json} and
-\texttt{results/stokes\_scaling\hspace{0pt}\_estimate\hspace{0pt}\_d2.json} by the scripts named in
+\texttt{spacing\_convention}\hspace{0pt}\texttt{\_check.json}),
+\texttt{results/}\hspace{0pt}\texttt{streaming\_forcing\hspace{0pt}\_d2.json} and
+\texttt{results/}\hspace{0pt}\texttt{stokes\_scaling\hspace{0pt}\_estimate\hspace{0pt}\_d2.json} by the scripts named in
 Secs.~S4.5--S4.8, and those records, which are what the tables and figures are
 generated from, are committed. The \(N=512\) replication adds four kinds of artifact
 to the same locations: the three captures

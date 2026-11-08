@@ -52,8 +52,11 @@ desktop.ini
 # (results/09_d2_capture/capture_*.npz, 448 MB for the seven files, the N=512 ones
 # above GitHub's 100 MB per-file limit) are excluded from the git tree and shipped as
 # bundle/PoF_d2_captures_v1.tar; results/09_d2_capture/MANIFEST.md, which is
-# committed, indexes them with their sizes and SHA-256 checksums. Everything the text
-# needs as input or as provenance is committed.
+# committed, indexes them with their sizes and SHA-256 checksums. The three steady
+# N=512 fields Main Fig. 4 is rendered from (45 MB) are excluded on the same terms and
+# shipped as bundle/PoF_fig4_fields_v1.tar, indexed by the committed
+# results/10_fig4_stationary_fields/FIELDS_MANIFEST.md. Everything the text needs as
+# input or as provenance is committed.
 *.npz
 *.h5
 *.hdf5

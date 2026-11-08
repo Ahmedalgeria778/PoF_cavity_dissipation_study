@@ -1389,11 +1389,11 @@ including two record files that were added to the deposit for that purpose, the
 185-run classification table of the branch map and the \(\lambda_{\mathrm{var}}\) modal
 ablation audit --- and reproduces the transmitted files exactly, cell by cell, so the
 inherited numbers are now recomputed rather than transcribed. The single resource that
-cannot be regenerated is declared as such rather than glossed: Main Fig.~4 is rendered
-from the steady fields of the stationary \(N=512\) campaign, which are raw dumps held
-outside the git tree on the same terms as the captures, and its dissipation values do have
-a committed record. The exception is stated in the Data availability statement, in
-Sec.~S5.6, in the README and in the certificate.
+could not then be regenerated is declared as such rather than glossed: Main Fig.~4 was
+rendered from the steady fields of the stationary \(N=512\) campaign, which are raw
+dumps held outside the git tree on the same terms as the captures. That exception is
+closed in the present round, by committing the generator and inventorying the three
+field archives; see Point~48.
 
 The compiled result, after every change requested in this round, is the four PDFs in the
 repository: the manuscript at 27 pages with no overfull box, the supplement at 30 pages
@@ -1415,6 +1415,121 @@ one reproducibility trap found while doing this is documented in the README: the
 documents must be compiled with \texttt{-output-directory}, because an \texttt{.aux} left
 in the source directory is read in preference to the one just written and silently
 resurrects the labels and citations of the previous round.
+
+\vspace{1em}
+
+\noindent\textbf{Point 47: The word ``slip'' removed from the boundary-condition
+description (twelfth review, Sec.~2).}
+
+This was the reviewer's one remaining technical reserve and it is applied in full, in
+the reviewer's own wording. The passage of Sec.~S4.1 that began ``Being first order in
+the wall speed'' is replaced by the proposed text: the moving-wall correction is linear
+in the prescribed wall velocity, the recovered velocity is evaluated at the adjacent
+outermost fluid node, half a lattice spacing inside the hydrodynamic wall, and the
+difference from the commanded value is a consequence of sampling at the fluid-node
+location that ``should not be interpreted as a physical slip at the half-way wall''. In
+both documents the three phrases the reviewer objects to --- ``boundary-condition slip'',
+``discrete slip of the scheme'' and ``slip of the velocity boundary condition'' --- are
+gone; the quantity is now called, consistently, the \emph{near-wall nodal velocity
+offset}, in Sec.~S4.1, S4.2, S4.5, S4.6 and S4.8 of the supplement and in Main Sec.~4.2
+and Main Table~4. The measured values are kept unchanged ($3.2\%$ to $11.8\%$ of the
+cavity speed, resolution-dependent) and are now presented as the difference between the
+velocity at the sampled fluid node and the velocity at the wall plane; the sentence in
+Main Sec.~4.2 that pointed back to ``the $3$--$12\%$ slip quoted above'' was
+itself faulty, since no such number appears earlier in the manuscript, and it now quotes
+the range and its resolutions explicitly with a forward reference to Sec.~S4.8.
+
+The conflation the reviewer identified is corrected in the direction the code supports.
+That the momentum injection is linear in \(U_{\mathrm{lid}}\) is a statement about the
+source term, not about the spatial order of accuracy: with the half-way placement the
+boundary condition is second order for a flat wall aligned with the lattice, which is
+now said as such and attributed to Bouzidi, Firdaouss and Lallemand (2001), following
+Ladd (1994) for the injection itself. Sec.~S4.5 also gained the reason the offset and
+the estimator residual refine alike without being the same quantity: the offset is the
+product of the half-spacing between the sampling node and the hydrodynamic wall and the
+near-wall wall-normal gradient, whose scale is set by the Stokes layer, so it halves when
+\(\Delta x\) halves.
+
+\vspace{1em}
+
+\noindent\textbf{Point 48: The two availability statements harmonised, and Main Fig.~4
+given a generator and a manifest (twelfth review, Sec.~3).}
+
+The first sentence of the Data availability statement is now the proposed one: the
+scripts that regenerate all tables and all figures \emph{except Fig.~4}, together with
+the three exported actuation series, their checksum manifest, the solver run logs and the
+derived records quoted in the text, are available at the repository. In Sec.~S5.6 the
+clause ``would add that volume to a repository from which every quoted number is already
+reproducible'' is replaced as proposed, and the supplement now names the same three
+objects the manuscript names, so the two declarations agree.
+
+What was missing behind the exception has been supplied. The script that renders Main
+Fig.~4, \texttt{scripts/}\brk\texttt{make\_fig\_mechanism.py}, is committed. Its three
+steady \(N=512\) inputs, which the git tree does not carry, are
+\begin{itemize}
+\item \texttt{fields\_UNem\_0p5\_Re500\_N512.npz} ($16.0$\,MB),
+\item \texttt{fields\_S1em\_0p707107\_Re500\_N512.npz} ($16.0$\,MB) and
+\item \texttt{fields\_B1em\_0p707107\_Re500\_N512.npz} ($13.0$\,MB); the three together
+  are $44.94$\,MB.
+\end{itemize}
+They are inventoried, with their SHA-256 fingerprints, in the committed
+\texttt{results/10\_fig4}\brk\texttt{\_stationary\_fields/}\brk%
+\texttt{FIELDS}\brk\texttt{\_MANIFEST.md}, written by
+\texttt{scripts/}\brk\texttt{manifest\_fig4\_fields.py}, and shipped as the bundle
+\texttt{PoF\_fig4}\brk\texttt{\_fields\_v1.tar}. That script does more than list them: it
+recomputes from the archives the quantities the figure and Main Sec.~5.3 quote --- peak
+strain-rate magnitude \(169.4\), \(15.0\), \(23.4\) and interior mean \(1.0388\),
+\(1.0880\), \(1.4497\), i.e.\ the published \(169\), \(15.0\), \(23.4\) and the
+\(4.7\%\) and \(39.6\%\) ratios --- and exits non-zero if they no longer match, so the
+figure can be audited without the reviewer having to trust the rendering. One difference
+found while doing this is reported rather than smoothed over: integrating the stored
+local-dissipation field of these archives by trapezoid over the node lattice gives
+\(0.38\%\) to \(0.70\%\) more than the solver-recorded volume integral committed in
+\texttt{results/p1\_gci\_iso/p1\_gci\_raw.csv} for the same converged runs. Both estimators
+are now tabulated side by side in the manifest, the field and velocity reconstructions are
+shown to agree to better than \(10^{-12}\), and the deviation is bounded by the
+\(3.9\%\) to \(7.8\%\) fine-grid uncertainty already attached to those values. Every
+number quoted in the text remains the solver-recorded one. Since Main Fig.~4 has a
+generator, the certificate no longer lists any resource without one.
+
+\vspace{1em}
+
+\noindent\textbf{Point 49: The \(B_1\) series-versus-stationary comparison qualified
+(twelfth review, Sec.~4).}
+
+The reviewer is right that \(1.1934\times10^{-2}\) against \(1.1894\times10^{-2}\) is not
+a strictly iso-energetic comparison: the time-mean profile of that series has actuation
+norm \(0.2468\) where the stationary run used \(0.2503\), \(1.4\%\) apart. The comparison
+is now qualified as one at nearby-but-not-identical mean forcing norms in the three places
+it appears in the supplement --- Sec.~S4.3, the juxtaposition under Table~S14, and the
+sentence that reports the \(B_1\) series
+landing within \(0.4\%\) of its own stationary value --- and in the caption of Main
+Table~4, which now states both norms (\(E_{\mathrm{act}}=0.2503\) for the mean-profile row
+against \(0.2468\) for the full series' time mean). The qualification changes no number
+and no ordering: the \(0.34\%\) agreement is still reported, now with the condition it was
+measured under. The Jensen decomposition of Sec.~S4.3 is untouched because it is an
+identity on a single response, evaluated on that response's own \(\overline{D}\), \(D(\overline{\mathbf{u}})\)
+and \(D_{\mathrm{fluct}}\); it compares nothing across runs and so cannot be affected by
+the norm of a different one.
+
+\vspace{1em}
+
+\noindent\textbf{Point 50: Verification of the compilation after these changes
+(twelfth review, Sec.~5).}
+
+The four documents were rebuilt from the sources, three passes each, from inside their own
+directories so that \texttt{data\_appendix/} and the figure paths resolve as the sources
+declare them, with the marked-up copies regenerated by
+\texttt{scripts/}\hspace{0pt}\texttt{mark\_manuscript.py} from the previous round's
+transmitted files. The result, audited by
+\texttt{scripts/}\hspace{0pt}\texttt{check\_build\_logs.py} and recorded in
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md}: manuscript 27 pages with no
+overfull box, supplement 30 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name
+run of Sec.~S5.6, marked copies 36 and 40 pages, ten figures, eleven table sources, no
+missing resource, no undefined reference or citation, and zero reported problems. No new
+numerical campaign was run, in line with the reviewer's recommendation: the only
+computation added in this round is the recomputation of Main Sec.~5.3's strain-rate
+statistics from field archives that already existed.
 
 \newpage
 
