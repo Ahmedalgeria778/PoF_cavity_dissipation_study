@@ -184,6 +184,14 @@ the recorded volume, pages and year next to the local text, flagging every disag
 the right record. Monographs carry no quoted title and are reported as unmatched by
 design.
 
+A third script is advisory on purpose. `python scripts/check_style.py [file ...]`
+extracts the running text of a document (comments, display math, floats, section
+headings and bibliography entries removed) and prints the counts of the connectives and
+set phrases that give away templated writing, with the line numbers where they occur,
+plus the distribution of sentence openings and the longest sentences. It reports and
+never fails: a style count is not a correctness criterion, so it is not one of the
+`build_all.sh` gates.
+
 The two marked-up copies diff against the previous submission round and need one extra
 pass each (their table of contents shifts between runs):
 

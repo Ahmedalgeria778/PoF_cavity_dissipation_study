@@ -1535,10 +1535,11 @@ overfull box, supplement 31 pages with the single \(6.7\,\mathrm{pt}\) box in th
 run of Sec.~S5.6, marked copies 36 and 42 pages, this letter 25 pages with one
 \(1.7\,\mathrm{pt}\) box carried over from the previous round, ten figures, eleven table
 sources, no missing resource, no undefined reference or citation, and zero reported
-problems. Those are also the numbers of the build transmitted with the present letter:
-Points~51 and~52 below were applied and the four documents were rebuilt with
-\texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh}, which runs the three passes per
-document and then the build, bibliography and certificate gates. No new
+problems. Points~51 to~53 below were applied and the four documents were rebuilt with
+\texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh}, which runs the passes per
+document and then the build, bibliography and certificate gates; they left those counts
+unchanged. The style pass of Point~54 lengthened the marked-up manuscript by one page,
+and the counts of the transmitted build are recorded there. No new
 numerical campaign was run, in line with the reviewer's recommendation: the only
 computation added in this round is the recomputation of Main Sec.~5.3's strain-rate
 statistics from field archives that already existed.
@@ -1633,6 +1634,50 @@ number changes: the agreements remain \(5\%\) for \(B_2\)
 (\(1.41\times10^{-2}\) against the measured \(1.339\times10^{-2}\)) and \(2\%\) for
 \(B_3\) (\(6.38\times10^{-3}\) against the measured \(6.28\times10^{-3}\)).
 
+\vspace{1em}
+
+\noindent\textbf{Point 54: The prose of the manuscript and of the supplement was
+reviewed for phrasing that reads as templated rather than as authored (fifteenth
+review).}
+
+No result, no table and no figure was touched. What gave the writing away was a
+connective used as scaffolding: \emph{therefore} occurred fifty-five times in the
+running text of the two documents together, once every \(490\) words, and a handful of
+set phrases --- \emph{we note that}, \emph{it is therefore legitimate}, \emph{more
+importantly}, \emph{taken together}, \emph{which is why} --- opened paragraphs at
+regular intervals. Each was replaced by the subject and verb of the sentence it
+introduced, or by a participle after a comma, and where the inference genuinely is the
+point the word stayed: the manuscript keeps two of its seventeen, the supplement eight
+of its thirty-eight. The paragraphs that opened by announcing how many statements were
+to come --- ``Four statements summarize the study'', ``Three extensions follow
+directly'' --- now open with the question or the limitation they answer, the
+\emph{First, Second, Third} that follows them being left alone. In Sec.~S2 one clause
+explaining why the identification tables are reproduced in the supplement appeared
+twice within nine lines; the second occurrence was removed. Two sentences that each
+carried three separate claims --- one in the novelty paragraph of the Introduction, one
+in the account of where the wall power is sampled --- were cut at their natural joint,
+and the abstract's closing sentence now names the quantity the study evaluates instead
+of reporting that the results demonstrate something.
+
+That the content is unchanged is a checked property, not a claim: every substituted
+fragment had to occur exactly once in its file, and the multiset of numeric tokens of
+each file is identical before and after the pass (\texttt{manuscript/}: \(1740\)
+tokens, \(1741\) after the one added branch label \(B_2\) in Main Sec.~6.3, where the
+antecedent of ``its'' had been ambiguous; \texttt{supplementary/}: \(2443\) tokens in
+both states). The committed \texttt{scripts/}\brk\texttt{check\_style.py} prints this
+profile --- connective counts with their line numbers, sentence openings, the longest
+sentences of the running text --- for either document, and it is deliberately advisory
+rather than one of the build gates, since a style count is not a correctness criterion.
+
+The four documents were rebuilt with the same script and the same gates: the
+manuscript is 27 pages with no overfull box, the supplement 31 pages with the single
+\(6.7\,\mathrm{pt}\) box in the file-name run of Sec.~S5.6, the marked copies 37 and 42
+pages, and this letter 26 pages with the one \(1.7\,\mathrm{pt}\) box carried
+over from an earlier round. The certificate still lists ten figures and eleven table
+sources with no missing resource, the bibliography gate reports no problem among its
+thirty-eight manuscript and ten supplement entries, and no reference or citation is
+undefined.
+
 \newpage
 
 %----------------------------------------------------------------------
@@ -1677,6 +1722,12 @@ transcription errors is described in Point~52.
 identification-campaign robustness, the independent MRT-LBM verification with
 grid uncertainty, and the reproducibility inventory. It contains 19 tables,
 2 figures and its own short bibliography.
+
+\noindent\textbf{Prose:} The manuscript and the supplement were reviewed for wording
+that reads as templated rather than as authored. Repeated connectives and set phrases
+were replaced, three over-long sentences were divided, and the Conclusions now open
+with the question they answer; no value, table or figure changed, and the numeric
+tokens of each source file were checked to be the same before and after (Point~54).
 
 \noindent\textbf{Marked-up versions:} Prepared for both the manuscript and the
 supplementary material using a paragraph-level diff script.
