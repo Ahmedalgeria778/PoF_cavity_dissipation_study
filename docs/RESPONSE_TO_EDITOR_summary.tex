@@ -1,0 +1,161 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\geometry{margin=2.4cm}
+\setlength{\emergencystretch}{2em}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{1.3ex plus 1ex minus .2ex}{0.6ex}
+
+\title{\bfseries Response to the Deputy Editor's Pre-Review Comments\\[6pt]
+\normalsize Manuscript: \textit{Spatio-temporal wall-actuation modes and
+cycle-mean viscous dissipation in a lid-driven cavity}}
+
+\author{Beniaiche Ahmed (corresponding author), Larabi Abderrahim, Belkadi Mbarek\\
+Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria}
+
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.5em}
+
+\noindent\textbf{To:} The Deputy Editor, \textit{Physics of Fluids}.\\
+\textbf{Re:} Revision requested before external review. The revised manuscript
+and this response are submitted through the PXP site by 21 November 2026.
+
+\section*{Opening statement}
+
+We thank the Deputy Editor for confirming that the chosen article type is
+appropriate and for the pre-review comments. The manuscript has been revised to
+meet them. This letter answers each comment in the order it was given. The
+changes themselves are visible in the marked-up manuscript and are itemized,
+comment by comment, in the point-by-point response transmitted with the
+revision; they are not repeated here.
+
+\section*{Comment 1}
+
+\noindent\textcolor{blue}{``Physics of Fluids publishes original theoretical,
+computational, and experimental work that advances the physical understanding
+of fluids, meaning the mechanisms and principles that explain how and why
+fluids behave as they do. As written, the manuscript is framed as a
+reproducibility analysis of a physics informed neural network controller for
+the lid driven cavity. Before it can be considered, the paper needs to be
+reorganized so that the fluid physics is its central contribution.''}
+
+\textbf{Response.} The manuscript has been reorganized around the fluid
+physics. It now studies how the spatial and temporal structure of a wall
+actuation sets the viscous dissipation of the cavity flow it drives, and the
+physics-informed network appears only as the tool that generates the candidate
+actuations, which an independent multiple-relaxation-time lattice-Boltzmann
+solver then evaluates. The identification campaigns and the reproducibility
+audit no longer frame the paper.
+
+\section*{Comment 2}
+
+\noindent\textcolor{blue}{``The physics to bring to the front is how the spatio
+temporal structure of the wall actuation sets the cycle-mean viscous
+dissipation of the cavity flow. The neural network branch selection, the
+regularization dependent state recovery, and the reproducibility audit can
+remain as supporting evidence, but they should not frame the work.''}
+
+\textbf{Response.} The cycle-mean dissipation is now the quantity the paper
+compares, at a common quadratic actuation norm, for the stationary modes and
+the three identified branches. The distinction between the cycle-mean
+dissipation and the dissipation of the time-mean field, and the partition of
+the cycle-mean cost between mean field and fluctuations, are reported for each
+branch. The branch selection, the regularization-dependent state recovery and
+the reproducibility audit remain as supporting evidence in the supplementary
+material.
+
+\section*{Comment 3}
+
+\noindent\textcolor{blue}{``The introduction and reference list should be
+repositioned toward the fluid physics literature on active control of the lid
+driven cavity, viscous dissipation and energy budgets in actuated cavity
+flows, and modal structure and state selection in driven-cavity flow, so that
+the contribution is set against fluid flow.''}
+
+\textbf{Response.} The introduction and the reference list are now positioned
+in that literature: the cavity benchmarks, the active-control and
+cost-function work, the dissipation and energy-budget studies, and the modal
+structure and state-selection results. The antecedent identification study by
+one of us is cited where its results are used and is not restated.
+
+\section*{Comment 4}
+
+\noindent\textcolor{blue}{``Please also reduce the number of figures to maximum
+of 15.''}
+
+\textbf{Response.} The revised manuscript carries eight figures and four
+tables. The figures of the identification campaigns are no longer in the main
+text; those that support the comparison are in the supplementary material.
+
+\section*{Comment 5}
+
+\noindent\textcolor{blue}{``Please revise the title to lead with the actuation
+mode and dissipation physics.''}
+
+\textbf{Response.} The title is now \textit{Spatio-temporal wall-actuation
+modes and cycle-mean viscous dissipation in a lid-driven cavity}, which leads
+with the actuation structure and the dissipation cost.
+
+\section*{Comment 6}
+
+\noindent\textcolor{blue}{``Please revise your manuscript and submit a
+detailed, point-by-point response to the comments. Each response should
+include the original comment followed by a description of the corresponding
+revision made (or a justification if no change was made). The revised
+manuscript and response are due by 21-Nov-2026 via the PXP web site. The
+Editors will then make a decision as to the next step in the review
+process.''}
+
+\textbf{Response.} A detailed point-by-point response is submitted with the
+revision. It reproduces every comment of the Deputy Editor and of the
+reviewers, each followed by the corresponding revision or by the justification
+where no change was made. The revised manuscript and the response are
+submitted through the PXP site by 21 November 2026.
+
+\section*{Comment 7}
+
+\noindent\textcolor{blue}{``When submitting your revision, please upload two
+versions of your manuscript: a clean version labeled `Article File' and a
+marked-up version labeled `Marked-Up Manuscript,' which should clearly show
+all changes made from the previous submission.''}
+
+\textbf{Response.} Both versions are uploaded: the clean manuscript as the
+Article File and the marked-up manuscript as the Marked-Up Manuscript, the
+latter showing every change against the previous submission. The same pair is
+provided for the supplementary material.
+
+\section*{Closing}
+
+The revised manuscript, the marked-up manuscript, the supplementary material
+in both versions and the point-by-point response accompany this letter. We
+remain available to the Editors for the next step of the review process.
+
+\vspace{1.0em}
+
+\begin{minipage}[t]{0.52\linewidth}
+\rule{6.2cm}{0.4pt}\\[2pt]
+\textbf{Dr. BENIAICHE Ahmed}\\
+Corresponding author\\
+Laboratory of Fluid Mechanics\\
+Ecole Militaire Polytechnique, Algiers, Algeria\\
+\href{mailto:beniaiche_ahmed25@yahoo.fr}{beniaiche\_ahmed25@yahoo.fr}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\linewidth}
+\raggedleft
+\textit{Signed on behalf of all the authors}\\[4pt]
+Beniaiche Ahmed\\
+Larabi Abderrahim\\
+Belkadi Mbarek\\[6pt]
+Algiers, 10 November 2026
+\end{minipage}
+
+\end{document}

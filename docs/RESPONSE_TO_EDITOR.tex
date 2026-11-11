@@ -76,6 +76,10 @@ physics.
   \texttt{supplementary\_final\_marked.pdf}: marked-up supplementary.
 \item \texttt{RESPONSE\_TO\_EDITOR.tex} and
   \texttt{RESPONSE\_TO\_EDITOR.pdf}: this point-by-point response.
+\item A summary response letter, addressed to the Deputy Editor, which answers
+  the pre-review comments directly and is signed on behalf of all the authors.
+  The details of the revisions are left to the marked-up versions and to this
+  document.
 \item \texttt{figures/highlight\_image.png}: highlight image for the table of
   contents and potential cover.
 \item \texttt{figures/}: source files of the figures (the 8 embedded in the
@@ -276,9 +280,9 @@ should clearly show all changes made from the previous submission.''}
 \noindent\textbf{Response:} We have prepared both versions:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{manuscript\_final\brk.tex} and
-  \texttt{manuscript\_final\brk.pdf} (26 pages).
+  \texttt{manuscript\_final\brk.pdf} (27 pages).
 \item \textbf{Marked-up version}: \texttt{manuscript\_final\brk\_marked\brk.tex} and
-  \texttt{manuscript\_final\brk\_marked\brk.pdf} (35 pages). The marked-up version uses
+  \texttt{manuscript\_final\brk\_marked\brk.pdf} (36 pages). The marked-up version uses
   a paragraph-level diff: old text that has been removed or replaced is shown in
   \textcolor{red}{red}, new or rewritten text is shown in
   \textcolor{blue}{blue}. Obsolete figures and tables from the previous version
@@ -288,9 +292,9 @@ should clearly show all changes made from the previous submission.''}
 The same approach has been applied to the supplementary material:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{supplementary\_final\brk.tex} and
-  \texttt{supplementary\_final\brk.pdf} (29 pages).
+  \texttt{supplementary\_final\brk.pdf} (31 pages).
 \item \textbf{Marked-up version}: \texttt{supplementary\_final\brk\_marked\brk.tex} and
-  \texttt{supplementary\_final\brk\_marked\brk.pdf} (39 pages).
+  \texttt{supplementary\_final\brk\_marked\brk.pdf} (42 pages).
 \end{itemize}
 
 \vspace{1em}
@@ -310,9 +314,9 @@ since individual figure files are not being uploaded.''}
   marked-up sources \texttt{manuscript\_final\brk\_marked\brk.tex} and
   \texttt{supplementary\_final\brk\_marked\brk.tex};\\
   this letter, \texttt{RESPONSE\_TO\_EDITOR\brk.tex}.
-\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (26 pages),
-  \texttt{supplementary\_final\brk.pdf} (29 pages), the two marked-up PDFs
-  (35 and 39 pages), and
+\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (27 pages),
+  \texttt{supplementary\_final\brk.pdf} (31 pages), the two marked-up PDFs
+  (36 and 42 pages), and
   \texttt{RESPONSE\_TO\_EDITOR\brk.pdf}.
 \item \textbf{Figures}: the 8 figures of the manuscript and the 2 of the
   supplementary material are embedded in the two PDFs and visible in the text.
@@ -1669,14 +1673,33 @@ profile --- connective counts with their line numbers, sentence openings, the lo
 sentences of the running text --- for either document, and it is deliberately advisory
 rather than one of the build gates, since a style count is not a correctness criterion.
 
-The four documents were rebuilt with the same script and the same gates: the
-manuscript is 27 pages with no overfull box, the supplement 31 pages with the single
-\(6.7\,\mathrm{pt}\) box in the file-name run of Sec.~S5.6, the marked copies 37 and 42
-pages, and this letter 26 pages with the one \(1.7\,\mathrm{pt}\) box carried
-over from an earlier round. The certificate still lists ten figures and eleven table
-sources with no missing resource, the bibliography gate reports no problem among its
-thirty-eight manuscript and ten supplement entries, and no reference or citation is
-undefined.
+The four documents were rebuilt with the same script and the same gates, and the
+log, bibliography and certificate gates reported no problem. The abstract rewrite
+of Point~55 below changed the length of the marked-up manuscript; the counts of
+the transmitted build are recorded there.
+
+\vspace{1em}
+
+\noindent\textbf{Point 55: The abstract rewritten as a single physics-first
+paragraph within the 250-word limit (sixteenth round).}
+
+The abstract now opens on the mechanism, where the moving wall organizes shear
+and thereby sets the viscous dissipation of the cavity flow, and gives the method
+in one clause: stationary harmonic profiles and three time-periodic branches
+compared at a common quadratic actuation norm with an independent MRT-LBM solver,
+the branches being candidates identified by a physics-informed network. It is one
+paragraph of 236 words, counting each inline math span as one word, against the
+250-word limit; the limit is enforced by
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py}, which prints the count
+and fails above it. The quantitative statements retained are those of the body:
+the $17.7\%$ reduction and $36.8\%$ increase of the first and second harmonics,
+the fluctuation shares $92.9\%$, $53.7\%$ and $1.8\%$, the Stokes agreement to
+within $5\%$ and $2\%$, and the factor-$36$ pair equal over the cycle to within
+$2.1\%$. The marked-up manuscript was regenerated from the previous round's
+transmitted file and the package rebuilt: manuscript 27 pages with no overfull
+box, supplement 31 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name
+run of Sec.~S5.6, marked copies 36 and 42 pages; the gates report zero problems,
+ten figures and eleven table sources with no missing resource.
 
 \newpage
 
@@ -1689,8 +1712,9 @@ energetic characterization of conditional modal collapse in active control of
 lid-driven cavity flow'' to ``Spatio-temporal wall-actuation modes and
 cycle-mean viscous dissipation in a lid-driven cavity.''
 
-\noindent\textbf{Abstract:} Completely rewritten to lead with the physical
-question and announce the main quantitative results.
+\noindent\textbf{Abstract:} Rewritten as a single physics-first paragraph of
+236 words, within the 250-word limit now checked by the certification gate
+(Point~55).
 
 \noindent\textbf{Introduction:} Completely rewritten to present the physics of
 wall actuation, the energy budget, and the central question. The PINN is

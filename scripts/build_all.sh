@@ -1,5 +1,5 @@
 #!/bin/sh
-# Rebuild the four transmitted documents and re-run every package gate.
+# Rebuild the transmitted documents and re-run every package gate.
 #
 # The supplement must be compiled from inside supplementary/ because its appendix
 # tables are pulled with \input{data_appendix/...}, which is resolved against the
@@ -17,7 +17,7 @@ cd "$ROOT"
 
 for doc in manuscript/manuscript_final manuscript/manuscript_final_marked \
            supplementary/supplementary_final supplementary/supplementary_final_marked \
-           docs/RESPONSE_TO_EDITOR; do
+           docs/RESPONSE_TO_EDITOR docs/RESPONSE_TO_EDITOR_summary; do
     dir=$(dirname "$doc")
     job=$(basename "$doc")
     rm -f "$dir/$job.aux" "$dir/$job.log" "$dir/$job.out" "$dir/$job.toc"

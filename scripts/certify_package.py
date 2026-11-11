@@ -99,6 +99,17 @@ def pages(job):
     return n, box
 
 
+def abstract_words():
+    """Word count of the manuscript abstract as a journal counts it: each
+    inline math span is one word."""
+    src = open(MS, encoding="utf-8").read()
+    body = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", src, re.S).group(1)
+    body = re.sub(r"\$[^$]*\$", " MATH ", body)
+    body = re.sub(r"\\[a-zA-Z]+\*?", " ", body)
+    body = re.sub(r"[{}\\]", " ", body)
+    return len(body.split())
+
+
 def main():
     lines = []
     lines.append("# Package certification")
@@ -199,6 +210,12 @@ def main():
                  "`scripts/check_build_logs.py` then parses the four logs and reports "
                  "0 problems.")
     lines.append("")
+    lines.append("## Abstract")
+    lines.append("")
+    n_abs = abstract_words()
+    lines.append("The manuscript abstract holds %d words, counting each inline math "
+                 "span as one word; the submission limit is 250." % n_abs)
+    lines.append("")
     lines.append("## Resources without a generator in the repository")
     lines.append("")
     if ungenerated:
@@ -256,6 +273,10 @@ def main():
     print("wrote", OUT)
     print("figures=%d tables=%d missing=%d" % (len(fig_rows), len(tab_rows),
                                                len(missing)))
+    print("abstract words=%d (limit 250)" % n_abs)
+    if n_abs > 250:
+        print("ABSTRACT OVER THE 250-WORD LIMIT")
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

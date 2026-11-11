@@ -84,42 +84,27 @@ accessibility or mean-field diagnostics alone.
 
 \begin{chgadd}
 \begin{abstract}
-The spatial and temporal organization of wall actuation determines how mechanical
-input is distributed across the flow structures of a driven cavity, yet the
-resulting viscous-dissipation cost cannot be inferred from the actuation spectrum
-or from the time-mean velocity field alone. This study examines the relationship
-between wall-actuation structure, hydrodynamic response, and cycle-mean viscous
-dissipation in a two-dimensional lid-driven cavity. Stationary harmonic profiles
-and three physics-informed actuation branches are transferred to an independent
-multiple-relaxation-time lattice-Boltzmann solver and compared at a common
-quadratic actuation norm. For stationary controls at $Re=500$ on the $N=512$
-lattice, the first spatial
-harmonic reduces dissipation by $17.7\%$ relative to a corner-regularized
-uniform-lid reference, whereas the second harmonic and the mean profile of the
-quasi-steady two-lobe branch increase it by $36.8\%$ and $44.3\%$, respectively.
-Grid-refinement and local strain-rate analyses associate this ordering with the
-redistribution of dissipation between corner shear layers and the cavity interior.
-For time-dependent branches, the cycle-mean dissipation differs markedly from the
-dissipation of the time-mean flow: the fluctuating part of the strain field carries
-$92.9\%$, $53.7\%$ and $1.8\%$ of the cycle-mean cost of the lid-oscillatory, mixed
-and quasi-steady branches, respectively. The branch for which the dissipation
-evaluated on the time-mean field is $14.2$ times smaller than the cycle-mean
-dissipation is consequently the most dissipative of the
-three, though by the modest factor of $1.2$, while the quasi-steady and mixed
-responses differ by $2.1\%$ at $N=256$ and by $0.5\%$ at $N=512$. A second-Stokes
-boundary-layer estimate built from the imposed lid signal alone agrees with the
-measured fluctuating dissipation of the lid-oscillatory and mixed branches to within
-approximately $5\%$ and $2\%$, respectively, without an adjustable constant. The
-estimate is a half-space approximation, so this agreement supports a wall-layer
-interpretation of the dominant fluctuating cost rather than a spatial decomposition
-of the total dissipation. The same balance explains why the quasi-steady and mixed
-branches, whose oscillatory actuation energies differ by a factor of $36$, cost the
-same over the cycle to within $2.1\%$: their totals are reached through opposite
-partitions between mean field and fluctuations. At a fixed control effort the
-energetic cost of wall actuation is set by the spatial organization of the
-resulting flow and by the temporal fluctuations it carries, and the index that
-reflects it is the cycle-averaged dissipation rather than modal accessibility or a
-mean-field diagnostic.
+Where a moving wall organizes shear determines the viscous dissipation of the
+cavity flow it drives, and that cost cannot be inferred from the actuation
+spectrum or from the time-mean velocity field. Stationary harmonic lid profiles
+and three time-periodic actuation branches are compared in a two-dimensional
+lid-driven cavity at $Re=500$ and at a common quadratic actuation norm, with an
+independent multiple-relaxation-time lattice-Boltzmann solver; the branches are
+candidates identified by a physics-informed network. The first spatial harmonic
+lowers the dissipation by $17.7\%$ relative to a corner-regularized uniform lid
+and the second raises it by $36.8\%$, an ordering traced to the redistribution
+of strain between corner shear layers and the cavity interior. For the
+time-periodic branches the cycle-mean dissipation departs strongly from the
+dissipation of the time-mean flow: fluctuations carry $92.9\%$, $53.7\%$ and
+$1.8\%$ of the cycle-mean cost of the lid-oscillatory, mixed and quasi-steady
+branches. A second-Stokes boundary-layer estimate built from the lid signal
+alone reproduces the fluctuating cost of the first two to within $5\%$ and
+$2\%$, without an adjustable constant. Two branches whose oscillatory energies
+differ by a factor of $36$ cost the same over a cycle to within $2.1\%$,
+reaching that total through opposite partitions between mean flow and
+fluctuations. At fixed control effort the dissipation is governed by the spatial
+organization of the flow and by the fluctuations it carries, and the cycle-mean
+dissipation is the index that reflects it.
 \end{abstract}
 \end{chgadd}
 

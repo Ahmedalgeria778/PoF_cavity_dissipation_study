@@ -153,7 +153,9 @@ recomputes the peak and interior-mean strain-rate magnitudes of Sec. 5.3 from th
 fails if they no longer match. `python scripts/certify_package.py`
 regenerates [`docs/PACKAGE_CERTIFICATION.md`](docs/PACKAGE_CERTIFICATION.md), which
 lists each resource the two documents pull in, the script that writes it, and the page
-count and checksum of the compiled PDFs.
+count and checksum of the compiled PDFs. It also counts the words of the manuscript
+abstract (each inline math span as one word) and fails above the 250-word submission
+limit.
 
 ### Compile Manuscript and Supplementary
 
@@ -191,6 +193,15 @@ set phrases that give away templated writing, with the line numbers where they o
 plus the distribution of sentence openings and the longest sentences. It reports and
 never fails: a style count is not a correctness criterion, so it is not one of the
 `build_all.sh` gates.
+
+Two letters go with the papers. `docs/RESPONSE_TO_EDITOR_summary.tex` is the
+short response addressed to the Deputy Editor: it answers the pre-review
+comments in the order they were given and is signed on behalf of the authors,
+without repeating the revision details. `docs/RESPONSE_TO_EDITOR.tex` is the
+complete point-by-point reply to all sixty-three comments, nine from the Deputy
+Editor and fifty-four from the reviewers, and it remains the record of the
+revision; the summary letter does not replace it. Both are rebuilt by
+`build_all.sh`.
 
 The two marked-up copies diff against the previous submission round and need one extra
 pass each (their table of contents shifts between runs):
