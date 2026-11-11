@@ -110,6 +110,78 @@ def abstract_words():
     return len(body.split())
 
 
+SM_HEAD = "\\section*{Supplementary Material}"
+CONCL_HEAD = "\\section{Conclusions}"
+ACK_HEAD = "\\section*{Acknowledgments}"
+DOCX = os.path.join(REPO, "supplementary", "supplementary_final.docx")
+
+# The supplement numbers its floats with an S prefix, so the compiled aux records
+# the highest number of each kind; those are the counts the manuscript quotes.
+AUX_CHANNEL = re.compile(
+    r"\\@writefile\{(toc|lot|lof)\}\{\\contentsline \{(?:section|table|figure)\}"
+    r"\{\\numberline \{S(\d+)\}")
+CLAIM = re.compile(r"(Secs|Tables|Figs)(\.?~)S(\d+)--S(\d+)")
+CLAIM_KIND = {"toc": "Secs", "lot": "Tables", "lof": "Figs"}
+
+
+def manuscript_body():
+    src = open(MS, encoding="utf-8").read()
+    return src[src.index(r"\begin{document}"):]
+
+
+def supp_counts():
+    """Highest S-number per aux channel: sections, tables, figures."""
+    aux = os.path.join(BUILD, "supplementary_final.aux")
+    if not os.path.isfile(aux):
+        return None
+    txt = open(aux, "rb").read().decode("latin-1")
+    out = {}
+    for ch, num in AUX_CHANNEL.findall(txt):
+        out[ch] = max(out.get(ch, 0), int(num))
+    return out
+
+
+def supplementary_material_section():
+    """Locate the manuscript's Supplementary Material section and return
+    (problems, claims) where claims maps Secs/Tables/Figs to the spelling used
+    and the upper bound of the quoted range."""
+    body = manuscript_body()
+    problems = []
+    i, c, a = (body.find(SM_HEAD), body.find(CONCL_HEAD), body.find(ACK_HEAD))
+    if i < 0:
+        problems.append("the manuscript has no %s section" % SM_HEAD)
+        return problems, {}
+    if c < 0 or not c < i:
+        problems.append("Supplementary Material does not follow the Conclusions")
+    if a < 0 or not i < a:
+        problems.append("Supplementary Material does not precede the Acknowledgments")
+    seg = body[i + len(SM_HEAD):]
+    nxt = seg.find("\\section")
+    seg = seg[:nxt] if nxt >= 0 else seg
+    if not seg.strip():
+        problems.append("the Supplementary Material section holds no text")
+    claims = {}
+    for kind, tie, lo, hi in CLAIM.findall(seg):
+        if int(lo) != 1:
+            problems.append("the %s range does not start at S1" % kind)
+        if kind in claims and claims[kind][1] != int(hi):
+            problems.append("the manuscript quotes %s twice with different bounds"
+                            % kind)
+        claims[kind] = (kind + tie, int(hi))
+    return problems, claims
+
+
+def docx_stale():
+    """Inputs newer than the Word file, i.e. a Word source that no longer
+    matches the document it was generated from."""
+    if not os.path.isfile(DOCX):
+        return ["missing"]
+    new = os.path.getmtime(DOCX)
+    return [os.path.relpath(p, REPO).replace("\\", "/")
+            for p in (SP, os.path.join(BUILD, "supplementary_final.aux"))
+            if os.path.isfile(p) and os.path.getmtime(p) > new]
+
+
 def main():
     lines = []
     lines.append("# Package certification")
@@ -216,6 +288,53 @@ def main():
     lines.append("The manuscript abstract holds %d words, counting each inline math "
                  "span as one word; the submission limit is 250." % n_abs)
     lines.append("")
+
+    sm_problems, claims = supplementary_material_section()
+    counts = supp_counts()
+    stale = docx_stale()
+    lines.append("## Supplementary material")
+    lines.append("")
+    lines.append("The manuscript carries an unnumbered `Supplementary Material` "
+                 "section, placed after the Conclusions and before the Acknowledgments "
+                 "as the editor asked; AIP Publishing inserts the link to the posted "
+                 "files in that position. The paragraph it opens quotes the float "
+                 "ranges below, and those numbers are read back from the compiled "
+                 "supplement rather than typed:")
+    lines.append("")
+    lines.append("| quoted range | compiled from `build/supplementary_final.aux` |")
+    lines.append("| --- | --- |")
+    for ch in ("toc", "lot", "lof"):
+        kind = CLAIM_KIND[ch]
+        got = counts.get(ch) if counts else None
+        spell, hi = claims.get(kind, ("?", None))
+        lines.append("| `%sS1--S%s` | %s |"
+                     % (spell, "?" if hi is None else hi,
+                        "%d in the aux" % got if got else "not built"))
+    lines.append("")
+    lines.append("The supplement is transmitted twice: as its LaTeX source and, in "
+                 "parallel, as the word-processor source the editorial office also "
+                 "requires.")
+    lines.append("")
+    lines.append("| file | bytes | SHA-256 (first 16) | written by |")
+    lines.append("| --- | --- | --- | --- |")
+    if os.path.isfile(DOCX):
+        lines.append("| `supplementary/supplementary_final.docx` | %d | `%s` | "
+                     "`scripts/make_supplementary_docx.py` |"
+                     % (os.path.getsize(DOCX), sha256(DOCX)[:16]))
+    else:
+        lines.append("| `supplementary/supplementary_final.docx` | **NOT BUILT** | | "
+                     "`scripts/make_supplementary_docx.py` |")
+    lines.append("")
+    lines.append("`scripts/make_supplementary_docx.py` converts the supplement source "
+                 "itself: it re-types the prose, the float tables, the figures, the "
+                 "numbered displays and the bibliography entries, and it fails unless "
+                 "its own numbering reproduces the labels and the `\\bibcite` numbers "
+                 "of `build/supplementary_final.aux`, unless every word of the source "
+                 "outside the displays is present in the produced file, and unless the "
+                 "running prose of the source reappears in the same order. It is run "
+                 "by `scripts/build_all.sh` after the LaTeX passes, so the aux it "
+                 "checks against is the one just written.")
+    lines.append("")
     lines.append("## Resources without a generator in the repository")
     lines.append("")
     if ungenerated:
@@ -277,6 +396,32 @@ def main():
     if n_abs > 250:
         print("ABSTRACT OVER THE 250-WORD LIMIT")
         raise SystemExit(1)
+    for ch in ("toc", "lot", "lof"):
+        kind, got = CLAIM_KIND[ch], (counts or {}).get(ch)
+        if got is None:
+            sm_problems.append("%s: no compiled supplement to read (build/"
+                               "supplementary_final.aux missing)" % kind)
+        elif kind not in claims:
+            sm_problems.append("the Supplementary Material paragraph quotes no %s "
+                               "range, but the supplement has %d" % (kind, got))
+        elif claims[kind][1] != got:
+            sm_problems.append("the manuscript quotes %sS1--S%s but the compiled "
+                               "supplement holds %d"
+                               % (claims[kind][0], claims[kind][1], got))
+    if stale:
+        if stale == ["missing"]:
+            sm_problems.append("supplementary/supplementary_final.docx does not exist")
+        else:
+            sm_problems.append("the Word source is older than %s" % ", ".join(stale))
+    if sm_problems:
+        print("SUPPLEMENTARY MATERIAL GATE FAILED")
+        for p in sm_problems:
+            print("  - %s" % p)
+        raise SystemExit(1)
+    print("supplementary material: section after Conclusions and before "
+          "Acknowledgments, Secs/Tables/Figs counts match the aux (%d/%d/%d), "
+          "Word source current"
+          % (counts["toc"], counts["lot"], counts["lof"]))
 
 
 if __name__ == "__main__":

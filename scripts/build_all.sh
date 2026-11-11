@@ -32,4 +32,8 @@ done
 
 py scripts/check_build_logs.py
 py scripts/check_bibliography.py
+# The Word source of the supplement is generated after the LaTeX loop because it
+# cross-checks its own float, equation and bibliography numbering against the
+# fresh build/supplementary_final.aux.
+py scripts/make_supplementary_docx.py
 py scripts/certify_package.py

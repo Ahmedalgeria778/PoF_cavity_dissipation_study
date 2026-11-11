@@ -16,6 +16,23 @@ This repository contains the manuscript, supplementary material, figures, and an
 
 *Corresponding author: beniaiche_ahmed25@yahoo.fr
 
+## Files submitted
+
+| file | role |
+| --- | --- |
+| `manuscript/manuscript_final.pdf` | clean manuscript (Article File); its LaTeX source beside it |
+| `manuscript/manuscript_final_marked.pdf` | marked-up manuscript against the previous round |
+| `supplementary/supplementary_final.pdf` | clean supplementary material, LaTeX form |
+| `supplementary/supplementary_final.docx` | same supplement in Word form, generated from the LaTeX source |
+| `supplementary/supplementary_final_marked.pdf` | marked-up supplementary material |
+| `docs/RESPONSE_TO_EDITOR_summary.pdf` | signed reply to the Deputy Editor's comments |
+| `docs/RESPONSE_TO_EDITOR.pdf` | complete point-by-point response |
+| `figures/highlight_image.png` | highlight image for the table of contents |
+
+The manuscript announces the supplement in an unnumbered *Supplementary Material*
+section between the Conclusions and the Acknowledgments, where the publisher inserts the
+link to the posted files.
+
 ## Repository Contents
 
 ```
@@ -25,6 +42,7 @@ PoF_cavity_dissipation_study/
 ├── CITATION.cff                 # Citation information
 ├── manuscript/                  # Main manuscript (LaTeX source + compiled PDF)
 ├── supplementary/               # Supplementary material
+│   ├── supplementary_final.docx # Word version of the supplement, generated from its .tex
 │   └── data_appendix/           # Auto-generated appendix tables (.tex) + campaign records (.csv)
 ├── data/lid_series/             # The three imposed lid waveforms + manifest.csv (SHA-256, shapes, scaling)
 ├── data/lid_series_n512/        # Same controls resampled on 512 nodes + build report
@@ -44,7 +62,9 @@ PoF_cavity_dissipation_study/
 ### Requirements
 
 - **Python 3.10+** with: `numpy`, `scipy`, `matplotlib`, `numba` (the lattice-Boltzmann
-  kernel in `scripts/run_branch_capture_d2.py` is JIT-compiled, single-threaded, deterministic)
+  kernel in `scripts/run_branch_capture_d2.py` is JIT-compiled, single-threaded, deterministic).
+  `python-docx`, `PyMuPDF` and `Pillow` are additionally needed by `scripts/make_supplementary_docx.py`,
+  which writes the Word version of the supplement from its LaTeX source.
 - **LaTeX:** MiKTeX or TeX Live with standard packages
 
 ### Setup
@@ -152,10 +172,14 @@ filename, byte size and SHA-256 in
 recomputes the peak and interior-mean strain-rate magnitudes of Sec. 5.3 from them and
 fails if they no longer match. `python scripts/certify_package.py`
 regenerates [`docs/PACKAGE_CERTIFICATION.md`](docs/PACKAGE_CERTIFICATION.md), which
-lists each resource the two documents pull in, the script that writes it, and the page
-count and checksum of the compiled PDFs. It also counts the words of the manuscript
+lists each resource the two documents pull in, the script that writes it, the page
+count and checksum of the compiled PDFs and the size and checksum of the Word supplement.
+It also counts the words of the manuscript
 abstract (each inline math span as one word) and fails above the 250-word submission
-limit.
+limit, and it checks the Supplementary Material section of the manuscript: it fails if the
+section is not between the Conclusions and the Acknowledgments, if the section, table and
+figure ranges it quotes disagree with the compiled supplement, or if the Word file is older
+than the supplement source it was generated from.
 
 ### Compile Manuscript and Supplementary
 
@@ -164,7 +188,7 @@ directories, so each document must be compiled from its own directory, with the
 build output collected in `build/`:
 
 ```bash
-sh scripts/build_all.sh   # 3 passes per document, then all three gates
+sh scripts/build_all.sh   # 3 passes per document, the Word supplement, then all gates
 ```
 
 which is equivalent to, and safer than, doing it by hand:
@@ -173,7 +197,19 @@ which is equivalent to, and safer than, doing it by hand:
 for i in 1 2 3; do cd manuscript    && pdflatex -output-directory ../build manuscript_final.tex    && cd ..; done
 for i in 1 2 3; do cd supplementary && pdflatex -output-directory ../build supplementary_final.tex && cd ..; done
 python scripts/check_build_logs.py      # parses the four .log files; exit 0 = nothing to fix
+py scripts/make_supplementary_docx.py   # Word source of the supplement, from its .tex
 ```
+
+`scripts/make_supplementary_docx.py` is run after the LaTeX passes because it
+cross-checks itself against the `build/supplementary_final.aux` they just wrote. It
+converts the supplement into `supplementary/supplementary_final.docx` (A4, Times 11 pt,
+the numbered displays re-set as 300 dpi images in a two-cell table with their numbers at
+the right margin, the float tables and figures reproduced from the same sources the LaTeX
+build reads, a static contents list, a page-number field in the footer). It fails rather
+than writes a file that does not match the build: every label, equation and bibliography
+number it prints has to agree with the aux, every word of the source outside the displays
+has to be present in the produced document, and the running prose has to reappear in the
+source order.
 
 The bibliography has two gates of its own. `python scripts/check_bibliography.py`
 verifies that every citation key resolves in the document that uses it, that no

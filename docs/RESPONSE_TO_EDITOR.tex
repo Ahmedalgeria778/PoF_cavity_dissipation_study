@@ -1701,6 +1701,52 @@ box, supplement 31 pages with the single \(6.7\,\mathrm{pt}\) box in the file-na
 run of Sec.~S5.6, marked copies 36 and 42 pages; the gates report zero problems,
 ten figures and eleven table sources with no missing resource.
 
+\vspace{1em}
+
+\noindent\textbf{Point 56: A Supplementary Material section in the manuscript and a
+Word version of the supplement (seventeenth round).}
+
+Two requests of the editorial office are answered. First, the manuscript now carries
+an unnumbered \textbf{Supplementary Material} section, placed after the Conclusions
+and before the Acknowledgments, where the publisher inserts the link to the posted
+files. It is a single paragraph that says what the supplement holds --- the
+architecture, collocation sampling and loss weights of the identification, the
+Fourier basis and the branch classification rule with its parameter sensitivity, the
+seed, ablation, capacity and truncation records, the MRT-LBM formulation with the
+benchmark validation and the control-transfer protocol, the grid-convergence and
+phase-mean calculations, the field captures behind the branch figures, and the
+software, hardware and cost inventory --- and quotes its extent as Secs.~S1--S5,
+Tables~S1--S19 and Figs.~S1--S2. Those three numbers are not typed into the sentence:
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py} reads them back from the
+compiled supplement (\texttt{build/}\hspace{0pt}\texttt{supplementary\_final.aux},
+5 sections, 19 tables, 2 figures) and fails if the paragraph disagrees, and it also
+fails if the section ceases to sit between the Conclusions and the Acknowledgments, so
+neither the extent nor the position can drift in a later revision.
+
+Second, the supplement is transmitted in both formats the office asks for. Alongside
+its \LaTeX{} source it is now accompanied by
+\texttt{supplementary/}\hspace{0pt}\texttt{supplementary\_final.docx}, a Word source
+generated from the same \LaTeX{} file by
+\texttt{scripts/}\hspace{0pt}\texttt{make\_supplementary\_docx.py}: A4 pages with 22 mm
+side margins and Times 11 pt text, the 20 numbered displays set as 300 dpi images in a
+borderless two-cell table with their numbers at the right margin, the 19 float tables
+and the 2 figures reproduced from the same sources the \LaTeX{} build reads, a static
+table of contents, a page-number field in the footer, and the 10-entry bibliography
+numbered as the build numbers it. The conversion is gated rather than trusted: the
+script fails unless its own numbering reproduces the 26 labels and the bibliography
+numbers of the fresh \texttt{.aux}, unless every word and number of the source outside
+the displays is present in the produced file, and unless 92 consecutive five-word runs
+of the source prose reappear in the produced file in the same order. The script is run
+by \texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh} after the \LaTeX{} passes, so the
+auxiliary file it checks against is the one just written, and
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md} inventories the Word file
+with its size and checksum. The package rebuilt for this round is the manuscript at 28
+pages with no overfull box --- one page more than the 27 recorded in Point~55, the new
+section being the only change of extent --- the supplement at 31 pages with the single
+\(6.7\,\mathrm{pt}\) box of Sec.~S5.6, the marked copies at 36 and 42 pages, ten figures
+and eleven table sources with no missing resource, and the Word supplement at
+$2\,575\,194$ bytes.
+
 \newpage
 
 %----------------------------------------------------------------------
@@ -1745,7 +1791,11 @@ transcription errors is described in Point~52.
 (S1--S5): PINN implementation, control-space and modal-analysis details,
 identification-campaign robustness, the independent MRT-LBM verification with
 grid uncertainty, and the reproducibility inventory. It contains 19 tables,
-2 figures and its own short bibliography.
+2 figures and its own short bibliography. The manuscript now announces it in a
+Supplementary Material section placed between the Conclusions and the
+Acknowledgments, and the supplement is transmitted as a Word source beside its
+\LaTeX{} source, generated from it and checked against the compiled numbering
+(Point~56).
 
 \noindent\textbf{Prose:} The manuscript and the supplement were reviewed for wording
 that reads as templated rather than as authored. Repeated connectives and set phrases
