@@ -1,0 +1,88 @@
+{
+ "Re": 500.0,
+ "N": 256,
+ "h": 0.00392156862745098,
+ "checks": [
+  {
+   "test": "shear u=Gy: eps vs nu G^2",
+   "got": 0.007999999999999998,
+   "want": 0.008,
+   "dev": 2.220446049250313e-16,
+   "tol": 1e-12,
+   "ok": true
+  },
+  {
+   "test": "shear: swapped axes must differ by 2x",
+   "got": 2.0000000000000018,
+   "want": 2.0,
+   "dev": 8.881784197001252e-16,
+   "tol": 1e-12,
+   "ok": true
+  },
+  {
+   "test": "Taylor-Green: eps vs nu k^2",
+   "got": 0.07894090455841125,
+   "want": 0.07895683520871487,
+   "dev": 0.0002017640431193346,
+   "tol": 0.0004047511736958342,
+   "ok": true
+  },
+  {
+   "test": "Taylor-Green: K vs 1/4",
+   "got": 0.24999999999999997,
+   "want": 0.25,
+   "dev": 1.1102230246251565e-16,
+   "tol": 0.001,
+   "ok": true
+  },
+  {
+   "test": "Taylor-Green: enstrophy vs k^2",
+   "got": 39.47045227920563,
+   "want": 39.47841760435743,
+   "dev": 0.00020176404311911256,
+   "tol": 0.0004047511736958342,
+   "ok": true
+  },
+  {
+   "test": "Taylor-Green: int 2 S:S = int omega^2",
+   "got": 0.9999999999999998,
+   "want": 1.0,
+   "dev": 2.220446049250313e-16,
+   "tol": 0.002,
+   "ok": true
+  },
+  {
+   "test": "continuity max|div|, production layout",
+   "got": 0.006542371941972602
+  },
+  {
+   "test": "continuity max|div|, swapped layout",
+   "got": 5.293726455449061
+  },
+  {
+   "test": "psi cross-check residual, production",
+   "got": 0.0019032431193347216
+  },
+  {
+   "test": "psi cross-check residual, swapped",
+   "got": 0.28249785002328087
+  },
+  {
+   "test": "eps mean field: edge_order 1 vs 2",
+   "got": 0.021727227243670377,
+   "want": null,
+   "dev": null,
+   "tol": 0.05,
+   "ok": true
+  }
+ ],
+ "continuity_prod": 0.006542371941972602,
+ "continuity_swapped": 5.293726455449061,
+ "psi_residual": 0.0019032431193347216,
+ "psi_residual_swapped": 0.28249785002328087,
+ "eps_mean_field_edge1": 0.001015862365788844,
+ "eps_mean_field_edge2": 0.0010379342382586308,
+ "eps_mean_field_edge_rel_change": 0.021727227243670377,
+ "eps_cycle_mean_from_meta": 0.014408185478080999,
+ "production_layout": "axis 0 = y, axis 1 = x (verified)"
+}

@@ -3,39 +3,29 @@
 
 Excitation analytique pure (pas de PINN) :
 
-    U_wall(x, t) = A sin(2 pi x) cos(pi t)
+    U_wall(x, t) = A sin(2 pi x) cos(pi t),  A = 1  ->  E_act = 0.25
 
-Avec A = 1, E_act = <U^2> = 1/4 = 0.25 (moyenne spatio-temporelle).
-C'est le cas "Stokes pur" ou l'analytique donne une epaisseur
-de couche limite temporelle :
+Analytique (second probleme, demi-espace) :
 
-    delta = sqrt(2 nu / omega)  avec omega = pi
+    delta = sqrt(2 nu / omega),  omega = pi,  nu = 1/Re = 2e-3
+    delta_phys = 3.5682e-2 ;  en cellules : delta * (N-1) = 9.10 (N=256), 18.27 (N=512)
 
-A Re = 500 (nu = 2e-3) :
-    delta = sqrt(4e-3 / pi) = 3.5682e-2  (unites physiques)
-    en cellules LBM a N=256 : delta_cells = delta * N = 9.13
+Protocole derive (identique a celui de la campagne D2) :
 
-Cette valeur est inaccessible si on laisse le playback a period_lattice=256
-(omega = 40 pi) : delta_cells = 1.45, sous-resolue, le profil de U n'est
-plus exp(-y/delta) mais domine par le bruit de grille.
-
-Protocol
---------
-N = 256, SLOWDOWN = 40 (playback 1 echantillon par 40 pas lattice),
-period_lattice = 10240, T_phys_periode = 2.0, warmup 3 P + capture 4 P.
-Enregistre u(x, y, t) le long de la colonne x = N/4 (ou sin(2 pi x) = 1).
-Pour chaque y, FFT a omega = pi (resolutions 4 periodes => bin propre),
-d'ou le profil A(y). Ajustement log A = log A0 - y/delta sur
-y en [1, 20] cellules -> delta_measured.
-
-Criteres de validation :
-    |delta_measured - delta_theory| / delta_theory < 0.15
-    (le LBM-MRT avec omega_relax=1/tau a une dissipation numerique de
-     quelques % ; 15 % est une tolérance large)
+    U_ref = 0.05 (unites lattice), dt_phys = U_ref / N,
+    SLOWDOWN = N / 6.4, period_lattice = 256 * SLOWDOWN = 40 N,
+    T_phys = period_lattice * dt_phys = 2.0 exactement, donc omega = pi a tout N.
 
 Usage :
-    py scripts/validate_stokes_analytic.py
+    py scripts/validate_stokes_analytic.py --N 256            # archive deja committee
+    py scripts/validate_stokes_analytic.py --N 512            # test de resolution
+    py scripts/validate_stokes_analytic.py --N 512 --bench    # seul, 300 pas, chronometre
+
+Sorties : results/08_stokes_analytic/stokes_analytic[_nN].npz et .log
+A N=256 le nom de fichier et le protocole restent ceux de l'archive de reference ;
+les autres resolutions ecrivent un fichier distinct et ne l'ecrasent pas.
 """
+import argparse
 import datetime
 import os
 import sys
@@ -63,178 +53,216 @@ from lbm_mrt_pinn_validation import (  # noqa: E402
 )
 
 RE = 500
-N = 256
 NT_WAVE = 256
-SLOWDOWN = 40
-PERIOD_LATTICE = NT_WAVE * SLOWDOWN    # 10240
 U_REF = 0.05
-DT_PHYS = U_REF / N                     # 1.953e-4
-T_PHYS_PERIOD = PERIOD_LATTICE * DT_PHYS
-OMEGA = 2.0 * np.pi / T_PHYS_PERIOD     # = pi
 NU_PHYS = 1.0 / RE
-DELTA_TH = np.sqrt(2.0 * NU_PHYS / OMEGA)   # 3.568e-2
-DELTA_TH_CELLS = DELTA_TH * N                 # 9.13
-DELTA_TH_OLD_CELLS = np.sqrt(2 * NU_PHYS / (40 * np.pi)) * N   # 1.45
-
-WARMUP_PERIODS = 3
-CAPTURE_PERIODS = 4
-N_WARM = WARMUP_PERIODS * PERIOD_LATTICE
-N_CAP = CAPTURE_PERIODS * PERIOD_LATTICE
+OMEGA = np.pi                       # vise, et obtenu exactement pour tout N
+DELTA_TH = np.sqrt(2.0 * NU_PHYS / OMEGA)   # 3.5682e-2, independant de N
 
 OUTROOT = os.path.abspath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), ".."))
 OUTDIR = os.path.join(OUTROOT, "results", "08_stokes_analytic")
 os.makedirs(OUTDIR, exist_ok=True)
-LOG = os.path.join(OUTDIR, "stokes_analytic.log")
+
+# Fenetres d'ajustement, en cellules depuis la rangee du couvercle.
+# 'protocol' = la fenetre qui a produit l'archive de reference (s = 1..11).
+WINDOWS = [("protocol", 1, 12), ("s=1..23", 1, 24), ("s=1..47", 1, 48),
+           ("s=2..11", 2, 12), ("phys 0.2-0.8 delta", None, None)]
 
 
-def log(msg):
-    stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    line = f"[{stamp}] {msg}"
-    print(line, flush=True)
-    with open(LOG, "a", encoding="utf-8") as fh:
-        fh.write(line + "\n")
+class Log:
+    def __init__(self, path):
+        self.path = path
+
+    def __call__(self, msg):
+        stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        line = f"[{stamp}] {msg}"
+        print(line, flush=True)
+        with open(self.path, "a", encoding="utf-8") as fh:
+            fh.write(line + "\n")
 
 
-def build_waveform(N_, omega_t, x_col):
-    """Analytique : U(x,t) = sin(2 pi x) cos(2 pi t / T_phys)
-    joue sur PERIOD_LATTICE pas.
-    """
-    t = np.arange(PERIOD_LATTICE) * DT_PHYS         # [0, 2)
-    x = np.linspace(0.0, 1.0, N_)
-    U = np.outer(np.cos(omega_t * t), np.sin(2.0 * np.pi * x))
-    return U                                        # (10240, 256)
+def protocol(N):
+    """Derives the lattice protocol so that T_phys = 2 and omega = pi at any N."""
+    slowdown = int(round(N / 6.4))
+    period = NT_WAVE * slowdown                     # = 40 N
+    dt_phys = U_REF / N
+    assert abs(period * dt_phys - 2.0) < 1e-12, "T_phys != 2"
+    assert abs(2.0 * np.pi / (period * dt_phys) - OMEGA) < 1e-12
+    return slowdown, period, dt_phys
 
 
 def amp_at_omega(series_col, dt, omega):
-    """FFT de chaque serie temporelle, magnitude a la frequence omega.
-
-    series_col : (n_t, n_y). dt pas temporel. omega pulsation cible.
-    Retourne A(y) : |FFT(u(y, .))|, normalise.
-    """
+    """Single-sided amplitude at `omega` of each column of a (n_t, n_y) record."""
     n_t = series_col.shape[0]
     freqs = np.fft.rfftfreq(n_t, d=dt)
     omega_grid = 2.0 * np.pi * freqs
     bin_idx = int(np.round(omega / (omega_grid[1] - omega_grid[0])))
     if bin_idx >= len(omega_grid):
         raise RuntimeError("omega au-dela de Nyquist")
-    # fenetre de Hann le long du temps pour eviter fuite si le signal n'est
-    # pas exactement periodique ; ici il l'est (4 periodes entieres) mais
-    # Hann reste valide et reduit les harmoniques parasites.
     win = np.hanning(n_t)
     X = np.fft.rfft(series_col * win[:, None], axis=0)
-    # amplitude physique : 2|X_k| / sum(win)
-    A = 2.0 * np.abs(X[bin_idx]) / win.sum()
-    return A, omega_grid[bin_idx]
+    A = 2.0 * np.abs(X[bin_idx]) / win.sum()        # gain coherent de Hann = 1/2
+    # part de l'energie du signal totalise sur les colonnes qui porte la raie cible
+    P_line = float(np.sum(np.abs(X[bin_idx]) ** 2))
+    tot = float(np.sum(np.abs(X) ** 2))
+    return A, omega_grid[bin_idx], P_line / tot
 
 
-def fit_decay(A, y_cells, fit_lo=1, fit_hi=12):
-    """Decay length of the oscillating layer, measured from the lid row.
-
-    ``A`` is indexed by the wall-normal node number, so the lid sits at
-    ``A[N-1]`` and the layer decays towards decreasing ``N-1-i``; the profile is
-    reversed before fitting so that the abscissa is the distance from the lid.
-    """
-    prof = A[::-1]
-    dx = 1.0 / (N - 1)
-    s = np.arange(len(prof), dtype=float)[fit_lo:fit_hi]
-    log_A = np.log(np.maximum(prof[fit_lo:fit_hi], 1e-12))
+def fit_decay(prof, N, fit_lo, fit_hi):
+    """Decay length from the lid row; `prof` is already ordered from the lid."""
+    hi = min(fit_hi, len(prof))
+    s = np.arange(len(prof), dtype=float)[fit_lo:hi]
+    log_A = np.log(np.maximum(prof[fit_lo:hi], 1e-12))
     slope, intercept = np.polyfit(s, log_A, 1)
     r2 = float(np.corrcoef(s, log_A)[0, 1] ** 2)
     delta_cells = -1.0 / slope if slope < 0 else np.nan
-    delta_phys = delta_cells * dx
-    return (float(delta_phys), float(delta_cells), float(slope),
-            float(intercept), r2, prof)
+    dx = 1.0 / (N - 1)
+    return float(delta_cells * dx), float(delta_cells), float(slope), \
+        float(intercept), r2, int(len(s))
 
 
-def main():
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--N", type=int, default=256, choices=(256, 512))
+    ap.add_argument("--amp", type=float, default=1.0,
+                    help="imposed lid amplitude; <1 probes the linear Stokes limit")
+    ap.add_argument("--warm", type=int, default=3)
+    ap.add_argument("--capture", type=int, default=4)
+    ap.add_argument("--bench", type=int, default=0,
+                    help="run only this many lattice steps, then stop")
+    ap.add_argument("--force", action="store_true")
+    args = ap.parse_args(argv)
+
+    N = args.N
+    slowdown, PERIOD, DT_PHYS = protocol(N)
+    dx = 1.0 / (N - 1)
+    DELTA_TH_CELLS = DELTA_TH / dx                  # 9.10 a 256, 18.27 a 512
+    suffix = ("_n%d" % N if N != 256 else "")
+    if args.amp != 1.0:
+        suffix += "_a%g" % args.amp
+    out_npz = os.path.join(OUTDIR, "stokes_analytic%s.npz" % suffix)
+    log = Log(os.path.join(OUTDIR, "stokes_analytic%s.log" % suffix))
+
+    if os.path.isfile(out_npz) and not args.force and not args.bench:
+        raise SystemExit("%s existe deja (utiliser --force pour ecraser)" % out_npz)
+
     log("=" * 72)
-    log(f"Stokes analytic validation : N={N}  omega={OMEGA:.6f} (= pi)  "
-        f"T={T_PHYS_PERIOD}")
-    log(f"  delta_theory (omega=pi)   = {DELTA_TH:.6f}  "
-        f"({DELTA_TH_CELLS:.2f} cells)")
-    log(f"  delta_theory (omega=40pi) = "
-        f"{DELTA_TH_CELLS / 40:.6f}  ({DELTA_TH_OLD_CELLS:.2f} cells)")
-    log("=" * 72)
+    log(f"Stokes analytic validation : N={N}  amp={args.amp}  "
+        f"omega={OMEGA:.6f}  "
+        f"slowdown={slowdown}  period_lattice={PERIOD}  dt_phys={DT_PHYS:.6e}")
+    log(f"  T_phys={PERIOD * DT_PHYS:.6f}  nu_latt={U_REF * N / RE:.6f}  "
+        f"dx={dx:.6e}")
+    log(f"  delta_theory = {DELTA_TH:.6f} phys = {DELTA_TH_CELLS:.2f} cells "
+        f"(delta*N = {DELTA_TH * N:.2f})")
+    log(f"  protocole : warmup {args.warm} P + capture {args.capture} P")
 
-    U_wave = build_waveform(N, OMEGA, x_col=None)
-    e_act_row = np.array([np.trapz(row ** 2, dx=1.0 / (N - 1))
-                          for row in U_wave])
-    log(f"  waveform shape={U_wave.shape}  "
-        f"E_act_cycle_mean={e_act_row.mean():.6f}  "
+    n_warm = args.warm * PERIOD
+    n_cap = args.capture * PERIOD
+
+    t = np.arange(PERIOD) * DT_PHYS
+    x = np.linspace(0.0, 1.0, N)
+    U_wave = args.amp * np.outer(np.cos(OMEGA * t), np.sin(2.0 * np.pi * x))
+    e_act = np.array([np.trapz(row ** 2, dx=dx) for row in U_wave])
+    log(f"  waveform shape={U_wave.shape}  E_act_cycle_mean={e_act.mean():.6f}  "
         f"max|U|={np.max(np.abs(U_wave)):.6f}")
 
     solver = LBM_MRT_Solver(RE, N, lid_profile="uniform", max_iter=1000)
     solver.U_lid_norm = np.ascontiguousarray(U_wave, dtype=np.float64)
-    solver.period = PERIOD_LATTICE
+    solver.period = PERIOD
     solver.U_lid2d = solver.U_ref * solver.U_lid_norm
     U_lid2d, S_diag = solver.U_lid2d, solver.S_diag
-    U_ref = solver.U_ref
 
-    xp = N // 4                    # sin(2 pi x = pi/2) = 1 -> excitation max
-    log(f"  x_probe (index) = {xp},  sin(2 pi x) = "
+    xp = N // 4
+    log(f"  x_probe = {xp}, sin(2 pi x_probe) = "
         f"{np.sin(2 * np.pi * xp / (N - 1)):.6f}")
 
-    t0 = time.time()
     f = solver.f.copy()
     it = 0
-    u_col_all = np.zeros((N_WARM + N_CAP, N), dtype=np.float64)
+    t0 = time.time()
+    u_rec = np.zeros((n_cap, N), dtype=np.float64)
+    mean_col = np.zeros(N)
+    per_period = []
 
-    for k in range(N_WARM):
-        t_idx = it % PERIOD_LATTICE
+    total = (args.bench or (n_warm + n_cap))
+    for k in range(total):
+        t_idx = it % PERIOD
         f, rho, ux, uy = mrt_step(f, M, M_INV, S_diag, EX, EY, W,
                                   U_lid2d, t_idx, N, OPP)
-        u_col_all[k] = ux[:, xp] / U_ref
+        if n_warm <= k < n_warm + n_cap:
+            u_rec[k - n_warm] = ux[:, xp] / U_REF
+            mean_col += ux[:, xp] / U_REF
         it += 1
-        if (k + 1) % PERIOD_LATTICE == 0:
-            log(f"  warmup {(k + 1) // PERIOD_LATTICE}/{WARMUP_PERIODS} P "
-                f"({time.time() - t0:.0f}s)")
+        if (k + 1) % PERIOD == 0:
+            n_p = (k + 1) // PERIOD
+            phase = "warmup" if k < n_warm else "capture"
+            log(f"  {phase} {n_p} ({time.time() - t0:.0f}s)")
+            if phase == "capture":
+                m = k + 1 - n_warm
+                a, _, _ = amp_at_omega(u_rec[:m], DT_PHYS, OMEGA)
+                pp = a[::-1]
+                per_period.append((n_p, float(pp[0] / args.amp),
+                                   float(pp[min(11, N - 1)] / pp[0])))
 
-    for k in range(N_CAP):
-        t_idx = it % PERIOD_LATTICE
-        f, rho, ux, uy = mrt_step(f, M, M_INV, S_diag, EX, EY, W,
-                                  U_lid2d, t_idx, N, OPP)
-        u_col_all[N_WARM + k] = ux[:, xp] / U_ref
-        it += 1
-        if (k + 1) % PERIOD_LATTICE == 0:
-            log(f"  capture {(k + 1) // PERIOD_LATTICE}/{CAPTURE_PERIODS} P "
-                f"({time.time() - t0:.0f}s)")
+    if args.bench:
+        dt = (time.time() - t0) / args.bench
+        log(f"  bench : {dt * 1000:.2f} ms/pas -> "
+            f"{(n_warm + n_cap) * dt / 60:.1f} min pour le run complet")
+        return
 
-    u_col = u_col_all[N_WARM:]
-    A_profile, omega_meas = amp_at_omega(u_col, DT_PHYS, OMEGA)
-    y_cells = np.arange(N)
-    delta_phys, delta_cells, slope, intercept, r2, from_lid = fit_decay(
-        A_profile, y_cells)
+    u_col = u_rec
+    mean_col /= n_cap
+    A_profile, omega_meas, frac_line = amp_at_omega(u_col, DT_PHYS, OMEGA)
+    prof = A_profile[::-1]                          # 0 = rangee du couvercle
 
     log("-" * 72)
-    log(f"  FFT omega_meas = {omega_meas:.6f}   (cible {OMEGA:.6f})")
-    log(f"  A(lid) = {from_lid[0]:.4f}   A(s=1) = {from_lid[1]:.4e}   "
-        f"A(s=5) = {from_lid[5]:.4e}   A(s=10) = {from_lid[10]:.4e}   "
-        f"A(s=20) = {from_lid[20]:.4e}")
-    log(f"  fit log A vs s (cells from lid), s=1..11 : slope={slope:.5e}  "
-        f"intercept={intercept:.4f}  R2={r2:.5f}")
-    log(f"  delta_measured = {delta_phys:.6f}  ({delta_cells:.2f} cells)")
-    log(f"  delta_theory   = {DELTA_TH:.6f}  ({DELTA_TH_CELLS:.2f} cells)")
-    if not np.isnan(delta_phys):
-        ratio = delta_cells / DELTA_TH_CELLS
-        log(f"  measured / theory = {ratio:.3f}   "
-            f"{'PASS (exponentially decaying, wall-attached layer resolved)' if r2 > 0.99 and delta_cells > 4 else 'FAIL'}")
-        log("  note: the finite depth, the x-non-uniform lid and the return flow "
-            "make the layer thinner than the second-problem slab value; the test "
-            "is a frequency-response check, not a quantitative benchmark.")
-    else:
-        log("  FAIL : slope non negatif, couche de Stokes non observee")
+    log(f"  omega_meas = {omega_meas:.6f} (cible {OMEGA:.6f}, "
+        f"rapport {omega_meas / OMEGA:.6f})")
+    log(f"  A(lid) = {prof[0]:.4f} / imposee {args.amp:.4f}  "
+        f"=> offset du noeud = {100 * (1 - prof[0] / args.amp):.2f} %   "
+        f"fraction d'energie dans la raie = {100 * frac_line:.1f} %")
+    log(f"  A(s=1)={prof[1]:.4e}  A(s=5)={prof[5]:.4e}  A(s=10)={prof[10]:.4e}  "
+        f"A(s=20)={prof[20]:.4e}  A(s=40)={prof[40]:.4e}")
+    log("  par periode capturee (n, A_lid/ampl, A(11)/A(0)) : "
+        + ", ".join("%.4f/%.4f/%.3f" % p for p in per_period))
 
-    out = os.path.join(OUTDIR, "stokes_analytic.npz")
-    np.savez(out, A_profile=A_profile, A_from_lid=from_lid, y_cells=y_cells,
-             omega=OMEGA, omega_meas=omega_meas,
-             delta_theory=DELTA_TH, delta_measured=delta_phys,
-             delta_cells_theory=DELTA_TH_CELLS,
-             delta_cells_measured=delta_cells,
-             slope=slope, intercept=intercept, r2=r2,
-             dt_phys=DT_PHYS, period_lattice=PERIOD_LATTICE,
-             x_probe=xp, N=N, RE=RE)
-    log(f"  -> {out}")
+    fits = []
+    log("  fit log A vs s (delta en cellules depuis le couvercle) :")
+    for name, lo, hi in WINDOWS:
+        if lo is None:                       # fenetre proportionnelle a l'epaisseur theorique
+            lo = max(2, int(round(0.2 * DELTA_TH_CELLS)))
+            hi = max(lo + 3, int(round(0.8 * DELTA_TH_CELLS)))
+        label = "%s (s=%d..%d)" % (name, lo, hi - 1)
+        d_phys, d_cells, slope, inter, r2, npts = fit_decay(prof, N, lo, hi)
+        fits.append((label, lo, hi - 1, d_cells, d_phys, slope, r2, npts))
+        log(f"    {label:34s} delta = {d_cells:6.2f} cells = {d_phys:.5f} "
+            f"measured/theory = {d_cells / DELTA_TH_CELLS:.3f}  R2={r2:.5f}")
+
+    # cisaillement moyen pres du couvercle : l'hypothese d'amincissement par
+    # le retour permanent, quantifiee et non invoquee.
+    g = np.gradient(mean_col, dx)
+    shear = float(-g[::-1][1])
+    log(f"  champ moyen (cycle) a la sonde : U_mean(lid)={mean_col[-1]:.4f}, "
+        f"gradient pres du couvercle = {shear:.4f} / unite de longueur")
+    log(f"  echelle de cisaillement vs pulsation : |dU/dy|/omega = "
+        f"{abs(shear) / OMEGA:.3f} (comparaison indicative, pas un critere)")
+
+    np.savez(out_npz, A_profile=A_profile, A_from_lid=prof,
+             mean_profile=mean_col, shear_near_lid=shear,
+             omega=OMEGA, omega_meas=omega_meas, line_fraction=frac_line,
+             delta_theory=DELTA_TH, delta_cells_theory=DELTA_TH_CELLS,
+             dt_phys=DT_PHYS, period_lattice=PERIOD, slowdown=slowdown,
+             x_probe=xp, N=N, RE=RE, amp=args.amp,
+             lid_node_offset=1.0 - prof[0] / args.amp, warmup_periods=args.warm,
+             capture_periods=args.capture,
+             per_period=np.array(per_period),
+             fit_label=np.array([f[0] for f in fits]),
+             fit_lo=np.array([f[1] for f in fits]),
+             fit_hi=np.array([f[2] for f in fits]),
+             fit_delta_cells=np.array([f[3] for f in fits]),
+             fit_delta_phys=np.array([f[4] for f in fits]),
+             fit_r2=np.array([f[6] for f in fits]))
+    log(f"  -> {out_npz}")
 
 
 if __name__ == "__main__":

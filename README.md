@@ -104,7 +104,11 @@ python scripts/export_resolution_sensitivity_table.py
 
 # 4. Protocol verifications quoted in Secs. S4.1-S4.5
 python scripts/smoke_d2_period_lattice.py
-python scripts/validate_stokes_analytic.py
+python scripts/validate_stokes_analytic.py               # N=256 reference archive, amplitude 1
+python scripts/validate_stokes_analytic.py --N 512        # grid-doubling control
+python scripts/validate_stokes_analytic.py --amp 0.05     # linear-regime controls: --amp 0.33, 0.2, 0.05
+python scripts/summarize_stokes_sweep.py                 # -> results/08_stokes_analytic/stokes_sweep.{md,json}
+python scripts/test_gradient_identities.py               # -> results/d2_derived/gradient_identity_audit.json
 python scripts/compare_forcing_staircase.py
 python scripts/justify_capture_window.py
 python scripts/test_checkpoint_resume.py
@@ -154,9 +158,15 @@ The committed records are the ones every table and figure is generated from:
 - `results/09_d2_capture/capture_d2_*.log` — run logs of the six temporal captures
 - `results/09_d2_capture/MANIFEST.md` — filenames, byte sizes and SHA-256 of the seven field archives shipped outside the git tree
 - `results/10_fig4_stationary_fields/FIELDS_MANIFEST.md` — filenames, byte sizes and SHA-256 of the three steady \(N=512\) field archives Main Fig. 4 is rendered from, which are also held outside the git tree, with the strain-rate magnitudes of Sec. 5.3 recomputed from them
-- `results/d2_derived/` — `d2_summary.json`, `d2_extra.json`, `lid_modal_fractions.json`, `topology_numbers.txt`, `capture_window_justification_N256.json`, `staircase_control_B2_N256.json`, `resolution_sensitivity_hold.json`
+- `results/d2_derived/` — `d2_summary.json`, `d2_extra.json`, `lid_modal_fractions.json`, `topology_numbers.txt`, `capture_window_justification_N256.json`, `staircase_control_B2_N256.json`, `resolution_sensitivity_hold.json`, `gradient_identity_audit.json` (the eleven strain-rate, enstrophy, dissipation and continuity identities of the production gradient operators, and the axis-layout swap that fails them)
 - `results/streaming_forcing_d2.json`, `results/stokes_scaling_estimate_d2.json`, `results/lid_spatial_decomposition.json`
-- `results/07_d2_smoke/`, `results/08_stokes_analytic/` — protocol verifications
+- `results/07_d2_smoke/`, `results/08_stokes_analytic/` — protocol verifications. The oscillatory-Stokes
+  archives are `stokes_analytic.npz` (\(N=256\), amplitude 1), `stokes_analytic_n512.npz`,
+  `stokes_analytic_a{0.33,0.2,0.05}.npz` (\(N=256\), amplitude sweep) and
+  `stokes_analytic_n512_a0.05.npz` (the two controls run at the same amplitude on both grids); each holds
+  the amplitude profile `A_from_lid`, the per-period amplitudes and the fitted layer thickness.
+  `stokes_sweep.md` and `stokes_sweep.json` recompute the fit of every archive on one shared protocol
+  window and one shared cell-spacing convention, so the grid and amplitude trends are quotable from them.
 - `results/p1_gci_iso/*.csv` — stationary grid-convergence records, the input of the three `p1_table_*.tex` appendix tables
 - `results/01_ReE_star_map/branch_runs.csv` — one row per identification run (185 runs), with \(f_2\) and \(f_t\); the input of `p3_table_threshold.tex`
 - `results/02_lambda_var/*.csv` — the \(\lambda_{\mathrm{var}}=0\) ablation runs with their modal shares; the input of `p2_table_bfirst_ablation.tex`

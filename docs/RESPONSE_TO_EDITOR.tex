@@ -292,9 +292,9 @@ should clearly show all changes made from the previous submission.''}
 The same approach has been applied to the supplementary material:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{supplementary\_final\brk.tex} and
-  \texttt{supplementary\_final\brk.pdf} (33 pages).
+  \texttt{supplementary\_final\brk.pdf} (34 pages).
 \item \textbf{Marked-up version}: \texttt{supplementary\_final\brk\_marked\brk.tex} and
-  \texttt{supplementary\_final\brk\_marked\brk.pdf} (44 pages).
+  \texttt{supplementary\_final\brk\_marked\brk.pdf} (45 pages).
 \end{itemize}
 
 \vspace{1em}
@@ -315,8 +315,8 @@ since individual figure files are not being uploaded.''}
   \texttt{supplementary\_final\brk\_marked\brk.tex};\\
   this letter, \texttt{RESPONSE\_TO\_EDITOR\brk.tex}.
 \item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (28 pages),
-  \texttt{supplementary\_final\brk.pdf} (33 pages), the two marked-up PDFs
-  (36 and 44 pages), and
+  \texttt{supplementary\_final\brk.pdf} (34 pages), the two marked-up PDFs
+  (36 and 45 pages), and
   \texttt{RESPONSE\_TO\_EDITOR\brk.pdf}.
 \item \textbf{Figures}: the 8 figures of the manuscript and the 2 of the
   supplementary material are embedded in the two PDFs and visible in the text.
@@ -568,20 +568,33 @@ hence $\mathrm{Ma}\approx0.11$, and the oscillatory wall-layer thickness
 $\delta_1=\sqrt{2\nu/\omega_1}=0.036$ is about nine cells at $N=256$ and eighteen
 at $N=512$, so the same margin resolves that layer at both resolutions.
 
-Three checks close the mapping. \emph{(i) Frequency response.} A dedicated run
-whose lid is the pure harmonic $\sin(2\pi x)\cos(\omega_1 t)$, at the same
-$E^\ast$, $Re$, $N$ and $\omega_1$
-(\texttt{scripts/validate\_stokes\_analytic\brk.py}, Section~S4.3) records at the
-antinode a single-sided amplitude of $0.927$ at $\omega_1$ and no other
-significant line --- the imposed unit amplitude, recovered to within the
-$7.3\%$ near-wall nodal velocity offset --- and a wall-normal exponential
-decay of fitted length $5.4$ cells ($R^2=0.999$ over the eleven cells nearest the
-wall) against the half-space value $\delta=\sqrt{2\nu/\omega_1}=9.1$ cells. The
-layer is of the expected order and $41\%$ thinner, which is attributed to the
-non-uniform lid, the finite depth (about $28\delta$) and the steady shear
-superimposed by the return flow; the run is used as a frequency-response check of
-the solver and of the mapping, not as a quantitative benchmark of the layer
-thickness. \emph{(ii) Spectral purity of the branch runs.} A streamwise probe at
+Three checks close the mapping. \emph{(i) Frequency response.} Dedicated runs
+whose lid is the pure harmonic $A\sin(2\pi x)\cos(\omega_1 t)$, at the same
+$E^\ast$, $Re$ and $\omega_1$ (\texttt{scripts/validate\_stokes\_analytic\brk.py},
+Section~S4.2) --- six of them, $N=256$ at $A=1$, $0.33$, $0.2$ and $0.05$,
+$N=512$ at $A=1$ and $0.05$ --- record at the antinode a line at $\omega_1$ and no
+other significant line. The lid node gives $0.927A$ at $N=256$ and $0.963A$ at
+$N=512$, so the near-wall nodal velocity offset is $7.27\%$ and $3.69\%$ and
+halves with the cell spacing, as a probe half a cell below the wall should. The
+fitted wall-normal decay length is $0.02105$ and $0.02166$, against the half-space
+value $\delta=\sqrt{2\nu/\omega_1}=0.035682$ ($9.1$ cells at $N=256$, $18.2$ at
+$N=512$): the ratio rises $0.590\to0.607$, which closes $4\%$ of the $41\%$
+deficit, and at the smallest amplitude the same grid pair gives $0.766\to0.759$.
+Resolution is therefore excluded, and so is the normalisation of the lid
+amplitude, because the decay length is fitted from the slope of $\log A$ and a
+multiplicative error in $A$ moves only the intercept. The amplitude is not:
+$0.590$, $0.734$, $0.754$ and $0.766$ at $A=1$, $0.33$, $0.2$ and $0.05$, a
+deficit that falls by a third by $A=0.33$ and then saturates, and that tracks the
+cycle-mean shear below the lid, which measures $6.4\times10^{-4}$,
+$1.10\times10^{-2}$ and $2.82\times10^{-2}$ at those three amplitudes, that is,
+like $A^2$. Near the linear limit about a quarter of the thickness is still
+missing, which these runs attribute to the second-problem idealisation itself
+(lid non-uniform in $x$, depth $28\delta$, steady return-flow shear) without
+separating its three parts. Section~S4.2 now reports the six runs, their fit
+windows and the $R^2\ge0.9987$ they reach on the eleven cells nearest the wall;
+the check remains a frequency-response test of the solver and of the mapping, not
+a quantitative benchmark of the layer thickness. \emph{(ii) Spectral purity of the
+branch runs.} A streamwise probe at
 the cavity centre, recorded over the whole sampling window, has its spectral peak
 at $3.141593$ for all three branches, with $97.5$--$99.5\%$ of its fluctuation
 energy in the five spectral bins around that peak, and the dissipation signal
@@ -1562,7 +1575,7 @@ problems. Points~51 to~53 below were applied and the four documents were rebuilt
 \texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh}, which runs the passes per
 document and then the build, bibliography and certificate gates; they left those counts
 unchanged. The style pass of Point~54 lengthened the marked-up manuscript by one page,
-and the counts of the transmitted build are recorded in Point~57. No new
+and the counts of the transmitted build are recorded in Point~60. No new
 numerical campaign was run, in line with the reviewer's recommendation: the only
 computation added in this round is the recomputation of Main Sec.~5.3's strain-rate
 statistics from field archives that already existed.
@@ -1695,7 +1708,7 @@ rather than one of the build gates, since a style count is not a correctness cri
 The four documents were rebuilt with the same script and the same gates, and the
 log, bibliography and certificate gates reported no problem. The abstract rewrite
 of Point~55 below changed the length of the marked-up manuscript; the counts of
-the build transmitted with this letter are recorded in Point~57.
+the build transmitted with this letter are recorded in Point~60.
 
 \vspace{1em}
 
@@ -1762,8 +1775,9 @@ auxiliary file it checks against is the one just written, and
 with its size and checksum. The package rebuilt for that round is the manuscript at one
 page more than the 27 recorded in Point~55, the new section being the only change of
 extent, with ten figures and eleven table sources and no missing resource. The supplement
-and the marked copies grew again in the eighteenth round described below, so
-Point~57 records the page counts and the byte sizes of the build transmitted with this
+and the marked copies grew again in the eighteenth round described below, and the
+supplement again with the verifications of Points~58 and~59, so
+Point~60 records the page counts and the byte sizes of the build transmitted with this
 letter.
 
 \vspace{1em}
@@ -1839,7 +1853,7 @@ directories so that \texttt{data\_appendix/} and the figure paths resolve as the
 declare them; the marked copies were regenerated by
 \texttt{scripts/}\hspace{0pt}\texttt{mark\_manuscript.py} from the previous round's
 transmitted files, and the Word source by the converter against the fresh auxiliary file.
-The transmitted build is the manuscript at 28 pages with no overfull box, the supplement at
+The build transmitted at that round was the manuscript at 28 pages with no overfull box, the supplement at
 33 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name run of Sec.~S5.6, the
 marked copies at 36 and 44 pages, this letter at 29 pages with the single
 \(1.7\,\mathrm{pt}\) box carried over from an earlier round and the summary letter at 3
@@ -1848,10 +1862,108 @@ eleven table sources with no missing resource, an abstract of 236 words within t
 limit, and the bibliography gate reporting 38 entries in the manuscript and 10 in the
 supplement with 0 problems. This letter gained its twenty-ninth page from the paragraph
 added under Point~47, which reports the terminology gate. No numerical campaign was run and
-no value, table or figure changed: this round touches the names, the two files that render
+no value, table or figure changed: that round touches the names, the two files that render
 them, and the wording of one generated column header and of the alternative text that
-restates it, whose recorded values are untouched; Point~50's
-forward pointer to these counts is satisfied here.
+restates it, whose recorded values are untouched. The three verifications that
+follow it, and the build that carries them, are recorded in Points~58 to~60.
+
+\vspace{1em}
+
+\noindent\textbf{Point 58: The oscillating-lid check re-measured with six controls
+(nineteenth round, our own verification).}
+
+The frequency-response run of Sec.~S4.2 reported a Stokes layer \(0.588\) of the
+half-space thickness and attributed the deficit to the configuration without
+testing that attribution. Five runs were added with the same script, the same
+warmup and the same capture window: one at \(N=512\) with lid amplitude \(A=1\)
+and one there with \(A=0.05\), and three at \(N=256\) with \(A=0.33\), \(0.2\)
+and \(0.05\), the amplitude and the grid being switches of
+\texttt{scripts/validate\_stokes\_analytic\brk.py}.
+\texttt{scripts/summarize\_stokes\_sweep\brk.py} refits the six archived amplitude
+profiles with one formula, on the spacing \(h=1/(N-1)\) and on the eleven cells
+below the lid row, and writes the table quoted below to
+\texttt{results/08\_stokes\_analytic/stokes\_sweep.md}. The archive of the first
+run divides a thickness converted with \(1/(N-1)\) by one converted with \(1/N\);
+on a single convention its ratio is \(0.590\), so the \(0.588\) was a
+\(0.4\%\) artefact of the bookkeeping.
+
+Three questions were put to the six runs. \emph{Is it resolution?} At \(A=1\) the
+ratio rises from \(0.590\) to \(0.607\) when the grid is doubled, and at \(A=0.05\)
+the pair gives \(0.766\) and \(0.759\): grid doubling closes \(4\%\) of the
+deficit at one amplitude and moves nothing at the other. \emph{Is it the
+normalisation of the lid amplitude?} The lid node recovers \(0.927A\) at
+\(N=256\) and \(0.963A\) at \(N=512\), so the near-wall nodal velocity offset is
+\(7.27\%\) and \(3.69\%\) and halves with the cell spacing (factor \(1.97\)), as
+Sec.~S4.8 predicts; but the decay length is fitted on the slope of \(\log A\),
+where a multiplicative error cancels, and the two controls that differ by
+\(1.11\) in that offset differ by \(30\%\) in thickness. \emph{Is it the
+configuration?} The four amplitudes at \(N=256\) give \(0.590\), \(0.734\),
+\(0.754\) and \(0.766\), and the cycle-mean shear just below the lid, namely the
+steady component the second problem assumes absent, gives
+\(6.4\times10^{-4}\), \(1.10\times10^{-2}\) and \(2.82\times10^{-2}\) at \(A=0.05\),
+\(0.2\) and \(0.33\): the two series move together, the shear like \(A^2\). Finite
+amplitude accounts for just over two fifths of the deficit, the rest of what
+survives near the linear limit, about a quarter of the thickness, being what the
+idealisation drops (lid non-uniform in \(x\), depth \(28\delta\), return-flow
+shear), which these runs do not separate. Sec.~S4.2 now states the three answers
+and the window sensitivity with them: every profile fits an exponential to
+\(R^2\ge0.9987\) on the protocol window, and the departure from a single
+exponential beyond about one thickness is reproduced by both grids at matched
+physical depth, so it is not an under-resolution. No claim of the paper rests on
+this layer thickness, which the supplement has always offered as a
+frequency-response check only.
+
+\vspace{1em}
+
+\noindent\textbf{Point 59: The differential operators of the post-processing
+audited against analytic fields (nineteenth round, our own verification).}
+
+The dissipation, the kinetic energy and the streaming vorticity source are built
+from three discrete operators applied to arrays whose axis order is that of the
+solver, so the formulas were checked against fields whose exact values are known,
+by \texttt{scripts/test\_gradient\_identities\brk.py}, whose record
+\texttt{results/d2\_derived/gradient\_identity\_audit.json} is regenerated with
+the paper. The strain-rate contraction returns \(\nu G^2\) on the linear shear
+\(u=GY\) to \(2.2\times10^{-16}\) in relative terms and \(\nu k^2\) on a
+Taylor-Green cell to \(2.0\times10^{-4}\), which is the truncation error of the
+central difference at that resolution; the kinetic-energy density returns \(1/4\)
+on the same cell to \(1.1\times10^{-16}\); and the discrete identity
+\(\int2S:S=\int\omega^2\) holds to \(2.2\times10^{-16}\), so dissipation and
+enstrophy are contracted on the same axes. The axis convention is settled by the
+data rather than by the code: transposing the captured mean field of \(B_2\)
+multiplies its continuity residual by \(809\) and breaks the cross-check between
+the integrated stream function and the wall-normal velocity, so the convention
+axis \(0=y\), axis \(1=x\) is the only layout the archives satisfy. The one
+choice the audit cannot settle is the wall stencil, which has no analytic
+reference on a real field; switching the boundary formula of the gradient from
+first to second order moves the mean-field dissipation of \(B_2\) by \(+2.17\%\),
+from the published \(1.016\times10^{-3}\) to \(1.038\times10^{-3}\), which is the
+same order as the \(5.4\%\) grid-refinement effect already reported in
+Sec.~S4.5. Sec.~S4.7 now gives these deviations explicitly instead of asserting
+agreement, and the README lists the audit with the other verification runs.
+
+\vspace{1em}
+
+\noindent\textbf{Point 60: Verification of the compilation after these changes.}
+
+The six documents were rebuilt from the sources, three passes each, from inside
+their own directories, the marked copies regenerated by
+\texttt{scripts/mark\_manuscript\brk.py} from the previous round's transmitted
+files and the Word source reconverted against the fresh auxiliary file. The
+transmitted build is the manuscript at 28 pages with no overfull box, the
+supplement at 34 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name
+run of Sec.~S5.6, the marked copies at 36 and 45 pages, this letter at 30 pages
+with no overfull box, and
+the summary letter at 3 pages with no box. The log gate reports 0 problems, the
+bibliography gate 38 entries in the manuscript and 10 in the supplement with 0
+problems, the certification 10 figures and 11 table sources with no missing
+resource, an abstract of 236 words, the supplement's five sections, nineteen
+tables and two figures matching the auxiliary file, the Word source current with
+its \LaTeX{} parent, the byline gate given-name-first in 11 files and the
+terminology gate clean in 16 files. Two records join the repository, the Stokes
+sweep of Point~58 and the gradient audit of Point~59, and the text they support
+changed in one passage of Sec.~S4.2 and one of Sec.~S4.7; no figure, no table and
+no other value of the two documents was touched.
 
 \newpage
 

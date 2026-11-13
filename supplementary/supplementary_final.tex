@@ -782,31 +782,81 @@ that the transient has left the sampled window, and the periodic response is
 reproduced independently in the two halves of that window.
 
 \emph{Single-frequency oscillating lid.} The temporal mapping itself was checked
-with a dedicated run in which the lid is a pure harmonic,
-\(U_{\mathrm{lid}}(x,t)=\sin(2\pi x)\cos(\omega_1 t)\) at the same
-\(E^\ast=0.25\), \(Re=500\), \(N=256\) and \(\omega_1=\pi\) as the branch captures
-(\texttt{scripts/validate\_stokes\_analytic.py}, output
-\texttt{results/08\_stokes\_analytic/stokes\_analytic.npz}). Oscillating-lid cavity
-flows have been simulated with the lattice Boltzmann method before
-\cite{mendu2013oscillating}; here the aim is not a flow regime but a
-frequency-response check of the solver and of the mapping. The streamwise velocity
-recorded at the antinode of the lid profile then contains the forcing frequency and
-no other significant line: the single-sided amplitude at \(\omega_1\) is \(0.927\)
-at the lid node, i.e.\ the imposed unit amplitude recovered to within the \(7.3\%\)
-near-wall nodal velocity offset of Sec.~S4.8, and the wall-normal
-profile of that amplitude decays exponentially over the cells below the lid, with a
-fitted decay length of \(5.4\) cells and \(R^2=0.999\) over the eleven cells
-nearest the wall. The half-space Stokes thickness at \(\omega_1\) is
-\(\delta=\sqrt{2\nu/\omega_1}=9.1\) cells. The measured layer is
-of the right order but \(41\%\) thinner than the semi-infinite-slab
-value: the lid is non-uniform in \(x\), the cavity depth is only about \(28\delta\),
-and the return flow superimposes a steady shear on the oscillating component, none
-of which enters the second-problem idealisation. The run is used as evidence that
-the solver responds at the imposed frequency with a wall-attached layer of the
-expected order of magnitude, not as a quantitative benchmark of the layer
-thickness; the quantitative claims of this study rest on cycle means, which are
-checked as well by the drift, quadrature and closure tests of Secs.~S4.6
-and S4.8.
+with dedicated runs in which the lid is a pure harmonic,
+\(U_{\mathrm{lid}}(x,t)=A\sin(2\pi x)\cos(\omega_1 t)\), at the same
+\(E^\ast=0.25\), \(Re=500\), \(\omega_1=\pi\) and probe column as the branch
+captures, with \(N\) and \(A\) as switches
+(\texttt{scripts/validate\_stokes\_analytic.py}). Six runs are archived, at
+\(N=256\) with \(A=1\), \(0.33\), \(0.2\) and \(0.05\) and at \(N=512\) with
+\(A=1\) and \(0.05\), and \texttt{scripts/summarize\_stokes\_sweep.py} recomputes
+every number quoted below from the archived amplitude profiles with one formula,
+on one cell spacing, \(h=1/(N-1)\), and one fitting window, the eleven cells
+below the lid row (\texttt{results/08\_stokes\_analytic/stokes\_sweep.md}). The
+reference archive self-reports a ratio of \(0.588\) only because it converts the
+measured thickness with \(1/(N-1)\) and the theoretical one with \(1/N\); on a
+single convention it is \(0.590\), the \(0.4\%\) being the spacing artefact of
+Sec.~S4.5. Oscillating-lid cavity flows have been simulated with the lattice
+Boltzmann method before \cite{mendu2013oscillating}; here the aim is not a flow
+regime but a frequency-response check of the solver and of the mapping, and, the
+fitted layer having come out thinner than the semi-infinite-slab value, an
+account of why.
+
+The frequency response itself is clean. The recorded line falls on \(\omega_1\),
+and the lid amplitude of one capture period reproduces that of the next to
+\(1.8\times10^{-4}\) at worst and to \(5\times10^{-6}\) at the smallest
+amplitude. The amplitude at the lid node is \(0.927A\) at \(N=256\) and \(0.963A\)
+at \(N=512\): the near-wall nodal velocity offset of Sec.~S4.8 is \(7.27\%\) and
+\(3.69\%\), so it halves with the cell spacing (factor \(1.97\)), which is the
+first-order-in-distance behaviour expected of a probe that samples an exponential
+layer half a cell below the wall. Measured and predicted offsets do not quite
+coincide, the first being \(1.36\) times the half-cell stand-off factor
+\(e^{-h/2\delta}\) at \(A=1\) and \(1.23\) times it at \(A=0.05\), on both grids.
+
+That residual is a property of the layer, not of the amplitude bookkeeping,
+because the two are independent by construction: the fit uses the slope of
+\(\log A\) against distance from the lid, so a multiplicative error in the lid
+amplitude moves the intercept and cancels in the decay length. The sweep shows
+the same decoupling in the data, the \(A=1\) and \(A=0.05\) nodal offsets at
+\(N=256\) differing by a factor \(1.11\) while their fitted decay lengths differ
+by \(30\%\).
+
+Resolution is excluded by the grid pair rather than by argument. At \(A=1\) the
+fitted thickness is \(0.02105\) at \(N=256\) and \(0.02166\) at \(N=512\), against
+the half-space Stokes value \(\delta=\sqrt{2\nu/\omega_1}=0.035682\), that is,
+\(9.1\) and \(18.2\) cells: the ratio rises from \(0.590\) to \(0.607\), so
+doubling the grid closes \(4\%\) of the \(41\%\) deficit. At \(A=0.05\) the same
+pair gives \(0.766\) and \(0.759\), a change of \(-0.9\%\). Neither the cell size
+nor the normalisation of the lid amplitude accounts for a layer \(41\%\) thinner
+than the half-space value at \(A=1\) and \(23\%\) thinner at \(A=0.05\). The
+amplitude does, and it is the one parameter the second-problem idealisation
+assumes small: the four runs at \(N=256\) give \(0.590\), \(0.734\), \(0.754\) and
+\(0.766\) at \(A=1\), \(0.33\), \(0.2\) and \(0.05\), so the deficit falls by a
+third already at \(A=0.33\) and then saturates, the three values at \(A\le0.33\)
+spanning \(0.03\). The cycle-mean shear just below the lid, namely the steady
+component that the oscillating-lid idealisation assumes absent, measures
+\(6.4\times10^{-4}\), \(1.10\times10^{-2}\) and \(2.82\times10^{-2}\) at
+\(A=0.05\), \(0.2\) and \(0.33\), which is to say like \(A^2\), and it is the
+quantity the deficit tracks. What the smallest amplitude leaves, about a quarter,
+these runs do not separate: the lid varies in \(x\), the depth is some \(28\delta\),
+and the return flow is not the quiescent half-space.
+
+Two checks bound the reading of the fitted length. Every profile is exponential
+over the protocol window to \(R^2\ge0.9987\). The window is where that statement
+means something: dropping the first cell moves the ratio by less than \(0.5\%\),
+while a window reaching past twice the theoretical thickness returns a larger
+decay length with a visibly degraded fit (\(R^2\approx0.82\)), because the profile
+flattens there. The flattening is not under-resolution: at matched physical depth
+the grids agree, \(0.590\) (\(N=256\), cells 1--11) against \(0.591\) (\(N=512\),
+cells 1--23), and \(1.179\) with \(R^2=0.823\) against \(1.153\) with
+\(R^2=0.828\) for the widest window each grid allows. The departure from a single
+exponential is a property of the configuration that both grids resolve, and the
+near-wall value of the protocol window is the one used above.
+
+The run is used as evidence that the solver responds at the imposed frequency with
+a wall-attached layer of the expected order of magnitude, not as a quantitative
+benchmark of the layer thickness; the quantitative claims of this study rest on
+cycle means, which are checked as well by the drift, quadrature and closure tests
+of Secs.~S4.6 and S4.8.
 
 \subsection{Control Transfer Protocol}
 
@@ -1589,7 +1639,25 @@ exactly the spacing gap, to the last digit
 \texttt{forcing\_over\_viscous\_ratio\_\*}). The factor is still common to the three
 branches, so it affects neither their ordering nor the ratios quoted between them,
 and the ratios of Table~\ref{tab:streaming_forcing} are the \(h=1/(N-1)\) values.
-The
+The three differential operators themselves are audited against analytic fields
+whose exact values are known, by \texttt{scripts/test\_gradient\_identities.py},
+whose record \texttt{results/d2\_derived/gradient\_identity\_audit.json} is
+regenerated with the paper. The strain-rate contraction
+\(\phi=\nu(2u_x^2+2v_y^2+(u_y+v_x)^2)\) returns \(\nu G^2\) on the linear shear
+\(u=GY\) to \(2.2\times10^{-16}\) relative and \(\nu k^2\) on the Taylor-Green cell
+to \(2.0\times10^{-4}\), which is the truncation error of the central difference;
+the kinetic-energy density returns \(K=1/4\) on that cell to
+\(1.1\times10^{-16}\); the discrete identity \(\int2\phi/\nu=\int\omega^2\) holds
+to \(2.2\times10^{-16}\); and the axis convention of the archived arrays (axis
+\(0=y\), axis \(1=x\), as the solver advances the population arrays) is fixed by
+the transposition test, which doubles \(\phi\) on the shear and multiplies the
+continuity residual of the captured mean field by \(809\). The wall stencil is the
+one choice the audit cannot settle, because it has no analytic reference on a real
+field: switching \texttt{np.gradient} from its first-order to its second-order
+boundary formula moves the mean-field dissipation of \(B_2\), whose production
+value is the \(1.016\times10^{-3}\) of Main Table~3, by \(+2.17\%\)
+to \(1.038\times10^{-3}\) -- the same order as the \(5.4\%\) grid effect of
+Sec.~S4.5. The
 three boundary cells on
 each side are excluded from
 every norm and maximum because the discrete derivative there reaches into the
