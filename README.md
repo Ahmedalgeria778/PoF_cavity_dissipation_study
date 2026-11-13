@@ -9,7 +9,7 @@ This repository contains the manuscript, supplementary material, figures, and an
 
 **Title:** Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation in a lid-driven cavity
 
-**Authors:** Beniaiche Ahmed¹,*, Larabi Abderrahim¹, Belkadi Mbarek²
+**Authors:** Ahmed BENIAICHE¹,*, Abderrahim LARABI¹, Mebarek BELKADI²
 
 ¹ Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria  
 ² Laboratory of Turbomachinery, Ecole Militaire Polytechnique, Algiers, Algeria
@@ -299,7 +299,7 @@ reasonable request.
 ```bibtex
 @article{beniaiche2026spatiotemporal,
   title={Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation in a lid-driven cavity},
-  author={Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mbarek},
+  author={Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mebarek},
   journal={Physics of Fluids},
   year={2026},
   publisher={AIP Publishing}
@@ -312,6 +312,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-**Beniaiche Ahmed**  
+**Ahmed BENIAICHE**  
 Email: beniaiche_ahmed25@yahoo.fr  
 GitHub: https://github.com/Ahmedalgeria778

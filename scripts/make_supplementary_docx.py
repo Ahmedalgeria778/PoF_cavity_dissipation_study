@@ -61,7 +61,7 @@ SYMBOLS = {
     "sum": "∑", "prod": "∏", "int": "∫", "iint": "∬", "oint": "∮",
     "bigcup": "⋃", "bigcap": "⋂", "coprod": "∐",
     "langle": "⟨", "rangle": "⟩", "lfloor": "⌊", "rfloor": "⌋",
-    "vert": "|", "lvert": "|", "rvert": "|",
+    "vert": "|", "lvert": "|", "rvert": "|", "textbar": "|",
     "lVert": "‖", "rVert": "‖", "Vert": "‖", "mid": "∣",
     "dots": "…", "ldots": "…", "cdots": "⋯", "vdots": "⋮", "ddots": "⋱",
     "backslash": "\\", "degree": "°", "checkmark": "✓",
@@ -427,7 +427,8 @@ def tok(src, fmt=None, math=0):
                     emit(", ")
                     i = j
                     continue
-                if name in SYMBOLS and (math or name in ("pm", "times", "infty")):
+                if name in SYMBOLS and (math or name in ("pm", "times", "infty",
+                                                         "textbar")):
                     flush()
                     emit(SYMBOLS[name])
                     i = j
@@ -813,8 +814,9 @@ def pdf_to_png(pdf, name):
 
 LABELS = {}
 BIB = {}
+ALT = {}
 COUNTS = {"head1": 0, "head2": 0, "head3": 0, "para": 0, "table": 0,
-          "figure": 0, "equation": 0, "bibitem": 0, "item": 0}
+          "figure": 0, "equation": 0, "bibitem": 0, "item": 0, "alt": 0}
 
 
 class Counters(object):
@@ -1093,6 +1095,33 @@ def strip_labels(s):
     return s
 
 
+def collect_alts(preamble):
+    """\\AltTextFor{label}{text} registers the alternative text of one float. The
+    LaTeX source prints it under the caption through a patched \\label; the Word
+    source prints the same text under the caption of the float carrying that
+    label, so the two transmitted forms describe the floats identically."""
+    for m in re.finditer(r"\\AltTextFor\s*\{", preamble):
+        lab, j = read_group(preamble, preamble.index("{", m.end() - 1))
+        if j < len(preamble) and preamble[j] == "{":
+            text, _ = read_group(preamble, j)
+            ALT[lab.strip()] = " ".join(text.split())
+
+
+def alt_paragraph(doc, label):
+    text = ALT.get(label) if label else None
+    if not text:
+        return
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(2)
+    p.paragraph_format.space_after = Pt(6)
+    r = p.add_run("Alt text: ")
+    r.bold = True
+    r.italic = True
+    r.font.size = Pt(8.5)
+    add_runs(p, tok(text, {"i": True}), size=8.5)
+    COUNTS["alt"] += 1
+
+
 def table_env(doc, inner):
     cap = None
     m = re.search(r"\\caption\s*(\[[^\]]*\])?\{", inner)
@@ -1110,6 +1139,7 @@ def table_env(doc, inner):
     r.font.size = Pt(9.5)
     add_runs(p, tok(cap or ""), size=9.5)
     COUNTS["table"] += 1
+    alt_paragraph(doc, lab.group(1) if lab else None)
     tb = re.search(r"\\begin\{tabular\}", inner)
     if not tb:
         return
@@ -1192,6 +1222,7 @@ def figure_env(doc, inner):
         r.font.size = Pt(9.5)
         add_runs(p, tok(cap), size=9.5)
     COUNTS["figure"] += 1
+    alt_paragraph(doc, lab.group(1) if lab else None)
     doc.add_paragraph()
 
 
@@ -1220,6 +1251,16 @@ def bibliography(doc, inner):
         add_runs(p, tok(inner[h.end():stop]))
 
 
+TITLE_LINE = re.compile(r"\\\\\s*(?:\[[^\]]*\])?")
+
+
+def title_text(body):
+    """The title and author blocks end their lines with a vertical skip whose
+    length would be printed as text, and mark the affiliation with a math
+    superscript; the skip is dropped and the marker becomes a real superscript."""
+    return re.sub(r"\^\{?(\d+)\}?", r"\\textsuperscript{\1}", body)
+
+
 def build_title(doc, preamble):
     t = re.search(r"\\title\{(.*)\}\s*$", preamble, re.S | re.M)
     a = re.search(r"\\author\{(.*)\}\s*$", preamble, re.S | re.M)
@@ -1227,7 +1268,7 @@ def build_title(doc, preamble):
         body, _ = read_group(preamble, preamble.index("{", t.start() + 5))
         p = doc.add_paragraph(style="Title")
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        for k, seg in enumerate(body.split("\\\\")):
+        for k, seg in enumerate(TITLE_LINE.split(title_text(body))):
             runs = tok(seg)
             if k:
                 p.add_run().add_break(WD_BREAK.LINE)
@@ -1239,7 +1280,7 @@ def build_title(doc, preamble):
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.space_after = Pt(14)
-        for k, seg in enumerate(body.split("\\\\")):
+        for k, seg in enumerate(TITLE_LINE.split(title_text(body))):
             if k:
                 p.add_run().add_break(WD_BREAK.LINE)
             add_runs(p, tok(seg), size=10.5)
@@ -1346,6 +1387,7 @@ def reset_state(labels=False):
 def render(src_obj):
     doc = Document()
     setup(doc)
+    collect_alts(src_obj.preamble)
     build_title(doc, src_obj.preamble)
     walk(doc, src_obj.body)
     fill_contents()
@@ -1371,10 +1413,11 @@ def main():
     print("wrote %s (%d bytes)" % (os.path.relpath(OUT, REPO),
                                    os.path.getsize(OUT)))
     print("headings=%d paragraphs=%d tables=%d figures=%d equations=%d "
-          "items=%d bibitems=%d" % (COUNTS["head1"] + COUNTS["head2"],
-                                    COUNTS["para"], COUNTS["table"],
-                                    COUNTS["figure"], COUNTS["equation"],
-                                    COUNTS["item"], COUNTS["bibitem"]))
+          "items=%d bibitems=%d alt=%d" % (COUNTS["head1"] + COUNTS["head2"],
+                                           COUNTS["para"], COUNTS["table"],
+                                           COUNTS["figure"], COUNTS["equation"],
+                                           COUNTS["item"], COUNTS["bibitem"],
+                                           COUNTS["alt"]))
     bad = 0
     if UNMAPPED:
         bad = 1
@@ -1408,6 +1451,18 @@ def main():
             print("  word:", w)
         for x in missing_n[:25]:
             print("  number:", x)
+    silent = []
+    flat = " ".join(have.split())
+    for lab, text in sorted(ALT.items()):
+        want = " ".join(plain(tok(text, {"i": True})).split())
+        if want not in flat:
+            silent.append(lab)
+    if silent:
+        bad = 1
+        print("ALT TEXT REGISTERED BUT NOT PRINTED (%d): %s"
+              % (len(silent), ", ".join(silent)))
+    elif ALT:
+        print("alt text: %d registrations printed under their float" % len(ALT))
     aux = aux_labels()
     clash = []
     for lab, num in aux.items():

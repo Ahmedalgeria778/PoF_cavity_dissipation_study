@@ -13,7 +13,7 @@
 Manuscript: \textit{Spatio-temporal wall-actuation modes and cycle-mean\\
 viscous dissipation in a lid-driven cavity}}
 
-\author{Beniaiche Ahmed, Larabi Abderrahim, Belkadi Mbarek\\
+\author{Ahmed BENIAICHE, Abderrahim LARABI, Mebarek BELKADI\\
 Laboratory of Fluid Mechanics, Ecole Militaire Polytechnique, Algiers, Algeria}
 \date{Submission date: 21 November 2026}
 
@@ -280,7 +280,7 @@ should clearly show all changes made from the previous submission.''}
 \noindent\textbf{Response:} We have prepared both versions:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{manuscript\_final\brk.tex} and
-  \texttt{manuscript\_final\brk.pdf} (27 pages).
+  \texttt{manuscript\_final\brk.pdf} (28 pages).
 \item \textbf{Marked-up version}: \texttt{manuscript\_final\brk\_marked\brk.tex} and
   \texttt{manuscript\_final\brk\_marked\brk.pdf} (36 pages). The marked-up version uses
   a paragraph-level diff: old text that has been removed or replaced is shown in
@@ -292,9 +292,9 @@ should clearly show all changes made from the previous submission.''}
 The same approach has been applied to the supplementary material:
 \begin{itemize}
 \item \textbf{Clean version}: \texttt{supplementary\_final\brk.tex} and
-  \texttt{supplementary\_final\brk.pdf} (31 pages).
+  \texttt{supplementary\_final\brk.pdf} (33 pages).
 \item \textbf{Marked-up version}: \texttt{supplementary\_final\brk\_marked\brk.tex} and
-  \texttt{supplementary\_final\brk\_marked\brk.pdf} (42 pages).
+  \texttt{supplementary\_final\brk\_marked\brk.pdf} (44 pages).
 \end{itemize}
 
 \vspace{1em}
@@ -314,9 +314,9 @@ since individual figure files are not being uploaded.''}
   marked-up sources \texttt{manuscript\_final\brk\_marked\brk.tex} and
   \texttt{supplementary\_final\brk\_marked\brk.tex};\\
   this letter, \texttt{RESPONSE\_TO\_EDITOR\brk.tex}.
-\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (27 pages),
-  \texttt{supplementary\_final\brk.pdf} (31 pages), the two marked-up PDFs
-  (36 and 42 pages), and
+\item \textbf{Author-generated PDFs}: \texttt{manuscript\_final\brk.pdf} (28 pages),
+  \texttt{supplementary\_final\brk.pdf} (33 pages), the two marked-up PDFs
+  (36 and 44 pages), and
   \texttt{RESPONSE\_TO\_EDITOR\brk.pdf}.
 \item \textbf{Figures}: the 8 figures of the manuscript and the 2 of the
   supplementary material are embedded in the two PDFs and visible in the text.
@@ -574,7 +574,7 @@ $E^\ast$, $Re$, $N$ and $\omega_1$
 (\texttt{scripts/validate\_stokes\_analytic\brk.py}, Section~S4.3) records at the
 antinode a single-sided amplitude of $0.927$ at $\omega_1$ and no other
 significant line --- the imposed unit amplitude, recovered to within the
-$7.3\%$ slip of the velocity boundary condition --- and a wall-normal exponential
+$7.3\%$ near-wall nodal velocity offset --- and a wall-normal exponential
 decay of fitted length $5.4$ cells ($R^2=0.999$ over the eleven cells nearest the
 wall) against the half-space value $\delta=\sqrt{2\nu/\omega_1}=9.1$ cells. The
 layer is of the expected order and $41\%$ thinner, which is attributed to the
@@ -620,7 +620,7 @@ their fluctuating parts span two orders of magnitude --- is unchanged by the
 refinement. The power-balance residual of Sec.~6.5 is divided by $2.1$, $1.9$
 and $2.4$, i.e.\ the factor of two a first-order one-sided stencil predicts under
 $\Delta x\to\Delta x/2$, and moves to $-1.4\%$, $-0.3\%$ and $-0.2\%$, while the
-largest slip of the velocity boundary condition drops by $38$--$47\%$. The
+largest near-wall nodal velocity offset drops by $38$--$47\%$. The
 periodicity of the averaged state is not degraded: the half-window phase
 reproduction of the finer captures is $1.79\times10^{-3}$,
 $1.48\times10^{-5}$ and $2.69\times10^{-4}$ against $1.87\times10^{-3}$,
@@ -723,7 +723,7 @@ momentum injection into the two wall-facing populations, which enforces the movi
 wall at the hydrodynamic boundary half a lattice spacing outside row $N-1$; it
 therefore does \emph{not} make the recovered node velocity equal the commanded
 profile, and Supplementary Sec.~S4.1 no longer claims it does. That discrepancy is
-the slip already quantified in Sec.~6.5 --- $6.0\%$, $11.5\%$ and $11.8\%$ of the
+the offset already quantified in Sec.~6.5 --- $6.0\%$, $11.5\%$ and $11.8\%$ of the
 cavity speed at $N=256$, dropping to $3.2\%$, $7.2\%$ and $6.9\%$ at $N=512$ ---
 and Sec.~2.2 now explains the residuals of Table~4 through it, instead of leaving
 the reader to infer why the recovered and prescribed estimators bracket the
@@ -986,12 +986,12 @@ boundary condition imposes the commanded moving-wall velocity at the hydrodynami
 boundary --- the half-way plane a half spacing outside the lid node row --- and that
 the macroscopic streamwise velocity reconstructed at the adjacent outermost fluid-node
 row $i=N-1$ is a computed quantity that differs from the prescribed profile by the
-discrete slip of the scheme. The same sweep renamed the remaining loose uses: the list
+near-wall nodal velocity offset. The same sweep renamed the remaining loose uses: the list
 of estimator choices in Sec.~S4.8 speaks of the velocity at the lid node row, the
 sentence after Eq.~(5) of the main text no longer says the boundary condition fails
 ``at the wall node'' but that it imposes the velocity at the hydrodynamic wall outside
 that row, and the captions of Table~4 and Fig.~5 now say the recovered velocity is the
-one of the outermost fluid row rather than ``the boundary node''. The slip magnitudes
+one of the outermost fluid row rather than ``the boundary node''. The offset magnitudes
 themselves ($0.060$, $0.115$, $0.118$ cavity units) are unchanged.
 
 \vspace{1em}
@@ -1053,7 +1053,7 @@ with the local density taken from the post-collision field. The algorithm applie
 correction to the wall-facing populations of row $N-1$, but the velocity it imposes
 belongs to the hydrodynamic wall, the half-way plane located a half lattice spacing
 outside that row, rather than to the macroscopic velocity reconstructed at the fluid
-node.'' The sentence that followed, on the measured slip ($3.2\%$--$11.8\%$ of the
+node.'' The sentence that followed, on the measured offset ($3.2\%$--$11.8\%$ of the
 cavity speed) and on the power estimator being evaluated on row $N-1$, was kept and now
 follows as the consequence of that distinction rather than as a second statement of it.
 This is the wording the code implements: the correction is applied to the wall-facing
@@ -1079,7 +1079,7 @@ both quantities exactly at the hydrodynamic wall, which lies a half spacing outs
 it.'' Main Table~4 already labels $\overline P_{\mathrm{lid}}^{\mathrm{rec}}$ as
 recovered on the outermost fluid row, so the table, Sec.~4.2 and Sec.~S4.8 now make the
 same statement: the estimator is consistent with itself, and its difference from the
-physical wall power is the slip quantified in that section.
+physical wall power is the offset quantified in that section.
 
 \vspace{1em}
 
@@ -1447,6 +1447,25 @@ velocity at the sampled fluid node and the velocity at the wall plane; the sente
 Main Sec.~4.2 that pointed back to ``the $3$--$12\%$ slip quoted above'' was
 itself faulty, since no such number appears earlier in the manuscript, and it now quotes
 the range and its resolutions explicitly with a forward reference to Sec.~S4.8.
+The letters of the rounds that preceded this one had used the withdrawn word when they
+described the documents, and the present transmission renamed those occurrences as well,
+so that the quantity carries its single name throughout this response; the three phrases
+appear here only inside the quotations above, which are the record of their removal.
+
+The renaming is now enforced rather than promised. Preparing this transmission found one
+regression: the last column of Table~S15, which the supplement does not type but generate
+from the resolution-sensitivity records, had kept the withdrawn wording in its header and
+in the sentence describing it. Its generator was corrected, and
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py}, which
+\texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh} runs as the last gate of the build,
+searches the two sources, the two response letters, the \texttt{README.md} and every
+generated table the supplement pulls --- sixteen files --- for the three phrases, after
+blanking the quoted editor comments and the quoted prose of our own sentences, so that a
+quotation does not count against the check. It was tested from both sides: one sentence
+carrying a phrase in plain prose made the gate name the file and the phrase and stopped
+the build with a non-zero exit, and the same phrase inside a quotation left it green. The
+file inventory and its verdict are printed in
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md}.
 
 The conflation the reviewer identified is corrected in the direction the code supports.
 That the momentum injection is linear in \(U_{\mathrm{lid}}\) is a statement about the
@@ -1543,7 +1562,7 @@ problems. Points~51 to~53 below were applied and the four documents were rebuilt
 \texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh}, which runs the passes per
 document and then the build, bibliography and certificate gates; they left those counts
 unchanged. The style pass of Point~54 lengthened the marked-up manuscript by one page,
-and the counts of the transmitted build are recorded there. No new
+and the counts of the transmitted build are recorded in Point~57. No new
 numerical campaign was run, in line with the reviewer's recommendation: the only
 computation added in this round is the recomputation of Main Sec.~5.3's strain-rate
 statistics from field archives that already existed.
@@ -1676,7 +1695,7 @@ rather than one of the build gates, since a style count is not a correctness cri
 The four documents were rebuilt with the same script and the same gates, and the
 log, bibliography and certificate gates reported no problem. The abstract rewrite
 of Point~55 below changed the length of the marked-up manuscript; the counts of
-the transmitted build are recorded there.
+the build transmitted with this letter are recorded in Point~57.
 
 \vspace{1em}
 
@@ -1696,7 +1715,7 @@ the $17.7\%$ reduction and $36.8\%$ increase of the first and second harmonics,
 the fluctuation shares $92.9\%$, $53.7\%$ and $1.8\%$, the Stokes agreement to
 within $5\%$ and $2\%$, and the factor-$36$ pair equal over the cycle to within
 $2.1\%$. The marked-up manuscript was regenerated from the previous round's
-transmitted file and the package rebuilt: manuscript 27 pages with no overfull
+transmitted file and the package rebuilt at that round: manuscript 27 pages with no overfull
 box, supplement 31 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name
 run of Sec.~S5.6, marked copies 36 and 42 pages; the gates report zero problems,
 ten figures and eleven table sources with no missing resource.
@@ -1740,12 +1759,99 @@ of the source prose reappear in the produced file in the same order. The script 
 by \texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh} after the \LaTeX{} passes, so the
 auxiliary file it checks against is the one just written, and
 \texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md} inventories the Word file
-with its size and checksum. The package rebuilt for this round is the manuscript at 28
-pages with no overfull box --- one page more than the 27 recorded in Point~55, the new
-section being the only change of extent --- the supplement at 31 pages with the single
-\(6.7\,\mathrm{pt}\) box of Sec.~S5.6, the marked copies at 36 and 42 pages, ten figures
-and eleven table sources with no missing resource, and the Word supplement at
-$2\,575\,194$ bytes.
+with its size and checksum. The package rebuilt for that round is the manuscript at one
+page more than the 27 recorded in Point~55, the new section being the only change of
+extent, with ten figures and eleven table sources and no missing resource. The supplement
+and the marked copies grew again in the eighteenth round described below, so
+Point~57 records the page counts and the byte sizes of the build transmitted with this
+letter.
+
+\vspace{1em}
+
+\noindent\textbf{Point 57: The given names and the surnames of the byline set in the
+order of the submission form (eighteenth round).}
+
+The office reported that the byline and the submission form disagree on the order of the
+two name components, and asked that the given name be shown first for the three authors.
+Every transmitted source now reads Ahmed BENIAICHE, Abderrahim LARABI, Mebarek BELKADI:
+the bylines of the manuscript and of the supplement, those of the two marked-up copies,
+the author blocks of this letter and of the summary letter, the author line and the
+corresponding-author entry of the \texttt{README.md}, and the copyright line of the licence.
+Nothing else in the two title blocks moved. The affiliation superscripts, the two
+institution lines and the corresponding-author footnote carried by Author Beniaiche in
+\texttt{manuscript/}\hspace{0pt}\texttt{manuscript\_final.tex} are the ones already
+transmitted, and the CRediT roles are attached to the same three people. The third given
+name is spelled Mebarek, as the form gives it, wherever it occurs; that spelling also
+reaches the two citation-metadata files, where the order is left as their formats require:
+\texttt{CITATION.cff} keeps its separate \texttt{given-names} and \texttt{family-names}
+fields and \texttt{Zenodo.md} keeps the \texttt{surname, given names} pattern that BibTeX
+defines, so the reversal the editor flagged concerns the prose bylines and not those
+records, which name the same three people.
+
+The order is enforced rather than promised.
+\texttt{scripts/}\hspace{0pt}\texttt{certify\_package.py}, which
+\texttt{scripts/}\hspace{0pt}\texttt{build\_all.sh} runs as the last gate of the build, now
+holds an author-name check over eleven files --- the eight sources that carry a byline, the
+two citation-metadata files and the Word source of the supplement. It fails if any of them
+puts a surname before its given name, if any of the eight byline sources ceases to show a
+name in the given-name-first form, if any of them still spells the third given name the way
+the old byline did, and if the title block of the \texttt{.docx} no longer carries the three
+names. The search is case-insensitive and rejects a match immediately followed by a letter,
+which is what lets a name keep being found when a Unicode superscript digit --- a word
+character to the regular-expression engine --- sits against it, as it does in the
+\texttt{README.md} author line; without that look-ahead the gate reported a name as absent
+from a file that shows it. The Word check reads \texttt{word/document.xml} inside the
+produced archive and strips its tags, so the title block is verified as it is rendered and
+not as it was typed. One exemption is part of the rule: a response letter quotes the
+comment it answers, and the comment of this round names the three authors in the order the
+submission form gave, so the gate blanks the 22 passages that the two response letters set
+in the editor's colour before it searches for an order, and prints that count in the
+certificate. The editor's words are therefore reproduced as they stand while every byline
+is still checked; retyping one of the latter in the reversed order fails the build, which
+is what keeps the exemption from hiding a mistake. Both branches were tested from the
+negative side: one byline retyped
+in the reversed order made the gate report the reversal and then the name that line no
+longer shows, and the build stopped with a non-zero exit; the earlier spelling of the third
+given name, restored in one file, was reported twice for that file, once as the misspelling
+and once as the absent name.
+\texttt{docs/}\hspace{0pt}\texttt{PACKAGE\_CERTIFICATION.md} now prints the
+count of each name in each of the eleven files, so the office can see every place the byline
+is quoted and check that it is quoted alike.
+
+Two defects of the Word source of the supplement, found while rebuilding it for this round,
+are closed with it. Its title block had reproduced the line-break, spacing and superscript
+commands of the \LaTeX{} author line as printed text, so the file transmitted to the
+publisher showed a bracketed spacing argument and the carets of the affiliation markers
+where a word processor should show an author block; the converter now splits that block on
+its line breaks and turns the markers into real superscript runs, of which the produced
+file carries the five of the supplement title block. And the
+alternative texts that the supplement registers for its floats with
+\texttt{\textbackslash AltTextFor} were not converted at all, so the \texttt{.docx} was less
+accessible than the PDF beside it. The converter now reads that register and typesets each
+string as an ``Alt text'' line under its own float: 21 registrations, one for every one of
+the 19 tables and the 2 figures. The gate is again mechanical --- a registered string that
+does not reappear verbatim in the produced file stops the build, which was verified by
+registering a string against a label that no float uses; the script named it as registered
+but not printed and left the Word file unwritten.
+
+The four documents were rebuilt from the sources, three passes each, from inside their own
+directories so that \texttt{data\_appendix/} and the figure paths resolve as the sources
+declare them; the marked copies were regenerated by
+\texttt{scripts/}\hspace{0pt}\texttt{mark\_manuscript.py} from the previous round's
+transmitted files, and the Word source by the converter against the fresh auxiliary file.
+The transmitted build is the manuscript at 28 pages with no overfull box, the supplement at
+33 pages with the single \(6.7\,\mathrm{pt}\) box in the file-name run of Sec.~S5.6, the
+marked copies at 36 and 44 pages, this letter at 29 pages with the single
+\(1.7\,\mathrm{pt}\) box carried over from an earlier round and the summary letter at 3
+pages with no box, the Word supplement current with its source, ten figures and
+eleven table sources with no missing resource, an abstract of 236 words within the 250-word
+limit, and the bibliography gate reporting 38 entries in the manuscript and 10 in the
+supplement with 0 problems. This letter gained its twenty-ninth page from the paragraph
+added under Point~47, which reports the terminology gate. No numerical campaign was run and
+no value, table or figure changed: this round touches the names, the two files that render
+them, and the wording of one generated column header and of the alternative text that
+restates it, whose recorded values are untouched; Point~50's
+forward pointer to these counts is satisfied here.
 
 \newpage
 

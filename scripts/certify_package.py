@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import sys
+import zipfile
 
 import matplotlib
 import numpy as np
@@ -182,6 +183,145 @@ def docx_stale():
             if os.path.isfile(p) and os.path.getmtime(p) > new]
 
 
+# The submission form and the byline have to agree, so the names are read back
+# from the transmitted sources: the marked copies and the Word file are generated
+# from these files, and the two letters restate the byline.
+AUTHORS = ("Ahmed BENIAICHE", "Abderrahim LARABI", "Mebarek BELKADI")
+BYLINE = [MS, SP,
+          os.path.join(REPO, "manuscript", "manuscript_final_marked.tex"),
+          os.path.join(REPO, "supplementary", "supplementary_final_marked.tex"),
+          os.path.join(REPO, "docs", "RESPONSE_TO_EDITOR.tex"),
+          os.path.join(REPO, "docs", "RESPONSE_TO_EDITOR_summary.tex"),
+          os.path.join(REPO, "README.md"), os.path.join(REPO, "LICENSE")]
+METADATA = [os.path.join(REPO, "CITATION.cff"), os.path.join(REPO, "Zenodo.md")]
+
+# A response letter quotes the comment it answers, and the comment of this round
+# names the three authors the way the submission form did. Those spans are quoted
+# in \textcolor{blue}{...}; they are read, so they appear in the inventory, but the
+# name order is not searched inside them: they are the editor's words, not bylines.
+QUOTE = "\\textcolor{blue}{"
+
+
+def without_quotes(text):
+    """(text with the quoted comments blanked, number of spans blanked)."""
+    out, i, spans = [], 0, 0
+    while True:
+        j = text.find(QUOTE, i)
+        if j < 0:
+            out.append(text[i:])
+            break
+        out.append(text[i:j])
+        k, depth = j + len(QUOTE) - 1, 0
+        while k < len(text):
+            if text[k] == "{":
+                depth += 1
+            elif text[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        out.append(" " * (k - j + 1))
+        i, spans = k + 1, spans + 1
+    return "".join(out), spans
+
+
+def author_names():
+    """(problems, rows, quoted): every byline file shows each author with the given
+    name first and the surname in capitals, no file that carries a byline shows the
+    reversed order, and the given names keep one spelling. The order is searched in
+    the sources with the quoted editor comments blanked; the quoted count is the
+    number of those spans the gate stepped over."""
+    problems, rows, quoted = [], [], 0
+    for path in BYLINE + METADATA:
+        rel = os.path.relpath(path, REPO).replace("\\", "/")
+        if not os.path.isfile(path):
+            problems.append("%s is missing" % rel)
+            continue
+        text = open(path, encoding="utf-8", errors="replace").read()
+        body, spans = without_quotes(text)
+        quoted += spans
+        found = []
+        for full in AUTHORS:
+            given, sur = full.split()
+            # A trailing \b would not fire on "LARABI¹": a unicode superscript
+            # digit is a word character, so the name is followed by a letter check.
+            fwd = len(re.findall(r"\b%s\s+%s(?![A-Za-z])" % (given, sur), body, re.I))
+            rev = len(re.findall(r"\b%s\s+%s(?![A-Za-z])" % (sur, given), body, re.I))
+            if rev:
+                problems.append("%s puts the surname %s before the given name "
+                                "(%d time%s)"
+                                % (rel, sur.title(), rev, "" if rev == 1 else "s"))
+            if path in BYLINE and not fwd:
+                problems.append("%s never shows %s" % (rel, full))
+            found.append("%s: %d" % (full, fwd))
+        old = len(re.findall(r"\bMbarek\b", body))
+        if old:
+            problems.append("%s spells the third given name Mbarek rather than "
+                            "Mebarek (%d time%s)"
+                            % (rel, old, "" if old == 1 else "s"))
+        rows.append((rel, ", ".join(found)))
+    if os.path.isfile(DOCX):
+        # The title block of the Word source is typeset from the supplement
+        # preamble, so the converted text is checked the same way, allowing a
+        # word-processor run to break between the given name and the surname.
+        with zipfile.ZipFile(DOCX) as zf:
+            xml = re.sub(r"<[^>]+>", "",
+                         zf.read("word/document.xml").decode("utf-8", "replace"))
+        found = []
+        for full in AUTHORS:
+            given, sur = full.split()
+            fwd = len(re.findall(r"%s\s*%s" % (given, sur), xml, re.I))
+            rev = len(re.findall(r"%s\s*%s" % (sur, given), xml, re.I))
+            if rev or not fwd:
+                problems.append("the Word source does not show %s on its title "
+                                "block" % full)
+            found.append("%s: %d" % (full, fwd))
+        rows.append((os.path.relpath(DOCX, REPO).replace("\\", "/"),
+                     ", ".join(found)))
+    return problems, rows, quoted
+
+
+# The twelfth review withdrew three names for the difference between the commanded
+# lid profile and the velocity reconstructed at the outermost fluid node; the single
+# term it left is the near-wall nodal velocity offset. The withdrawal is enforced
+# here because the tables of the supplement are regenerated from scripts, and a
+# regenerated table restored one of the withdrawn phrases after the sweep.
+WITHDRAWN = ("boundary-condition slip",
+             "discrete slip of the scheme",
+             "slip of the velocity boundary condition")
+QUOTED_PROSE = re.compile(r"``.*?''", re.S)
+
+
+def vocabulary(tab_rows):
+    """(problems, rows): none of the withdrawn phrases outside a quotation. The
+    response letters retire those phrases by quoting them, so both the blue editor
+    comments and the ``quoted prose'' of our own sentences are blanked first."""
+    problems, rows = [], []
+    sources = [MS, SP, os.path.join(REPO, "docs", "RESPONSE_TO_EDITOR.tex"),
+               os.path.join(REPO, "docs", "RESPONSE_TO_EDITOR_summary.tex"),
+               os.path.join(REPO, "README.md")]
+    for tag, name in tab_rows:
+        p = resolve(name, DOCS[tag]["cwd"])
+        if p is not None:
+            sources.append(p)
+    seen = set()
+    for path in sources:
+        rel = os.path.relpath(path, REPO).replace("\\", "/")
+        if rel in seen or not os.path.isfile(path):
+            continue
+        seen.add(rel)
+        text = open(path, encoding="utf-8", errors="replace").read()
+        body, _ = without_quotes(text)
+        body = QUOTED_PROSE.sub(" ", body)
+        hits = [phrase for phrase in WITHDRAWN
+                if re.search(re.escape(phrase), body, re.I)]
+        if hits:
+            problems.append("%s still uses the withdrawn wording: %s"
+                            % (rel, "; ".join(hits)))
+        rows.append((rel, "clean" if not hits else ", ".join(hits)))
+    return problems, rows
+
+
 def main():
     lines = []
     lines.append("# Package certification")
@@ -287,6 +427,49 @@ def main():
     n_abs = abstract_words()
     lines.append("The manuscript abstract holds %d words, counting each inline math "
                  "span as one word; the submission limit is 250." % n_abs)
+    lines.append("")
+
+    name_problems, name_rows, name_quoted = author_names()
+    lines.append("## Author names")
+    lines.append("")
+    lines.append("The Deputy Editor reported that the given names and the surnames were "
+                 "reversed relative to the submission form. Every transmitted source "
+                 "now shows them as Ahmed BENIAICHE, Abderrahim LARABI, Mebarek "
+                 "BELKADI, with the affiliations and the corresponding-author marker "
+                 "unchanged. The count is the number of times each form appears in the "
+                 "file. The two citation-metadata files are held to the spelling of the "
+                 "given names only: BibTeX and CFF write a name as `surname, given "
+                 "names` by definition. The %d quoted comments of the two response "
+                 "letters are blanked before the search and are not counted in the "
+                 "table: they reproduce the editor's words, and the comment of this "
+                 "round names the authors in the order the submission form gave."
+                 % name_quoted)
+    lines.append("")
+    lines.append("| file | occurrences of the given-name-first form |")
+    lines.append("| --- | --- |")
+    for rel, found in name_rows:
+        lines.append("| `%s` | %s |" % (rel, found))
+    lines.append("")
+
+    vocab_problems, vocab_rows = vocabulary(tab_rows)
+    lines.append("## Terminology")
+    lines.append("")
+    lines.append("The twelfth review renamed the difference between the commanded lid "
+                 "profile and the velocity reconstructed at the outermost fluid node: "
+                 "the three phrases `boundary-condition slip', `discrete slip of the "
+                 "scheme' and `slip of the velocity boundary condition' were withdrawn "
+                 "in favour of the single term *near-wall nodal velocity offset*. The "
+                 "gate below re-reads the two sources, the two response letters, the "
+                 "README and every auto-generated table the supplement pulls, after "
+                 "blanking the quoted editor comments and the quoted prose of our own "
+                 "sentences, so that a regenerated table cannot restore a withdrawn "
+                 "phrase. The phrases still occur where the response letters quote them "
+                 "as the record of the renaming.")
+    lines.append("")
+    lines.append("| file | withdrawn wording found |")
+    lines.append("| --- | --- |")
+    for rel, state in vocab_rows:
+        lines.append("| `%s` | %s |" % (rel, state))
     lines.append("")
 
     sm_problems, claims = supplementary_material_section()
@@ -422,6 +605,21 @@ def main():
           "Acknowledgments, Secs/Tables/Figs counts match the aux (%d/%d/%d), "
           "Word source current"
           % (counts["toc"], counts["lot"], counts["lof"]))
+    if name_problems:
+        print("AUTHOR NAME GATE FAILED")
+        for p in name_problems:
+            print("  - %s" % p)
+        raise SystemExit(1)
+    print("author names: given name first in %d files, no reversed order outside the "
+          "%d quoted editor comments, one spelling of each given name"
+          % (len(name_rows), name_quoted))
+    if vocab_problems:
+        print("TERMINOLOGY GATE FAILED")
+        for p in vocab_problems:
+            print("  - %s" % p)
+        raise SystemExit(1)
+    print("terminology: no withdrawn boundary-condition wording in %d files"
+          % len(vocab_rows))
 
 
 if __name__ == "__main__":

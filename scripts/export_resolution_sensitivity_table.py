@@ -81,14 +81,14 @@ $\overline D$ is the cycle-mean dissipation, $D(\overline{\mathbf u})$ the same
 functional evaluated on the time-mean field, $\overline D_{\mathrm{fluct}}$ their
 difference, the next column the fluctuating share of the cycle mean,
 $\overline K$ the cycle-mean kinetic energy and $\overline P_{\mathrm{lid}}$ the
-lid power recovered at the boundary node. The two right-hand columns are the
+lid power recovered at the lid node row. The two right-hand columns are the
 balance residual $100(\overline P_{\mathrm{lid}}-\overline D)/\overline D$ and the
-largest discrete slip of the velocity boundary condition over the record, in per
-cent of the cavity speed. The third row of each block is the $256\to512$ change,
+largest near-wall nodal velocity offset over the record, in per cent of the
+cavity speed. The third row of each block is the $256\to512$ change,
 in per cent or in percentage points (pt). The relative standard error of every
 $\overline D$ is below @SE@, which is three to four orders of magnitude below the
 changes reported: the @D1@, @D2@ and @D3@ moves of $\overline D$ are resolved, and so is
-the accompanying halving of the balance residual and the drop of the lid slip,
+the accompanying halving of the balance residual and the drop of that offset,
 both consistent with the first-order truncation of the one-sided wall-shear
 estimator (Sec.~S4.8). The ordering $B_2>B_1>B_3$ is preserved, while the
 $B_1$--$B_3$ separation narrows from @G256@ to @G512@. Generated from
@@ -96,12 +96,12 @@ $B_1$--$B_3$ separation narrows from @G256@ to @G512@. Generated from
 \texttt{scripts/export\_resolution\_sensitivity\_table.py}.}
 \label{tab:res_sensitivity}
 \footnotesize
-\setlength{\tabcolsep}{2pt}
+\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{llcccccccc}
 \toprule
 Control & $N$ & $\overline D$ & $D(\overline{\mathbf u})$
 & $\overline D_{\mathrm{fluct}}$ & share (\%) & $\overline K$
-& $\overline P_{\mathrm{lid}}$ & residual (\%) & slip (\%)\\
+& $\overline P_{\mathrm{lid}}$ & residual (\%) & offset (\%)\\
 \midrule
 @ROWS@
 \bottomrule

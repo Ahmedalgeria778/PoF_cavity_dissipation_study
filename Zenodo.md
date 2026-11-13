@@ -96,7 +96,7 @@ If you use this work, please cite:
 
 ```bibtex
 @software{beniaiche2026_pof_cavity_dissipation,
-  author       = {Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mbarek},
+  author       = {Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mebarek},
   title        = {Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation in a lid-driven cavity},
   year         = {2026},
   publisher    = {Zenodo},
@@ -111,7 +111,7 @@ Et pour l'article:
 ```bibtex
 @article{beniaiche2026spatiotemporal,
   title={Spatio-temporal wall-actuation modes and cycle-mean viscous dissipation in a lid-driven cavity},
-  author={Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mbarek},
+  author={Beniaiche, Ahmed and Larabi, Abderrahim and Belkadi, Mebarek},
   journal={Physics of Fluids},
   year={2026},
   publisher={AIP Publishing}
